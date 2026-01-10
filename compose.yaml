@@ -1,0 +1,7 @@
+﻿services:
+  electricdashboardapi:
+    image: electricdashboardapi
+    build:
+      context: .
+      dockerfile: ElectricDashboardApi/Dockerfile
+
