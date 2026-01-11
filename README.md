@@ -1,0 +1,1 @@
+For anyone that stumbles upon this code.  Yes I know I should not have the client secrets and some other generally sensitive information publicly in the repository.  That being said, every service is on my own local network not reachable by the outside world.
