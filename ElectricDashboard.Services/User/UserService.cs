@@ -34,7 +34,7 @@ public class UserService(IOptions<KeycloakOptions> options) : IUserService
         return JsonDocument.Parse(json).RootElement.GetProperty("access_token").GetString();
     }
 
-    public async Task CreateUserAsync(string email, string password)
+    public async Task CreateUserAsync(Models.User.User userModel)
     {
         var token = await GetAdminTokenAsync();
         
@@ -44,18 +44,18 @@ public class UserService(IOptions<KeycloakOptions> options) : IUserService
 
         var user = new
         {
-            username = email,
-            email,
+            username = userModel.UserName,
+            email = userModel.EmailAddress,
             enabled = true,
             emailVerified = true,
-            firstName = "First",
-            lastName = "Last",
+            firstName = userModel.FirstName,
+            lastName = userModel.LastName,
             credentials = new[]
             {
                 new
                 {
                     type = "password",
-                    value = password,
+                    value = userModel.Password,
                     temporary = false
                 }
             }

@@ -4,7 +4,7 @@ namespace ElectricDashboard.Services.User;
 
 public interface IUserService
 {
-    Task CreateUserAsync(string email, string password);
+    Task CreateUserAsync(Models.User.User userModel);
     
     Task<string> LoginAsync(string username, string password);
 

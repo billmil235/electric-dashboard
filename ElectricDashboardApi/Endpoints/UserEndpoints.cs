@@ -1,4 +1,3 @@
-using ElectricDashboard.Models;
 using ElectricDashboard.Models.User;
 using ElectricDashboard.Services.User;
 
@@ -10,7 +9,7 @@ public static class UserEndpoint
     {
         group.MapPost("/register", async (User user, IUserService userService) =>
         {
-            await userService.CreateUserAsync(user.EmailAddress, user.Password);
+            await userService.CreateUserAsync(user);
             return Results.Ok();
         }).AllowAnonymous();
 
