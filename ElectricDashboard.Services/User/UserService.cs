@@ -3,11 +3,16 @@ using System.Text;
 using System.Text.Json;
 using ElectricDashboard.Models.Keycloak;
 using ElectricDashboard.Models.Options;
+using UserModel = ElectricDashboard.Models.User.User;
+using ElectricDashboardApi.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace ElectricDashboard.Services.User;
 
-public class UserService(IOptions<KeycloakOptions> options) : IUserService
+public class UserService(
+    IOptions<KeycloakOptions> options, 
+    ElectricDashboardContext context) : IUserService
 {
     private async Task<string> GetAdminTokenAsync()
     {
@@ -34,7 +39,7 @@ public class UserService(IOptions<KeycloakOptions> options) : IUserService
         return JsonDocument.Parse(json).RootElement.GetProperty("access_token").GetString();
     }
 
-    public async Task CreateUserAsync(Models.User.User userModel)
+    public async Task CreateUserAsync(UserModel userModel)
     {
         var token = await GetAdminTokenAsync();
         
@@ -45,7 +50,7 @@ public class UserService(IOptions<KeycloakOptions> options) : IUserService
         var user = new
         {
             username = userModel.UserName,
-            email = userModel.EmailAddress,
+            email = userModel.UserName,
             enabled = true,
             emailVerified = true,
             firstName = userModel.FirstName,
@@ -77,7 +82,11 @@ public class UserService(IOptions<KeycloakOptions> options) : IUserService
         }
 
         var location = response.Headers.Location?.ToString();
-        var userId = location?.Split('/').Last();
+        if (location is not null)
+        {
+            var userId = new Guid(location.Split('/').Last());
+            await UpdateUserProfile(userModel, userId);
+        }
     }
 
     public async Task<string> LoginAsync(string username, string password)
@@ -136,5 +145,32 @@ public class UserService(IOptions<KeycloakOptions> options) : IUserService
         var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(json);
 
         return tokenResponse;
+    }
+
+    public async Task UpdateUserProfile(UserModel userModel, Guid userId)
+    {
+        var userEntity = await context.Users.SingleOrDefaultAsync(user => user.UserId == userId);
+
+        if (userEntity is null)
+        {
+            var newUser = new ElectricDashboardApi.Data.Entities.User
+            {
+                UserId = userId,
+                DateOfBirth = userModel.DateOfBirth,
+                EmailAddress = userModel.UserName,
+                FirstName = userModel.FirstName,
+                LastName = userModel.LastName
+            };
+
+            await context.Users.AddAsync(newUser);
+        }
+        else
+        {
+            userEntity.FirstName = userModel.FirstName;
+            userEntity.LastName = userModel.LastName;
+            userEntity.DateOfBirth = userModel.DateOfBirth;
+        }
+
+        await context.SaveChangesAsync();
     }
 }

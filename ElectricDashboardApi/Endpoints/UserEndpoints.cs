@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using ElectricDashboard.Models.User;
 using ElectricDashboard.Services.User;
+using ElectricDashboardApi.Shared.Extensions;
 
 namespace ElectricDashboardApi.Endpoints;
 
@@ -11,16 +13,34 @@ public static class UserEndpoint
         {
             await userService.CreateUserAsync(user);
             return Results.Ok();
-        }).AllowAnonymous();
+        })
+            .AllowAnonymous();
 
         group.MapPost("/login", async (Login login, IUserService userService) =>
         {
             var token = await userService.LoginAsync(login.Username, login.Password);
             return Results.Ok(token);
-        }).AllowAnonymous();
+        })
+            .AllowAnonymous();
+        
+        group.MapPost("/refresh-token/{token}", async (string token, IUserService userService) 
+            => await userService.RefreshTokenAsync(token))
+            .AllowAnonymous();
 
-        group.MapPost("/refresh-token/{token:string}", async (string token, IUserService userService) 
-            => await userService.RefreshTokenAsync(token));
+        group.MapPost("/update-profile", (UserUpdate user, ClaimsPrincipal userClaims, IUserService userService) =>
+            {
+                var userId = userClaims.GetGuid();
+                var userModel = new User()
+                {
+                    UserName = string.Empty,
+                    Password = string.Empty,
+                    DateOfBirth = user.DateOfBirth,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName
+                };
+                return userService.UpdateUserProfile(userModel, userId);
+            })
+            .RequireAuthorization();
         
         return group;
     }

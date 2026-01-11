@@ -27,8 +27,4 @@
       <ProjectReference Include="..\ElectricDashboardApi.Data\ElectricDashboardApi.Data.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Shared\" />
-    </ItemGroup>
-
 </Project>

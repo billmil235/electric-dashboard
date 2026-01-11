@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ElectricDashboard.Models\ElectricDashboard.Models.csproj" />
+      <ProjectReference Include="..\ElectricDashboardApi.Data\ElectricDashboardApi.Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
