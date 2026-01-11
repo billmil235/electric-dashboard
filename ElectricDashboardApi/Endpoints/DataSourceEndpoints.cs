@@ -1,6 +1,6 @@
 namespace ElectricDashboardApi.Endpoints;
 
-public static class DataEndpoints
+public static class DataSourceEndpoints
 {
     public static RouteGroupBuilder RegisterDataEndpoints(this RouteGroupBuilder group)
     {
