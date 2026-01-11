@@ -32,7 +32,7 @@ public static class UserEndpoint
                 var userId = userClaims.GetGuid();
                 var userModel = new User()
                 {
-                    UserName = string.Empty,
+                    EmailAddress = string.Empty,
                     Password = string.Empty,
                     DateOfBirth = user.DateOfBirth,
                     FirstName = user.FirstName,

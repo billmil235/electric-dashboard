@@ -12,4 +12,12 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Queries\User\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ElectricDashboard.Models\ElectricDashboard.Models.csproj" />
+    </ItemGroup>
+
 </Project>

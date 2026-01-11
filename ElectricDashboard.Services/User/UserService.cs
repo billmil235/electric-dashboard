@@ -3,16 +3,15 @@ using System.Text;
 using System.Text.Json;
 using ElectricDashboard.Models.Keycloak;
 using ElectricDashboard.Models.Options;
-using UserModel = ElectricDashboard.Models.User.User;
-using ElectricDashboardApi.Data;
-using Microsoft.EntityFrameworkCore;
+using ElectricDashboardApi.Data.Commands.User;
 using Microsoft.Extensions.Options;
+using UserModel = ElectricDashboard.Models.User.User;
 
 namespace ElectricDashboard.Services.User;
 
 public class UserService(
     IOptions<KeycloakOptions> options, 
-    ElectricDashboardContext context) : IUserService
+    IUpdateProfileCommand updateProfileCommand) : IUserService
 {
     private async Task<string> GetAdminTokenAsync()
     {
@@ -49,8 +48,8 @@ public class UserService(
 
         var user = new
         {
-            username = userModel.UserName,
-            email = userModel.UserName,
+            username = userModel.EmailAddress,
+            email = userModel.EmailAddress,
             enabled = true,
             emailVerified = true,
             firstName = userModel.FirstName,
@@ -146,31 +145,9 @@ public class UserService(
 
         return tokenResponse;
     }
-
-    public async Task UpdateUserProfile(UserModel userModel, Guid userId)
+    
+    public async Task UpdateUserProfile(UserModel user, Guid userId)
     {
-        var userEntity = await context.Users.SingleOrDefaultAsync(user => user.UserId == userId);
-
-        if (userEntity is null)
-        {
-            var newUser = new ElectricDashboardApi.Data.Entities.User
-            {
-                UserId = userId,
-                DateOfBirth = userModel.DateOfBirth,
-                EmailAddress = userModel.UserName,
-                FirstName = userModel.FirstName,
-                LastName = userModel.LastName
-            };
-
-            await context.Users.AddAsync(newUser);
-        }
-        else
-        {
-            userEntity.FirstName = userModel.FirstName;
-            userEntity.LastName = userModel.LastName;
-            userEntity.DateOfBirth = userModel.DateOfBirth;
-        }
-
-        await context.SaveChangesAsync();
+        await updateProfileCommand.Execute(user, userId);
     }
 }
