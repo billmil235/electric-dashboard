@@ -10,7 +10,10 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ElectricDashboardContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("postgres")));
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("postgres"))
+        .UseSnakeCaseNamingConvention()
+    );
 
 builder.RegisterServices();
 
