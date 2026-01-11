@@ -22,6 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ElectricDashboard.Models\ElectricDashboard.Models.csproj" />
+      <ProjectReference Include="..\ElectricDashboard.Services\ElectricDashboard.Services.csproj" />
       <ProjectReference Include="..\ElectricDashboardApi.Data\ElectricDashboardApi.Data.csproj" />
     </ItemGroup>
 

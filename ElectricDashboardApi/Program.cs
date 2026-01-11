@@ -1,16 +1,18 @@
 using System.Security.Claims;
+using ElectricDashboardApi;
 using ElectricDashboardApi.Data;
 using ElectricDashboardApi.Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ElectricDashboardContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("postgres")));
+
+builder.RegisterServices();
 
 builder.Services.AddCors(options =>
 {
@@ -82,7 +84,6 @@ builder.Services.AddSwaggerGen(options => {
         
     options.AddSecurityRequirement(securityRequirement);
 });
-
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
