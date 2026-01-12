@@ -3,11 +3,14 @@ using ElectricDashboardApi;
 using ElectricDashboardApi.Data;
 using ElectricDashboardApi.Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<JsonOptions>(opts => opts.SerializerOptions.IncludeFields = true);
 
 builder.Services.AddDbContext<ElectricDashboardContext>(options =>
     options

@@ -3,6 +3,7 @@ using ElectricDashboard.Services.DataSources;
 using ElectricDashboard.Services.User;
 using ElectricDashboardApi.Data.Commands.DataSources;
 using ElectricDashboardApi.Data.Commands.User;
+using OllamaSharp;
 
 namespace ElectricDashboardApi;
 
@@ -18,5 +19,7 @@ public static class DependencyInjection
         
         builder.Services.AddScoped<IUpdateProfileCommand, UpdateProfileCommand>();
         builder.Services.AddScoped<IAddElectricBillCommand, AddElectricBillCommand>();
+        
+        builder.Services.AddChatClient(new OllamaApiClient("http://192.168.1.135:11434/", "qwen2.5vl:7b"));
     }
 }

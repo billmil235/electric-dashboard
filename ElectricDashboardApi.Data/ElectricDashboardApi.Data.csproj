@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ElectricDashboard.Models\ElectricDashboard.Models.csproj" />
+      <ProjectReference Include="..\ElectricDashboardApi.Models\ElectricDashboardApi.Models.csproj" />
     </ItemGroup>
 
 </Project>
