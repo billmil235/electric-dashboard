@@ -2,6 +2,7 @@ using System.Security.Claims;
 using ElectricDashboardApi;
 using ElectricDashboardApi.Data;
 using ElectricDashboardApi.Endpoints;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -113,10 +114,5 @@ app.UseHttpsRedirection();
 app.MapGroup("/users").RegisterUserEndpoints();
 app.MapGroup("/profile").RegisterProfileEndpoints();
 app.MapGroup("/data").RegisterDataEndpoints();
-
-app.MapGet("tests/me", (ClaimsPrincipal claimsPrincipal) =>
-{
-    return claimsPrincipal.Claims.ToDictionary(c => c.Type, c => c.Value);
-}).RequireAuthorization();
 
 app.Run();

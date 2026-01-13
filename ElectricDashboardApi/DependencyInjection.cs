@@ -20,6 +20,18 @@ public static class DependencyInjection
         builder.Services.AddScoped<IUpdateProfileCommand, UpdateProfileCommand>();
         builder.Services.AddScoped<IAddElectricBillCommand, AddElectricBillCommand>();
         
-        builder.Services.AddChatClient(new OllamaApiClient("http://192.168.1.135:11434/", "qwen2.5vl:7b"));
+        builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>
+        {
+            client.BaseAddress = new Uri("http://192.168.1.135:11434/");
+            client.Timeout = TimeSpan.FromMinutes(15);
+        });
+
+        builder.Services.AddChatClient(sp =>
+        {
+            var httpClient = sp.GetRequiredService<IHttpClientFactory>()
+                .CreateClient("ollama");
+
+            return new OllamaApiClient(httpClient, "gpt-oss");
+        });
     }
 }

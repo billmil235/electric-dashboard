@@ -1,9 +1,12 @@
+using System.Text;
 using ElectricDashboardApi.Data.Entities;
 using Microsoft.Extensions.AI;
+using OllamaSharp;
+using OllamaSharp.Models;
 
 namespace ElectricDashboard.Services.DataSources;
 
-public class DataSourceService(IChatClient chatClient) : IDataSourceService
+public class DataSourceService(IOllamaApiClient chatClient) : IDataSourceService
 {
     private const string Prompt = """
                                      Attached is an invoice from an electric utility.
@@ -15,6 +18,8 @@ public class DataSourceService(IChatClient chatClient) : IDataSourceService
                                      - Total kilowatt hours delivered as consumption
                                      - Total kilowatt hours received as sent back
                                      - Amount billed to the customer
+                                     
+                                     If you cannot do it explain why.  If you cannot view the image, explain why.
                                      
                                      Only provide a RFC8259 compliant JSON response following this format without deviation.
                                      
@@ -29,25 +34,22 @@ public class DataSourceService(IChatClient chatClient) : IDataSourceService
     
     public async Task<ElectricBill?> ParseUploadedBill(MemoryStream file, string contentType)
     {
-        var options = new ChatOptions()
+        if (file.Length == 0) return null;
+
+        // Get the exact bytes of the uploaded file
+        byte[] imageBytes = file.ToArray();
+        
+        var chat = new Chat(chatClient)
         {
-            TopK = 40,
-            TopP = 0.9f,
-            Temperature = 0.8f,
-            FrequencyPenalty = 1.1f,
-            PresencePenalty = 0
+            Model = "qwen2.5vl:32b"
         };
-	    
-        var message = new ChatMessage(ChatRole.User, Prompt);
-	    
-        if (file.TryGetBuffer(out var bufferSegment))
-        {
-            var readOnlyMemory = new ReadOnlyMemory<byte>(bufferSegment.Array, bufferSegment.Offset, bufferSegment.Count);
-            message.Contents.Add(new DataContent(readOnlyMemory, contentType));
-        }
-		    
-        var result = await chatClient.GetResponseAsync<ElectricBill>(message, options);
-	    
-        return result.Result;
+
+        var imageBytesEnumerable = new List<IEnumerable<byte>> { imageBytes };
+
+        var text = String.Empty;
+        await foreach (var answerToken in chat.SendAsync(message: Prompt, imagesAsBytes: imageBytesEnumerable))
+            text += answerToken;
+        
+        return null;
     }
 }

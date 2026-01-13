@@ -19,7 +19,9 @@ public static class DataSourceEndpoints
                 await dataSourceService.ParseUploadedBill(memoryStream, file.ContentType);
                 
                 return Results.Ok();
-            }).RequireAuthorization();
+            })
+            .RequireAuthorization()
+            .DisableAntiforgery();
         
         return group;
     }
