@@ -41,7 +41,7 @@ public class DataSourceService(IOllamaApiClient chatClient) : IDataSourceService
         
         var chat = new Chat(chatClient)
         {
-            Model = "qwen2.5vl:32b"
+            Model = "gpt-oss"
         };
 
         var imageBytesEnumerable = new List<IEnumerable<byte>> { imageBytes };
