@@ -16,9 +16,9 @@ public static class DataSourceEndpoints
             {
                 using var memoryStream = new MemoryStream();
                 await file.CopyToAsync(memoryStream);
-                await dataSourceService.ParseUploadedBill(memoryStream, file.ContentType);
+                var electricBill = await dataSourceService.ParseUploadedBill(memoryStream, file.ContentType);
                 
-                return Results.Ok();
+                return Results.Ok(electricBill);
             })
             .RequireAuthorization()
             .DisableAntiforgery();

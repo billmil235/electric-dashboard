@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using ElectricDashboardApi.Data.Entities;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
@@ -11,15 +12,16 @@ public class DataSourceService(IOllamaApiClient chatClient) : IDataSourceService
     private const string Prompt = """
                                      Attached is an invoice from an electric utility.
                                      
-                                     Extract the followinf information from the invoice and provide it as JSON.
+                                     Extract the following information from the invoice and provide it as a RFC8259 JSON response.
+                                     Do not add any other information or explanations to the response.
+                                     
+                                     The response will be deserialized into a C# object.
                                      
                                      - Period Start Date
                                      - Period End Date
                                      - Total kilowatt hours delivered as consumption
                                      - Total kilowatt hours received as sent back
                                      - Amount billed to the customer
-                                     
-                                     If you cannot do it explain why.  If you cannot view the image, explain why.
                                      
                                      Only provide a RFC8259 compliant JSON response following this format without deviation.
                                      
@@ -38,18 +40,24 @@ public class DataSourceService(IOllamaApiClient chatClient) : IDataSourceService
 
         // Get the exact bytes of the uploaded file
         byte[] imageBytes = file.ToArray();
+
+        var image = Convert.ToBase64String(imageBytes);
+
+        chatClient.SelectedModel = "devstral-small-2:24b";
         
-        var chat = new Chat(chatClient)
+        var request = new GenerateRequest
         {
-            Model = "gpt-oss"
+            Prompt = Prompt,
+            Images = (new List<string> { image }).ToArray(),
+            Format = "json"
         };
 
-        var imageBytesEnumerable = new List<IEnumerable<byte>> { imageBytes };
-
-        var text = String.Empty;
-        await foreach (var answerToken in chat.SendAsync(message: Prompt, imagesAsBytes: imageBytesEnumerable))
-            text += answerToken;
+        var response = chatClient.GenerateAsync(request);
         
-        return null;
+        var text = String.Empty;
+        await foreach (var answerToken in response)
+            text += answerToken!.Response;
+
+        return JsonSerializer.Deserialize<ElectricBill>(text);
     }
 }
