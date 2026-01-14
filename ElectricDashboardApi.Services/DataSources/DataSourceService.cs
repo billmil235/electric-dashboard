@@ -12,10 +12,7 @@ public class DataSourceService(IOllamaApiClient chatClient) : IDataSourceService
     private const string Prompt = """
                                      Attached is an invoice from an electric utility.
                                      
-                                     Extract the following information from the invoice and provide it as a RFC8259 JSON response.
-                                     Do not add any other information or explanations to the response.
-                                     
-                                     The response will be deserialized into a C# object.
+                                     Extract the following information from the invoice.
                                      
                                      - Period Start Date
                                      - Period End Date
