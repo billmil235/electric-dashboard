@@ -24,4 +24,6 @@ public class User
     
     [Column("dateofbirth")]
     public required DateOnly DateOfBirth { get; set; }
+
+    public virtual ICollection<ServiceAddress> ServiceAddresses { get; set; } = new List<ServiceAddress>();
 }
