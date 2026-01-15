@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using ElectricDashboardApi.Data.Commands.DataSources;
 using ElectricDashboardApi.Data.Entities;
 using OllamaSharp;
 using OllamaSharp.Models;
@@ -8,7 +9,7 @@ using SkiaSharp;
 
 namespace ElectricDashboard.Services.DataSources;
 
-public class DataSourceService(IOllamaApiClient chatClient) : IDataSourceService
+public class DataSourceService(IOllamaApiClient chatClient, IAddElectricBillCommand addElectricBillCommand) : IDataSourceService
 {
     private const string Prompt = """
                                      Attached is an invoice from an electric utility as a PDF file.
@@ -32,7 +33,7 @@ public class DataSourceService(IOllamaApiClient chatClient) : IDataSourceService
                                      }
                                      """;
     
-    private async Task<List<string>> ConvertPdfToImagesAsync(Stream pdfStream, int dpi = 200)
+    private async Task<List<string>> ConvertPdfToImagesAsync(Stream pdfStream)
     {
         var images = new List<string>();
 

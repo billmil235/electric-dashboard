@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ElectricDashboardApi.Dtos\ElectricDashboardApi.Dtos.csproj" />
       <ProjectReference Include="..\ElectricDashboardApi.Models\ElectricDashboardApi.Models.csproj" />
     </ItemGroup>
 

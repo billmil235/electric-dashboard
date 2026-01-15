@@ -30,10 +30,10 @@ public class ElectricBill
 
     [Required]
     [Column("consumptionkwh", TypeName = "decimal(10, 2)")]
-    public decimal ConsumptionKwh { get; set; }
+    public int ConsumptionKwh { get; set; }
 
     [Column("sendbackkwh", TypeName = "decimal(10, 2)")]
-    public decimal? SentBackKwh { get; set; }
+    public int? SentBackKwh { get; set; }
 
     [Required]
     [Column("billedamount", TypeName = "decimal(10, 2)")]

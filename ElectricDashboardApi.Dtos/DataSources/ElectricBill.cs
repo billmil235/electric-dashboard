@@ -2,17 +2,17 @@ namespace ElectricDashboardApi.Dtos.DataSources;
 
 public record ElectricBill
 {
-    public Guid? BillId { get; set; }
+    public Guid? BillId { get; init; }
     
-    public Guid? AddressId { get; set; }
+    public Guid? AddressId { get; init; }
     
-    public DateOnly PeriodStartDate { get; set; }
+    public DateOnly PeriodStartDate { get; init; }
     
-    public DateOnly PeriodEndDate { get; set; }
+    public DateOnly PeriodEndDate { get; init; }
     
-    public int ConsumptionKwh { get; set; }
+    public int ConsumptionKwh { get; init; }
 
-    public int SentBackKwh { get; set; } = 0;
+    public int? SentBackKwh { get; init; }
 
-    public decimal BilledAmount { get; set; }
+    public decimal BilledAmount { get; init; }
 }
