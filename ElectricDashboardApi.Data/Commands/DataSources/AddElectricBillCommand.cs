@@ -9,6 +9,7 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
     {
         var entity = new ElectricBillEntity
         {
+            BillId = Guid.CreateVersion7(),
             AddressId = electricBill.AddressId!.Value,
             BilledAmount = electricBill.BilledAmount,
             PeriodStartDate = electricBill.PeriodStartDate.ToDateTime(TimeOnly.MinValue),

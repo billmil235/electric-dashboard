@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using ElectricDashboard.Models.User;
+using ElectricDashboardApi.Data.Commands.Users;
 using ElectricDashboardApi.Data.Queries.User;
 using ElectricDashboardApi.Shared.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,11 @@ public static class ProfileEndpoints
             return addressList.Count == 0 ? Results.NoContent() : Results.Ok(addressList);
         }).RequireAuthorization();
         
-        group.MapPost("/address", ([FromBody] ServiceAddress serviceAddress, ClaimsPrincipal user) => Results.Ok()).RequireAuthorization();
+        group.MapPost("/address", ([FromBody] ServiceAddress serviceAddress, ClaimsPrincipal user, IAddServiceAddressCommand addServiceAddressCommand) =>
+        {
+            var address = addServiceAddressCommand.AddServiceAddress(user.GetGuid(), serviceAddress);
+            return Results.Ok(address);
+        }).RequireAuthorization();
 
         group.MapDelete("/address/{addressId:Guid}", ([FromRoute] Guid addressId, ClaimsPrincipal user) => Results.Ok()).RequireAuthorization();
         

@@ -3,6 +3,7 @@ using ElectricDashboard.Services.DataSources;
 using ElectricDashboard.Services.User;
 using ElectricDashboardApi.Data.Commands.DataSources;
 using ElectricDashboardApi.Data.Commands.User;
+using ElectricDashboardApi.Data.Commands.Users;
 using ElectricDashboardApi.Data.Queries.DataSources;
 using ElectricDashboardApi.Data.Queries.User;
 using OllamaSharp;
@@ -27,6 +28,7 @@ public static class DependencyInjection
         
         builder.Services.AddScoped<IGetAddressExistsQuery, GetAddressExistsQuery>();
         builder.Services.AddScoped<IGetUserAddressesQuery, GetUserAddressesQuery>();
+        builder.Services.AddScoped<IAddServiceAddressCommand, AddServiceAddressCommand>();
         
         builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>
         {
