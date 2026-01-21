@@ -19,7 +19,8 @@ public class GetElectricBillsQuery(ElectricDashboardContext context) : IGetElect
             PeriodEndDate = DateOnly.FromDateTime(bill.PeriodEndDate),
             PeriodStartDate = DateOnly.FromDateTime(bill.PeriodStartDate),
             SentBackKwh = bill.SentBackKwh,
-            ConsumptionKwh = bill.ConsumptionKwh
+            ConsumptionKwh = bill.ConsumptionKwh,
+            UnitPrice = bill.UnitPrice,
         }).ToList();
     }
 }

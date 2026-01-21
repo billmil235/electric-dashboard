@@ -15,7 +15,8 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
             PeriodStartDate = electricBill.PeriodStartDate.ToDateTime(TimeOnly.MinValue),
             PeriodEndDate = electricBill.PeriodEndDate.ToDateTime(TimeOnly.MinValue),
             SentBackKwh = electricBill.SentBackKwh,
-            ConsumptionKwh = electricBill.ConsumptionKwh
+            ConsumptionKwh = electricBill.ConsumptionKwh,
+            UnitPrice = electricBill.UnitPrice
         };
 
         await context.ElectricBills.AddAsync(entity);

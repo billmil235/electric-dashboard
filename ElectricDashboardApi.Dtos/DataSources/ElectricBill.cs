@@ -15,4 +15,6 @@ public record ElectricBill
     public int? SentBackKwh { get; init; }
 
     public decimal BilledAmount { get; init; }
+    
+    public decimal UnitPrice { get; init; }
 }

@@ -38,4 +38,7 @@ public class ElectricBill
     [Required]
     [Column("billedamount", TypeName = "decimal(10, 2)")]
     public decimal BilledAmount { get; set; }
+    
+    [Column("unitprice", TypeName = "decimal(6,4")]
+    public decimal UnitPrice { get; set; }
 }
