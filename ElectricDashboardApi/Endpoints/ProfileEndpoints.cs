@@ -17,9 +17,9 @@ public static class ProfileEndpoints
             return addressList.Count == 0 ? Results.NoContent() : Results.Ok(addressList);
         }).RequireAuthorization();
         
-        group.MapPost("/address", ([FromBody] ServiceAddress serviceAddress, ClaimsPrincipal user, IAddServiceAddressCommand addServiceAddressCommand) =>
+        group.MapPost("/address", async ([FromBody] ServiceAddress serviceAddress, ClaimsPrincipal user, IAddServiceAddressCommand addServiceAddressCommand) =>
         {
-            var address = addServiceAddressCommand.AddServiceAddress(user.GetGuid(), serviceAddress);
+            var address = await addServiceAddressCommand.AddServiceAddress(user.GetGuid(), serviceAddress);
             return Results.Ok(address);
         }).RequireAuthorization();
 

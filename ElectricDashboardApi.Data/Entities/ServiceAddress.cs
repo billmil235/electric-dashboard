@@ -3,14 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ElectricDashboardApi.Data.Entities;
 
+[Table("serviceaddresses")]
 public class ServiceAddress
 {
     [Key]
+    [Column("addressid")]
     public Guid AddressId { get; set; } = Guid.NewGuid();
 
+    [Column("userid")]
     public Guid UserId { get; set; }
 
-    [ForeignKey("UserId")]
+    [ForeignKey(nameof(UserId))]
     public virtual User User { get; set; }
 
     [StringLength(100)]
