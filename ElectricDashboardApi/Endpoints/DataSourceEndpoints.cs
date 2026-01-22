@@ -28,7 +28,7 @@ public static class DataSourceEndpoints
             .RequireAuthorization();
 
         group.MapPost("/electric-bill/{addressGuid:Guid}",
-            async ([FromRoute] Guid addressGuid, [FromBody] ElectricBill electricBill, ClaimsPrincipal user,
+            async ([FromRoute] Guid addressGuid, [FromBody] ElectricBillDto electricBillDto, ClaimsPrincipal user,
                 IAddElectricBillCommand addElectricBillCommand, IGetAddressExistsQuery getAddressExistsQuery) =>
             {
                 var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
@@ -36,7 +36,7 @@ public static class DataSourceEndpoints
                 if (!addressExists)
                     return Results.NotFound();
 
-                var updatedAddress = await addElectricBillCommand.AddElectricBill(user.GetGuid(), electricBill);
+                var updatedAddress = await addElectricBillCommand.AddElectricBill(user.GetGuid(), electricBillDto);
                 
                 return Results.Ok(updatedAddress);
             })

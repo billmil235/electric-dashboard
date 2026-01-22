@@ -1,10 +1,8 @@
-using System.Runtime.InteropServices.Marshalling;
-
-namespace ElectricDashboardApi.Data.Entities;
-
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ElectricBillModel = ElectricDashboard.Models.DataSources.ElectricBill;
+
+namespace ElectricDashboardApi.Data.Entities;
 
 [Table(nameof(ElectricBill))]
 public class ElectricBill
@@ -15,7 +13,7 @@ public class ElectricBill
     [Required]
     public Guid AddressId { get; set; }
 
-    [ForeignKey(nameof(AddressId))]
+    [ForeignKey(nameof(AddressId))] 
     public virtual ServiceAddress ServiceAddress { get; set; }
 
     [Required]
@@ -35,4 +33,19 @@ public class ElectricBill
     
     [Column(TypeName = "decimal(6,4")]
     public decimal? UnitPrice { get; set; }
+
+    public ElectricBillModel ToModel()
+    {
+        return new ElectricBillModel()
+        {
+            BillId = BillId,
+            AddressId = AddressId,
+            PeriodStartDate = DateOnly.FromDateTime(PeriodStartDate),
+            PeriodEndDate = DateOnly.FromDateTime(PeriodEndDate),
+            ConsumptionKwh = ConsumptionKwh,
+            SentBackKwh = SentBackKwh,
+            BilledAmount = BilledAmount,
+            UnitPrice = UnitPrice
+        };
+    }
 }

@@ -1,3 +1,4 @@
+using ServiceAddressModel = ElectricDashboard.Models.User.ServiceAddress;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -37,4 +38,20 @@ public class ServiceAddress
     public string? Country { get; set; }
     
     public bool IsCommercial { get; set; }
+
+    public ServiceAddressModel ToModel()
+    {
+        return new ServiceAddressModel
+        {
+            AddressId = AddressId,
+            AddressName = AddressName,
+            AddressLine1 = AddressLine1,
+            AddressLine2 = AddressLine2,
+            City = City,
+            State = State,
+            ZipCode = ZipCode,
+            Country = Country,
+            IsCommercial = IsCommercial
+        };
+    }
 }

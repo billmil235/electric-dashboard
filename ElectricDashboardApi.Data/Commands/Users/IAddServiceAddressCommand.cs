@@ -1,8 +1,9 @@
 using ElectricDashboard.Models.User;
+using ElectricDashboardApi.Dtos.User;
 
 namespace ElectricDashboardApi.Data.Commands.Users;
 
 public interface IAddServiceAddressCommand
 {
-    Task<ServiceAddress?> AddServiceAddress(Guid userId, ServiceAddress serviceAddress);
+    Task<ServiceAddress?> AddServiceAddress(Guid userId, ServiceAddressDto serviceAddress);
 }

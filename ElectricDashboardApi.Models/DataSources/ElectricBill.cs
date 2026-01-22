@@ -1,6 +1,6 @@
-namespace ElectricDashboardApi.Dtos.DataSources;
+namespace ElectricDashboard.Models.DataSources;
 
-public record ElectricBill
+public class ElectricBill
 {
     public Guid? BillId { get; init; }
     

@@ -1,11 +1,12 @@
 using ElectricDashboard.Models.User;
+using ElectricDashboardApi.Dtos.User;
 using ServiceAddressEntity = ElectricDashboardApi.Data.Entities.ServiceAddress;
 
 namespace ElectricDashboardApi.Data.Commands.Users;
 
 public class AddServiceAddressCommand(ElectricDashboardContext context) : IAddServiceAddressCommand
 {
-    public async Task<ServiceAddress?> AddServiceAddress(Guid userId, ServiceAddress serviceAddress)
+    public async Task<ServiceAddress?> AddServiceAddress(Guid userId, ServiceAddressDto serviceAddress)
     {
         var entity = new ServiceAddressEntity
         {
@@ -24,6 +25,6 @@ public class AddServiceAddressCommand(ElectricDashboardContext context) : IAddSe
         await context.ServiceAddresses.AddAsync(entity);
         await context.SaveChangesAsync();
 
-        return serviceAddress with { AddressId = entity.AddressId };
+        return entity.ToModel();
     }
 }

@@ -1,4 +1,4 @@
-using ElectricDashboardApi.Dtos.DataSources;
+using ElectricDashboard.Models.DataSources;
 
 namespace ElectricDashboardApi.Data.Queries.DataSources;
 

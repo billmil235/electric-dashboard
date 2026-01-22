@@ -1,8 +1,9 @@
 using ElectricDashboardApi.Dtos.DataSources;
+using ElectricBillModel = ElectricDashboard.Models.DataSources.ElectricBill;
 
 namespace ElectricDashboardApi.Data.Commands.DataSources;
 
 public interface IAddElectricBillCommand
 {
-    Task<ElectricBill?> AddElectricBill(Guid userId, ElectricBill electricBill);
+    Task<ElectricBillModel?> AddElectricBill(Guid userId, ElectricBillDto electricBillDto);
 }
