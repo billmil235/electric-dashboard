@@ -1,8 +1,6 @@
-using System.Security.Claims;
 using ElectricDashboardApi;
 using ElectricDashboardApi.Data;
 using ElectricDashboardApi.Endpoints;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +14,6 @@ builder.Services.Configure<JsonOptions>(opts => opts.SerializerOptions.IncludeFi
 builder.Services.AddDbContext<ElectricDashboardContext>(options =>
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("postgres"))
-        .UseSnakeCaseNamingConvention()
     );
 
 builder.RegisterServices();

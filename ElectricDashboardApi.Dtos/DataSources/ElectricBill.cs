@@ -16,5 +16,5 @@ public record ElectricBill
 
     public decimal BilledAmount { get; init; }
     
-    public decimal UnitPrice { get; init; }
+    public decimal? UnitPrice { get; init; }
 }
