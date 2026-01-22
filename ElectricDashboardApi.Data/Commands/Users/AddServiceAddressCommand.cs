@@ -17,7 +17,8 @@ public class AddServiceAddressCommand(ElectricDashboardContext context) : IAddSe
             City = serviceAddress.City,
             State = serviceAddress.State,
             ZipCode = serviceAddress.ZipCode,
-            Country = serviceAddress.Country
+            Country = serviceAddress.Country,
+            IsCommercial = serviceAddress.IsCommercial
         };
 
         await context.ServiceAddresses.AddAsync(entity);

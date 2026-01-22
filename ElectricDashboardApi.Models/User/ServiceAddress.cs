@@ -17,4 +17,6 @@ public record ServiceAddress
     public required string ZipCode { get; init; }
 
     public string? Country { get; init; } = null;
+
+    public bool IsCommercial { get; init; } = false;
 }

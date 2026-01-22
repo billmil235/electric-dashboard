@@ -28,7 +28,8 @@ public class GetUserAddressesQuery(ElectricDashboardContext context) : IGetUserA
             City = a.City,
             State = a.State,
             ZipCode = a.ZipCode,
-            Country = a.Country
+            Country = a.Country,
+            IsCommercial = a.IsCommercial
         }).ToList();
     }
 }

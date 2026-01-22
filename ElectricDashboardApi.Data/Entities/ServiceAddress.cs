@@ -43,4 +43,7 @@ public class ServiceAddress
     [StringLength(50)]
     [Column("country")]
     public string? Country { get; set; }
+    
+    [Column("iscommercial")]
+    public bool IsCommercial { get; set; }
 }
