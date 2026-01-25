@@ -9,17 +9,20 @@ public class GetUserAddressesQuery(ElectricDashboardContext context) : IGetUserA
         Guid userId,
         Guid? addressId = null)
     {
-        var query = context.ServiceAddresses
-            .Where(a => a.UserId == userId);
+        var query = context.UserToServiceAddresses
+            .Include(usa => usa.ServiceAddress)
+            .Where(usa => usa.UserId == userId);
 
         if (addressId.HasValue)
         {
-            query = query.Where(a => a.AddressId == addressId.Value);
+            query = query.Where(usa => usa.AddressId == addressId.Value);
         }
 
-        var addresses = await query.ToListAsync();
+        var userAddresses = await query
+            .Select(usa => usa.ServiceAddress)
+            .ToListAsync();
 
-        return addresses.Select(a => new ServiceAddress()
+        return userAddresses.Select(a => new ServiceAddress()
         {
             AddressId = a.AddressId,
             AddressLine1 = a.AddressLine1,

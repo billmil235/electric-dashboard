@@ -12,7 +12,6 @@ public class AddServiceAddressCommand(ElectricDashboardContext context) : IAddSe
         var entity = new ServiceAddressEntity
         {
             AddressId = Guid.CreateVersion7(),
-            UserId = userId,
             AddressName = serviceAddress.AddressName,
             AddressLine1 = serviceAddress.AddressLine1,
             AddressLine2 = serviceAddress.AddressLine2,

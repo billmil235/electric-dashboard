@@ -9,12 +9,9 @@ public class ServiceAddress
 {
     [Key]
     public Guid AddressId { get; set; } = Guid.NewGuid();
+
+    public virtual List<User> Users { get; set; }
     
-    public Guid UserId { get; set; }
-
-    [ForeignKey(nameof(UserId))]
-    public virtual User User { get; set; }
-
     [StringLength(100)]
     public required string AddressName { get; set; }
 

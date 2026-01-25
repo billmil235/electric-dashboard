@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ElectricDashboardApi.Data.Entities;
 
+[Table(nameof(UserToServiceAddress))]
 public class UserToServiceAddress
 {
     [Key]
