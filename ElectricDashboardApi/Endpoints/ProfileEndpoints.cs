@@ -23,7 +23,11 @@ public static class ProfileEndpoints
             return Results.Ok(address);
         }).RequireAuthorization();
 
-        group.MapDelete("/address/{addressId:Guid}", ([FromRoute] Guid addressId, ClaimsPrincipal user) => Results.Ok()).RequireAuthorization();
+        group.MapDelete("/address/{addressId:Guid}", async ([FromRoute] Guid addressId, ClaimsPrincipal user, IDeleteServiceAddressCommand deleteServiceAddressCommand) =>
+        {
+            var success = await deleteServiceAddressCommand.DeleteServiceAddress(user.GetGuid(), addressId);
+            return !success ? Results.NotFound() : Results.Ok();
+        }).RequireAuthorization();
         
         return group;
     }
