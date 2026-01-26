@@ -1,3 +1,5 @@
+using ElectricDashboard.Models.DataSources;
+
 namespace ElectricDashboardApi.Dtos.DataSources;
 
 public record ElectricBillDto

@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using ElectricDashboardApi.Data.Commands.DataSources;
-using ElectricDashboardApi.Data.Entities;
+using ElectricDashboardApi.Dtos.DataSources;
 using OllamaSharp;
 using OllamaSharp.Models;
 using PDFtoImage;
@@ -33,7 +33,7 @@ public class DataSourceService(IOllamaApiClient chatClient, IAddElectricBillComm
                                      }
                                      """;
     
-    private async Task<List<string>> ConvertPdfToImagesAsync(Stream pdfStream)
+    private static async Task<List<string>> ConvertPdfToImagesAsync(Stream pdfStream)
     {
         var images = new List<string>();
 
@@ -58,7 +58,7 @@ public class DataSourceService(IOllamaApiClient chatClient, IAddElectricBillComm
         return images;
     }
     
-    public async Task<ElectricBill?> ParseUploadedBill(MemoryStream file, string contentType)
+    public async Task<ElectricBillDto?> ParseUploadedBill(Guid addressId, MemoryStream file, string contentType)
     {
         if (file.Length == 0) return null;
 
@@ -90,6 +90,9 @@ public class DataSourceService(IOllamaApiClient chatClient, IAddElectricBillComm
         await foreach (var answerToken in response)
             messageBuilder.Append(answerToken!.Response);
         
-        return JsonSerializer.Deserialize<ElectricBill>(messageBuilder.ToString());
+        
+        var parsedBill = JsonSerializer.Deserialize<ElectricBillDto>(messageBuilder.ToString()) ?? new ElectricBillDto();
+
+        return parsedBill with { AddressId = addressId };
     }
 }

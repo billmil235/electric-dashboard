@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ElectricDashboardApi.Models\ElectricDashboardApi.Models.csproj" />
+    </ItemGroup>
+
 </Project>

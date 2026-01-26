@@ -13,8 +13,8 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
             BillId = Guid.CreateVersion7(),
             AddressId = electricBillDto.AddressId!.Value,
             BilledAmount = electricBillDto.BilledAmount,
-            PeriodStartDate = electricBillDto.PeriodStartDate.ToDateTime(TimeOnly.MinValue),
-            PeriodEndDate = electricBillDto.PeriodEndDate.ToDateTime(TimeOnly.MinValue),
+            PeriodStartDate = electricBillDto.PeriodStartDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc),
+            PeriodEndDate = electricBillDto.PeriodEndDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc),
             SentBackKwh = electricBillDto.SentBackKwh,
             ConsumptionKwh = electricBillDto.ConsumptionKwh,
             UnitPrice = electricBillDto.UnitPrice

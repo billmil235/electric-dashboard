@@ -1,8 +1,8 @@
-using ElectricDashboardApi.Data.Entities;
+using ElectricDashboardApi.Dtos.DataSources;
 
 namespace ElectricDashboard.Services.DataSources;
 
 public interface IDataSourceService
 {
-    Task<ElectricBill?> ParseUploadedBill(MemoryStream file, string contentType);
+    Task<ElectricBillDto?> ParseUploadedBill(Guid addressId, MemoryStream file, string contentType);
 }
