@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ElectricBill } from '../models/electric-bill.model';
+import { ServiceAddress } from '../models/service-address.model';
+import { UserRegistration } from '../models/user-registration.model';
+import { LoginRequest } from '../models/login-request.model';
 
 interface LoginResponse {
   accessToken: string;
@@ -12,50 +16,6 @@ interface LoginResponse {
   notBeforePolicy?: number;
   sessionState?: string;
   scope?: string;
-}
-
-interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-interface UserRegistration {
-  emailAddress: string;
-  password: string;
-  dateOfBirth: Date;
-  firstName: string;
-  lastName: string;
-}
-
-interface ElectricBill {
-  addressId?: string | null;
-  periodStartDate?: string;
-  periodEndDate?: string;
-  consumptionKwh?: number;
-  sentBackKwh?: number | null;
-  billedAmount?: number;
-  unitPrice?: number | null;
-}
-
-interface ServiceAddress {
-  addressId: string;
-  addressName: string;
-  addressLine1: string;
-  addressLine2: string | null;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string | null;
-  isCommercial: boolean;
-}
-
-interface ServiceAddress {
-  id: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  isPrimary: boolean;
 }
 
 @Injectable({

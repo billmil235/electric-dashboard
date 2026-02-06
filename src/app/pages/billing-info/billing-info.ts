@@ -4,16 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Api } from '../../services/api';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
-
-interface ElectricBill {
-  addressId?: string | null;
-  periodStartDate?: string;
-  periodEndDate?: string;
-  consumptionKwh?: number;
-  sentBackKwh?: number | null;
-  billedAmount?: number;
-  unitPrice?: number | null;
-}
+import { ElectricBill } from '../../models/electric-bill.model';
 
 @Component({
   selector: 'app-billing-info',
