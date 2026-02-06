@@ -2,6 +2,61 @@
   <h1>ElectricDashboard</h1>
   <p class="welcome">Welcome back, {{ username() }}!</p>
 
+  <!-- Address Selector and Bills Table Section -->
+  <div class="bills-section">
+    <app-service-address-selector
+      (addressesLoaded)="onAddressesLoaded($event)"
+      (addressSelected)="onAddressSelected($event)">
+    </app-service-address-selector>
+
+    <div class="bills-table-container">
+      @if (loadingBills()) {
+        <div class="loading">Loading bills...</div>
+      } @else if (bills().length === 0) {
+        <div class="no-bills">No bills found for this address</div>
+      } @else {
+        <div class="table-responsive">
+          <table class="bills-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>Consumption (kWh)</th>
+                <th>Sent Back (kWh)</th>
+                <th>Amount</th>
+                <th>Unit Price</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (bill of bills(); track bill.addressId || bill.periodStartDate) {
+                <tr>
+                  <td data-label="Period">
+                    {{ formatDate(bill.periodStartDate) }} -<br>
+                    {{ formatDate(bill.periodEndDate) }}
+                  </td>
+                  <td data-label="Consumption (kWh)">{{ formatNumber(bill.consumptionKwh) }}</td>
+                  <td data-label="Sent Back (kWh)">{{ formatNumber(bill.sentBackKwh) }}</td>
+                  <td data-label="Amount">
+                    {{ formatCurrency(bill.billedAmount) }}
+                  </td>
+                  <td data-label="Unit Price">
+                    {{ formatCurrency(bill.unitPrice) }}
+                  </td>
+                  <td data-label="Actions">
+                    <button class="action-btn view">View</button>
+                    <button class="action-btn edit">Edit</button>
+                    <button class="action-btn delete">Delete</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Menu Grid -->
   <div class="menu-grid">
     <nav class="menu-container">
       <div class="menu-item">

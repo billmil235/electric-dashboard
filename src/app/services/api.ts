@@ -26,18 +26,17 @@ export class Api {
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
+  private getAuthHeaders(isFormData?: boolean): HttpHeaders {
     const token = localStorage.getItem('accessToken');
     console.log('Retrieved token from localStorage:', token); // Debug log
+    const headers: { [key: string]: string } = {};
     if (token) {
-      return new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      });
+      headers['Authorization'] = `Bearer ${token}`;
     }
-    return new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return new HttpHeaders(headers);
   }
 
   register(user: UserRegistration): Observable<void> {
@@ -52,5 +51,18 @@ export class Api {
   getAddresses(): Observable<ServiceAddress[]> {
     const headers = this.getAuthHeaders();
     return this.http.get<ServiceAddress[]>(`api/profile/address`, { headers });
+  }
+
+  getBillsByAddress(addressId: string): Observable<ElectricBill[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<ElectricBill[]>(`api/data/electric-bill/${addressId}`, { headers });
+  }
+
+  uploadElectricBillPdf(addressId: string, file: File): Observable<ElectricBill> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const headers = this.getAuthHeaders(true);
+    return this.http.post<ElectricBill>(`api/data/electric-bill/upload/${addressId}`, formData, { headers });
   }
 }
