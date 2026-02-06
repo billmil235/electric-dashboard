@@ -37,7 +37,7 @@ interface ElectricBill {
   unitPrice?: number | null;
 }
 
-interface Address {
+interface ServiceAddress {
   addressId: string;
   addressName: string;
   addressLine1: string;
@@ -89,8 +89,8 @@ export class Api {
     return this.http.post<void>(`${this.baseUrl}/${addressId}/bill`, bill, { headers });
   }
 
-  getAddresses(): Observable<Address[]> {
+  getAddresses(): Observable<ServiceAddress[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<Address[]>(`api/profile/address`, { headers });
+    return this.http.get<ServiceAddress[]>(`api/profile/address`, { headers });
   }
 }

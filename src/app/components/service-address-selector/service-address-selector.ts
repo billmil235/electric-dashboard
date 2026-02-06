@@ -2,7 +2,7 @@ import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular
 import { CommonModule } from '@angular/common';
 import { Api } from '../../services/api';
 
-export interface Address {
+export interface ServiceAddress {
   addressId: string;
   addressName: string;
   addressLine1: string;
@@ -27,9 +27,9 @@ export class ServiceAddressSelector implements OnInit {
   @Input() selectedAddressId: string = '';
   @Input() loading: boolean = false;
   @Output() addressSelected = new EventEmitter<string>();
-  @Output() addressesLoaded = new EventEmitter<Address[]>();
+  @Output() addressesLoaded = new EventEmitter<ServiceAddress[]>();
   
-  addresses: Address[] = [];
+  addresses: ServiceAddress[] = [];
   error: string | null = null;
   
   async ngOnInit() {
