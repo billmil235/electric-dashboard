@@ -10,9 +10,15 @@ using UserModel = ElectricDashboard.Models.User.User;
 namespace ElectricDashboard.Services.User;
 
 public class UserService(
-    IOptions<KeycloakOptions> options, 
+    IOptions<KeycloakOptions> options,
     IUpdateProfileCommand updateProfileCommand) : IUserService
 {
+
+    private JsonSerializerOptions _options = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+    };
+
     private async Task<string> GetAdminTokenAsync()
     {
         var client = new HttpClient();
@@ -33,7 +39,7 @@ public class UserService(
             var error = await response.Content.ReadAsStringAsync();
             throw new Exception($"Keycloak error: {response.StatusCode} - {error}");
         }
-        
+
         var json = await response.Content.ReadAsStringAsync();
         return JsonDocument.Parse(json).RootElement.GetProperty("access_token").GetString();
     }
@@ -41,7 +47,7 @@ public class UserService(
     public async Task CreateUserAsync(UserModel userModel)
     {
         var token = await GetAdminTokenAsync();
-        
+
         var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
@@ -88,7 +94,7 @@ public class UserService(
         }
     }
 
-    public async Task<string> LoginAsync(string username, string password)
+    public async Task<LoginTokenResponse> LoginAsync(string username, string password)
     {
         var client = new HttpClient();
 
@@ -112,9 +118,9 @@ public class UserService(
         }
 
         var json = await response.Content.ReadAsStringAsync();
-        return json; // contains access_token, refresh_token, etc.
+        return JsonSerializer.Deserialize<LoginTokenResponse>(json, _options) ?? new LoginTokenResponse(); // contains access_token, refresh_token, etc.
     }
-    
+
     public async Task<TokenResponse?> RefreshTokenAsync(string refreshToken)
     {
         var requestData = new Dictionary<string, string>
@@ -128,7 +134,7 @@ public class UserService(
         var requestContent = new FormUrlEncodedContent(requestData);
 
         var client = new HttpClient();
-        
+
         var response = await client.PostAsync(
             options.Value.TokenUrl,
             requestContent
@@ -141,11 +147,11 @@ public class UserService(
         }
 
         var json = await response.Content.ReadAsStringAsync();
-        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(json);
+        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(json, _options);
 
         return tokenResponse;
     }
-    
+
     public async Task UpdateUserProfile(UserModel user, Guid userId)
     {
         await updateProfileCommand.Execute(user, userId);

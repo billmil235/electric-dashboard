@@ -7,7 +7,7 @@ public interface IUserService
 {
     Task CreateUserAsync(UserModel userModel);
     
-    Task<string> LoginAsync(string username, string password);
+    Task<LoginTokenResponse> LoginAsync(string username, string password);
 
     Task<TokenResponse?> RefreshTokenAsync(string refreshToken);
 
