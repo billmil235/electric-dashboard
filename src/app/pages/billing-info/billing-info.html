@@ -1,0 +1,112 @@
+<div class="billing-info-container">
+  <h2>Electric Bill Information</h2>
+  
+  @if (loading) {
+    <div class="loading">Saving bill information...</div>
+  }
+  
+  @if (error) {
+    <div class="error">{{ error }}</div>
+  }
+  
+  @if (success) {
+    <div class="success">
+      Bill information saved successfully!
+      <button (click)="navigateToDashboard()" class="btn btn-primary">
+        Back to Dashboard
+      </button>
+    </div>
+  }
+  
+  @if (!loading && !success) {
+    <!-- Service Address Selector -->
+    <app-service-address-selector 
+      [selectedAddressId]="addressId"
+      [loading]="addressesLoading"
+      (addressSelected)="onAddressSelected($event)"
+      (addressesLoaded)="addressesLoading = false">
+    </app-service-address-selector>
+    
+    <form (ngSubmit)="onSubmit()" #billForm="ngForm" class="billing-form">
+      <div class="form-group">
+        <label for="billedDate">Billing Period Start Date:</label>
+        <input 
+          type="date" 
+          id="billedDate" 
+          name="billedDate"
+          [(ngModel)]="billedDate"
+          required
+          class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label for="billedDateEnd">Billing Period End Date:</label>
+        <input 
+          type="date" 
+          id="billedDateEnd" 
+          name="billedDateEnd"
+          [(ngModel)]="billedDateEnd"
+          required
+          class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label for="consumption">Electric Consumption (kWh):</label>
+        <input 
+          type="number" 
+          id="consumption" 
+          name="consumption"
+          [(ngModel)]="consumption"
+          required
+          class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label for="sentBack">Sent Back Energy (kWh):</label>
+        <input 
+          type="number" 
+          id="sentBack" 
+          name="sentBack"
+          [(ngModel)]="sentBack"
+          class="form-control">
+      </div>
+      
+      <div class="form-group">
+        <label for="billedAmount">Billed Amount ($):</label>
+        <input 
+          type="number" 
+          id="billedAmount" 
+          name="billedAmount"
+          [(ngModel)]="billedAmount"
+          required
+          class="form-control"
+          step="0.01">
+      </div>
+      
+      <div class="form-group">
+        <label for="unitPrice">Unit Price ($/kWh):</label>
+        <input 
+          type="number" 
+          id="unitPrice" 
+          name="unitPrice"
+          [(ngModel)]="unitPrice"
+          class="form-control"
+          step="0.001">
+      </div>
+      
+      <button 
+        type="submit" 
+        [disabled]="!billForm.form.valid || loading"
+        class="btn btn-primary">
+        Save Bill Information
+      </button>
+      
+      <button 
+        type="button" 
+        (click)="navigateToDashboard()"
+        class="btn btn-secondary">
+        Cancel
+      </button>
+    </form>
+  }
+</div>

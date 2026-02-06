@@ -1,0 +1,48 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricDashboardApi", "ElectricDashboardApi\ElectricDashboardApi.csproj", "{90066E91-4EE8-3556-56F5-1B2963CF6B52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricDashboardApi.Services", "ElectricDashboardApi.Services\ElectricDashboardApi.Services.csproj", "{98366D04-21A0-0FF4-1A72-563E5F02243D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricDashboardApi.Dtos", "ElectricDashboardApi.Dtos\ElectricDashboardApi.Dtos.csproj", "{66AA05A7-842D-71EB-BA9C-EDE5BE2AC4BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricDashboardApi.Models", "ElectricDashboardApi.Models\ElectricDashboardApi.Models.csproj", "{D9F657CF-4CEB-78B9-0269-1F2FDEB3D1B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricDashboardApi.Data", "ElectricDashboardApi.Data\ElectricDashboardApi.Data.csproj", "{38F95551-B57D-85F7-0AEA-1723878ECEAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90066E91-4EE8-3556-56F5-1B2963CF6B52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90066E91-4EE8-3556-56F5-1B2963CF6B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90066E91-4EE8-3556-56F5-1B2963CF6B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90066E91-4EE8-3556-56F5-1B2963CF6B52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98366D04-21A0-0FF4-1A72-563E5F02243D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98366D04-21A0-0FF4-1A72-563E5F02243D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98366D04-21A0-0FF4-1A72-563E5F02243D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98366D04-21A0-0FF4-1A72-563E5F02243D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66AA05A7-842D-71EB-BA9C-EDE5BE2AC4BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66AA05A7-842D-71EB-BA9C-EDE5BE2AC4BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66AA05A7-842D-71EB-BA9C-EDE5BE2AC4BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66AA05A7-842D-71EB-BA9C-EDE5BE2AC4BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9F657CF-4CEB-78B9-0269-1F2FDEB3D1B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9F657CF-4CEB-78B9-0269-1F2FDEB3D1B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9F657CF-4CEB-78B9-0269-1F2FDEB3D1B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9F657CF-4CEB-78B9-0269-1F2FDEB3D1B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F95551-B57D-85F7-0AEA-1723878ECEAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F95551-B57D-85F7-0AEA-1723878ECEAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F95551-B57D-85F7-0AEA-1723878ECEAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F95551-B57D-85F7-0AEA-1723878ECEAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A82D5ACF-5363-4DD2-80EB-D31170ADF967}
+	EndGlobalSection
+EndGlobal

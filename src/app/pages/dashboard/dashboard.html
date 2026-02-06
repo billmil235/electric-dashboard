@@ -1,0 +1,36 @@
+<div class="dashboard-container">
+  <h1>ElectricDashboard</h1>
+  <p class="welcome">Welcome back, {{ username() }}!</p>
+
+  <div class="menu-grid">
+    <nav class="menu-container">
+      <div class="menu-item">
+        <a routerLink="/dashboard/profile">
+          <div class="menu-icon" aria-hidden="true">👤</div>
+          <h3>Profile</h3>
+        </a>
+      </div>
+
+      <div class="menu-item">
+        <a routerLink="/dashboard/billing">
+          <div class="menu-icon" aria-hidden="true">📊</div>
+          <h3>Data Entry</h3>
+        </a>
+      </div>
+
+      <div class="menu-item">
+        <a routerLink="/dashboard/overview">
+          <div class="menu-icon" aria-hidden="true">📈</div>
+          <h3>Dashboard</h3>
+        </a>
+      </div>
+
+      <div class="menu-item logout-item">
+        <a (click)="logout()">
+          <div class="menu-icon" aria-hidden="true">🚪</div>
+          <h3>Logout</h3>
+        </a>
+      </div>
+    </nav>
+  </div>
+</div>

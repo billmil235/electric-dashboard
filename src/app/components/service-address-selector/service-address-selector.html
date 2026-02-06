@@ -1,0 +1,32 @@
+<div class="service-address-selector">
+  @if (error) {
+    <div class="error-message">{{ error }}</div>
+  }
+  
+  @if (loading) {
+    <div class="loading">Loading addresses...</div>
+  }
+  
+  @if (!loading && addresses.length > 0) {
+    <div class="form-group">
+      <label for="addressSelector">Select Service Address:</label>
+      <select 
+        id="addressSelector"
+        class="form-control"
+        [value]="selectedAddressId"
+        (change)="onAddressChange($event)">
+        @for (address of addresses; track address.addressId) {
+          <option [value]="address.addressId">
+            {{ address.addressName }} - {{ address.addressLine1 }}, {{ address.city }}, {{ address.state }} {{ address.zipCode }}
+          </option>
+        }
+      </select>
+    </div>
+  }
+  
+  @if (!loading && addresses.length === 0) {
+    <div class="no-addresses">
+      No service addresses found. Please add a new address.
+    </div>
+  }
+</div>
