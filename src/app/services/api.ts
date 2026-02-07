@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ElectricBill } from '../models/electric-bill.model';
 import { ServiceAddress } from '../models/service-address.model';
 import { UserRegistration } from '../models/user-registration.model';
@@ -22,7 +21,6 @@ interface LoginResponse {
   providedIn: 'root',
 })
 export class Api {
-  private baseUrl = 'api/users';
 
   constructor(private http: HttpClient) {}
 
@@ -40,12 +38,12 @@ export class Api {
   }
 
   register(user: UserRegistration): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/register`, user);
+    return this.http.post<void>(`api/users/register`, user);
   }
 
   addElectricBill(addressId: string, bill: ElectricBill): Observable<void> {
     const headers = this.getAuthHeaders();
-    return this.http.post<void>(`${this.baseUrl}/${addressId}/bill`, bill, { headers });
+    return this.http.post<void>(`api/data/electric-bill/${addressId}`, bill, { headers });
   }
 
   getAddresses(): Observable<ServiceAddress[]> {

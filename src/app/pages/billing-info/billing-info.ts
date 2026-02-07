@@ -58,6 +58,7 @@ export class BillingInfo {
 
       await this.api.addElectricBill(this.addressId, request).toPromise();
       this.success = true;
+      this.router.navigate(['/dashboard']);
     } catch (err) {
       this.error = 'Failed to save billing information. Please try again.';
     } finally {
