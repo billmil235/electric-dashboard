@@ -39,4 +39,16 @@ export class AuthService {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
   }
+
+  refreshToken(token: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/refresh-token/${token}`, {});
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
+  updateAccessToken(newToken: string): void {
+    localStorage.setItem('accessToken', newToken);
+  }
 }

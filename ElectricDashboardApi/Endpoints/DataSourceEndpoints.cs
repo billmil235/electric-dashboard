@@ -20,10 +20,10 @@ public static class DataSourceEndpoints
 
                 if (!addressExists)
                     return Results.NotFound();
-                
-                var addressList = await getElectricBillQuery.GetElectricBills(user.GetGuid(), addressGuid, null);
 
-                return addressList.Count == 0 ? Results.NoContent() : Results.Ok(addressList);
+                var billList = await getElectricBillQuery.GetElectricBills(user.GetGuid(), addressGuid, null);
+
+                return billList.Count == 0 ? Results.NoContent() : Results.Ok(billList);
             })
             .RequireAuthorization();
 
@@ -37,7 +37,7 @@ public static class DataSourceEndpoints
                     return Results.NotFound();
 
                 var updatedAddress = await addElectricBillCommand.AddElectricBill(user.GetGuid(), electricBillDto);
-                
+
                 return Results.Ok(updatedAddress);
             })
             .RequireAuthorization();
@@ -53,7 +53,7 @@ public static class DataSourceEndpoints
             })
             .RequireAuthorization()
             .DisableAntiforgery();
-        
+
         return group;
     }
 }

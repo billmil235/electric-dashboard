@@ -6,4 +6,5 @@ export interface ElectricBill {
   sentBackKwh?: number | null;
   billedAmount?: number;
   unitPrice?: number | null;
+  serviceYear?: number | null;
 }

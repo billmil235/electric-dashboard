@@ -26,7 +26,6 @@ export class Api {
 
   private getAuthHeaders(isFormData?: boolean): HttpHeaders {
     const token = localStorage.getItem('accessToken');
-    console.log('Retrieved token from localStorage:', token); // Debug log
     const headers: { [key: string]: string } = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
