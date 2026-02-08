@@ -6,10 +6,11 @@ import { Api } from '../../services/api';
 import { ElectricBill } from '../../models/electric-bill.model';
 import { ServiceAddress } from '../../models/service-address.model';
 import { ConsumptionChartComponent } from '../../components/consumption-chart/consumption-chart.component';
+import { BillTableComponent } from '../../components/bill-table/bill-table.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, ServiceAddressSelector, CommonModule, ConsumptionChartComponent],
+  imports: [RouterLink, ServiceAddressSelector, CommonModule, ConsumptionChartComponent, BillTableComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
