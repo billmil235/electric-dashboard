@@ -121,7 +121,7 @@ public class UserService(
         return JsonSerializer.Deserialize<LoginTokenResponse>(json, _options) ?? new LoginTokenResponse(); // contains access_token, refresh_token, etc.
     }
 
-    public async Task<TokenResponse?> RefreshTokenAsync(string refreshToken)
+    public async Task<RefreshTokenResponse?> RefreshTokenAsync(string refreshToken)
     {
         var requestData = new Dictionary<string, string>
         {
@@ -147,7 +147,7 @@ public class UserService(
         }
 
         var json = await response.Content.ReadAsStringAsync();
-        var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(json, _options);
+        var tokenResponse = JsonSerializer.Deserialize<RefreshTokenResponse>(json, _options);
 
         return tokenResponse;
     }

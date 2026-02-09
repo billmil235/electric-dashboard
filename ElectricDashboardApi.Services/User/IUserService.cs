@@ -6,10 +6,10 @@ namespace ElectricDashboard.Services.User;
 public interface IUserService
 {
     Task CreateUserAsync(UserModel userModel);
-    
+
     Task<LoginTokenResponse> LoginAsync(string username, string password);
 
-    Task<TokenResponse?> RefreshTokenAsync(string refreshToken);
+    Task<RefreshTokenResponse?> RefreshTokenAsync(string refreshToken);
 
     Task UpdateUserProfile(UserModel user, Guid userId);
 }
