@@ -1,68 +1,72 @@
-<div class="register-container">
-  <h1>Register for ElectricDashboard</h1>
-  <p>Create your account to start tracking electricity consumption</p>
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+  <div class="card col-12 col-md-6 col-lg-4">
+    <div class="card-body">
+      <h1 class="card-title text-center mb-4">Register for ElectricDashboard</h1>
+      <p class="card-text text-center mb-4">Create your account to start tracking electricity consumption</p>
 
-  <form (ngSubmit)="register()">
-    <div class="form-group">
-      <label for="email">Email Address</label>
-      <input
-        type="email"
-        id="email"
-        [(ngModel)]="email"
-        name="email"
-        required
-      />
+      <form (ngSubmit)="register()" class="mb-3">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email Address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            [(ngModel)]="email"
+            name="email"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            [(ngModel)]="password"
+            name="password"
+            required
+            minlength="8"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="firstName" class="form-label">First Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="firstName"
+            [(ngModel)]="firstName"
+            name="firstName"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="lastName" class="form-label">Last Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="lastName"
+            [(ngModel)]="lastName"
+            name="lastName"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="dob" class="form-label">Date of Birth</label>
+          <input
+            type="date"
+            class="form-control"
+            id="dob"
+            [(ngModel)]="dob"
+            name="dob"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+      </form>
+
+      <div class="text-center">
+        <p>Already have an account? <a routerLink="/" class="link-primary">Login here</a></p>
+      </div>
     </div>
-
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        [(ngModel)]="password"
-        name="password"
-        required
-        minlength="8"
-      />
-    </div>
-
-    <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input
-        type="text"
-        id="firstName"
-        [(ngModel)]="firstName"
-        name="firstName"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label for="lastName">Last Name</label>
-      <input
-        type="text"
-        id="lastName"
-        [(ngModel)]="lastName"
-        name="lastName"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label for="dob">Date of Birth</label>
-      <input
-        type="date"
-        id="dob"
-        [(ngModel)]="dob"
-        name="dob"
-        required
-      />
-    </div>
-
-    <button type="submit" class="btn-primary">Register</button>
-  </form>
-
-  <div class="login-link">
-    <p>Already have an account? <a routerLink="/">Login here</a></p>
   </div>
 </div>

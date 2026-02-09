@@ -1,59 +1,99 @@
-<div class="dashboard-container">
-  <h1>ElectricDashboard</h1>
-  <p class="welcome">Welcome back, {{ username() }}!</p>
-
-  <!-- Address Selector and Bills Table Section -->
-  <div class="bills-section">
-    <app-service-address-selector
-      (addressesLoaded)="onAddressesLoaded($event)"
-      (addressSelected)="onAddressSelected($event)">
-    </app-service-address-selector>
-
-    <div class="bills-and-chart-container">
-      <div class="bills-table-container">
-        <app-bill-table [bills]="bills()" [loading]="loadingBills()"></app-bill-table>
-      </div>
-
-      <div class="chart-container">
-        @if (bills().length > 0) {
-          <app-consumption-chart [chartData]="getChartData()"></app-consumption-chart>
-        } @else {
-          <div class="no-chart">No bill data available for chart</div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- Menu Grid -->
-  <div class="menu-grid">
-    <nav class="menu-container">
-      <div class="menu-item">
-        <a routerLink="/dashboard/profile">
-          <div class="menu-icon" aria-hidden="true">👤</div>
-          <h3>Profile</h3>
-        </a>
-      </div>
-
-      <div class="menu-item">
-        <a routerLink="/dashboard/billing">
-          <div class="menu-icon" aria-hidden="true">📊</div>
-          <h3>Data Entry</h3>
-        </a>
-      </div>
-
-      <div class="menu-item">
-        <a routerLink="/reports/overview">
-          <div class="menu-icon" aria-hidden="true">📈</div>
-          <h3>Reports</h3>
-        </a>
-      </div>
-
-      <div class="menu-item logout-item">
-        <a (click)="logout()">
-          <div class="menu-icon" aria-hidden="true">🚪</div>
-          <h3>Logout</h3>
-        </a>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-2 d-none d-md-block sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+              <span data-feather="home"></span>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard/profile" routerLinkActive="active">
+              <span data-feather="user"></span>
+              Profile
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard/billing" routerLinkActive="active">
+              <span data-feather="bar-chart-2"></span>
+              Data Entry
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/reports/overview" routerLinkActive="active">
+              <span data-feather="file-text"></span>
+              Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" (click)="logout()">
+              <span data-feather="log-out"></span>
+              Logout
+            </a>
+          </li>
+        </ul>
       </div>
     </nav>
+
+    <!-- Main content -->
+    <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <span data-feather="calendar"></span>
+            This week
+          </button>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <p class="welcome">Welcome back, {{ username() }}!</p>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title">Service Address</h2>
+              <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title">Consumption Overview</h2>
+              @if (bills().length > 0) {
+                <app-consumption-chart [chartData]="getChartData()"></app-consumption-chart>
+              } @else {
+                <div class="no-chart">No bill data available for chart</div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title">Recent Bills</h2>
+              <div class="table-responsive">
+                <app-bill-table [bills]="bills()" [loading]="loadingBills()"></app-bill-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </div>
