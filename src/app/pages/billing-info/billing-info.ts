@@ -2,13 +2,13 @@ import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Api } from '../../services/api';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 import { ElectricBill } from '../../models/electric-bill.model';
 
 @Component({
   selector: 'app-billing-info',
-  imports: [CommonModule, FormsModule, ServiceAddressSelector],
+  imports: [CommonModule, FormsModule, ServiceAddressSelector, RouterLink],
   templateUrl: './billing-info.html',
   styleUrl: './billing-info.css',
 })

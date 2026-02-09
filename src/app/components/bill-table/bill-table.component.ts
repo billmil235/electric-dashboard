@@ -62,7 +62,13 @@ export class BillTableComponent {
 
   formatDate(dateString?: string): string {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString();
+    
+    // Parse the date and format it in UTC without converting to local time
+    const date = new Date(dateString);
+    
+    // Format to ISO string and extract just the date part (YYYY-MM-DD)
+    // This ensures no timezone conversion happens
+    return date.toISOString().split('T')[0];
   }
 
   formatCurrency(amount?: number | null): string {
