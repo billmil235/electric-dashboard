@@ -1,50 +1,7 @@
 /* Bootstrap is already included via angular.json */
 
-/* Sidebar styles */
-.sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  padding: 56px 0 0;
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-  background-color: #f8f9fa;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  width: 250px;
-}
-
-.sidebar .nav-link {
-  color: #495057;
-  border-radius: 0;
-  padding: 0.75rem 1rem;
-  margin: 0.25rem 0;
-}
-
-.sidebar .nav-link:hover {
-  color: #007bff;
-  background-color: #e9ecef;
-}
-
-.sidebar .nav-link.active {
-  background-color: #e9ecef;
-  color: #007bff;
-  border-left: 3px solid #007bff;
-}
-
-.sidebar .nav-link .feather {
-  margin-right: 0.5rem;
-  vertical-align: -0.2em;
-  opacity: 0.7;
-}
-
-.sidebar .nav-link.active .feather {
-  opacity: 1;
-}
-
 /* Main content needs to be offset to avoid sidebar overlap */
 main {
-  margin-left: 250px;
   padding: 2rem 1rem 1rem;
 }
 
@@ -111,7 +68,6 @@ main {
 }
 
 .main-content {
-  margin-left: 250px;
   padding: 2rem;
 }
 

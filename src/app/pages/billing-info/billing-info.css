@@ -9,7 +9,6 @@
 
 /* Main content needs to be offset to avoid sidebar overlap */
 main {
-  margin-left: 250px;
   padding: 2rem 1rem 1rem;
 }
 
