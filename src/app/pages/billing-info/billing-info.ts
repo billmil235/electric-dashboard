@@ -5,10 +5,11 @@ import { Api } from '../../services/api';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 import { ElectricBill } from '../../models/electric-bill.model';
+import { LoggedInLayout } from "../logged-in-layout/logged-in-layout";
 
 @Component({
   selector: 'app-billing-info',
-  imports: [CommonModule, FormsModule, ServiceAddressSelector, RouterLink],
+  imports: [CommonModule, FormsModule, ServiceAddressSelector, LoggedInLayout],
   templateUrl: './billing-info.html',
   styleUrl: './billing-info.css',
 })
@@ -65,7 +66,7 @@ export class BillingInfo {
       this.loading = false;
     }
   }
-
+  
   navigateToDashboard() {
     this.router.navigate(['/dashboard']);
   }

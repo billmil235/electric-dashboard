@@ -1,208 +1,166 @@
-<div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar -->
-    <nav class="col-md-2 d-none d-md-block sidebar">
-      <div class="position-sticky pt-3">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
-              <span data-feather="home"></span>
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/dashboard/profile" routerLinkActive="active">
-              <span data-feather="user"></span>
-              Profile
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" routerLink="/dashboard/billing" routerLinkActive="active">
-              <span data-feather="bar-chart-2"></span>
-              Data Entry
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/reports/overview" routerLinkActive="active">
-              <span data-feather="file-text"></span>
-              Reports
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" (click)="navigateToDashboard()">
-              <span data-feather="log-out"></span>
-              Logout
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <!-- Main content -->
-    <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Electric Dashboard</h1>
-      </div>
-
-      <div class="row mb-4">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-body">
-              <h2 class="card-title">Electric Bill Information</h2>
-              
-              @if (loading) {
-                <div class="alert alert-info">Saving bill information...</div>
-              }
-              
-              @if (error) {
-                <div class="alert alert-danger">{{ error }}</div>
-              }
-              
-              @if (success) {
-                <div class="alert alert-success">
-                  Bill information saved successfully!
-                  <button (click)="navigateToDashboard()" class="btn btn-primary ms-2">
-                    Back to Dashboard
-                  </button>
-                </div>
-              }
-              
-              @if (!loading && !success) {
-                <!-- Service Address Selector -->
-                <app-service-address-selector 
-                  [selectedAddressId]="addressId"
-                  [loading]="addressesLoading"
-                  (addressSelected)="onAddressSelected($event)"
-                  (addressesLoaded)="addressesLoading = false">
-                </app-service-address-selector>
-
-                <!-- PDF Upload Section -->
-                <div class="pdf-upload-section mt-4">
-                  <h3>Upload PDF Bill</h3>
-                  <p>Upload a PDF of your electric bill, and we'll automatically extract the information.</p>
-                  <input 
-                    type="file"
-                    id="pdfFile"
-                    accept=".pdf"
-                    (change)="onPdfSelected($event)"
-                    class="form-control">
-                  @if (pdfUploadError) {
-                    <div class="alert alert-danger mt-2">{{ pdfUploadError }}</div>
-                  }
-                  @if (pdfUploading) {
-                    <div class="alert alert-info mt-2">Processing PDF...</div>
-                  }
-                  @if (pdfUploaded) {
-                    <div class="alert alert-success mt-2">PDF processed successfully! Information extracted below.</div>
-                  }
-                </div>
-
-                <form (ngSubmit)="onSubmit()" #billForm="ngForm" class="mt-4">
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="billedDate" class="form-label">Billing Period Start Date:</label>
-                        <input 
-                          type="date" 
-                          id="billedDate" 
-                          name="billedDate"
-                          [(ngModel)]="billedDate"
-                          required
-                          class="form-control">
-                      </div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="billedDateEnd" class="form-label">Billing Period End Date:</label>
-                        <input 
-                          type="date" 
-                          id="billedDateEnd" 
-                          name="billedDateEnd"
-                          [(ngModel)]="billedDateEnd"
-                          required
-                          class="form-control">
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="consumption" class="form-label">Electric Consumption (kWh):</label>
-                        <input 
-                          type="number" 
-                          id="consumption" 
-                          name="consumption"
-                          [(ngModel)]="consumption"
-                          required
-                          class="form-control">
-                      </div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="sentBack" class="form-label">Sent Back Energy (kWh):</label>
-                        <input 
-                          type="number" 
-                          id="sentBack" 
-                          name="sentBack"
-                          [(ngModel)]="sentBack"
-                          class="form-control">
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="billedAmount" class="form-label">Billed Amount ($):</label>
-                        <input 
-                          type="number" 
-                          id="billedAmount" 
-                          name="billedAmount"
-                          [(ngModel)]="billedAmount"
-                          required
-                          class="form-control"
-                          step="0.01">
-                      </div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-3">
-                      <div class="form-group">
-                        <label for="unitPrice" class="form-label">Unit Price ($/kWh):</label>
-                        <input 
-                          type="number" 
-                          id="unitPrice" 
-                          name="unitPrice"
-                          [(ngModel)]="unitPrice"
-                          class="form-control"
-                          step="0.001">
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="d-flex gap-2 mt-3">
-                    <button 
-                      type="submit" 
-                      [disabled]="!billForm.form.valid || loading"
-                      class="btn btn-primary">
-                      Save Bill Information
-                    </button>
-                    
-                    <button 
-                      type="button" 
-                      (click)="navigateToDashboard()"
-                      class="btn btn-secondary">
-                      Cancel
+<app-logged-in-layout>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Main content -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h2 class="card-title">Electric Bill Information</h2>
+                
+                @if (loading) {
+                  <div class="alert alert-info">Saving bill information...</div>
+                }
+                
+                @if (error) {
+                  <div class="alert alert-danger">{{ error }}</div>
+                }
+                
+                @if (success) {
+                  <div class="alert alert-success">
+                    Bill information saved successfully!
+                    <button (click)="navigateToDashboard()" class="btn btn-primary ms-2">
+                      Back to Dashboard
                     </button>
                   </div>
-                </form>
-              }
+                }
+                
+                @if (!loading && !success) {
+                  <!-- Service Address Selector -->
+                  <app-service-address-selector 
+                    [selectedAddressId]="addressId"
+                    [loading]="addressesLoading"
+                    (addressSelected)="onAddressSelected($event)"
+                    (addressesLoaded)="addressesLoading = false">
+                  </app-service-address-selector>
+
+                  <!-- PDF Upload Section -->
+                  <div class="pdf-upload-section mt-4">
+                    <h3>Upload PDF Bill</h3>
+                    <p>Upload a PDF of your electric bill, and we'll automatically extract the information.</p>
+                    <input 
+                      type="file"
+                      id="pdfFile"
+                      accept=".pdf"
+                      (change)="onPdfSelected($event)"
+                      class="form-control">
+                    @if (pdfUploadError) {
+                      <div class="alert alert-danger mt-2">{{ pdfUploadError }}</div>
+                    }
+                    @if (pdfUploading) {
+                      <div class="alert alert-info mt-2">Processing PDF...</div>
+                    }
+                    @if (pdfUploaded) {
+                      <div class="alert alert-success mt-2">PDF processed successfully! Information extracted below.</div>
+                    }
+                  </div>
+
+                  <form (ngSubmit)="onSubmit()" #billForm="ngForm" class="mt-4">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                          <label for="billedDate" class="form-label">Billing Period Start Date:</label>
+                          <input 
+                            type="date" 
+                            id="billedDate" 
+                            name="billedDate"
+                            [(ngModel)]="billedDate"
+                            required
+                            class="form-control">
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                          <label for="billedDateEnd" class="form-label">Billing Period End Date:</label>
+                          <input 
+                            type="date" 
+                            id="billedDateEnd" 
+                            name="billedDateEnd"
+                            [(ngModel)]="billedDateEnd"
+                            required
+                            class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                          <label for="consumption" class="form-label">Electric Consumption (kWh):</label>
+                          <input 
+                            type="number" 
+                            id="consumption" 
+                            name="consumption"
+                            [(ngModel)]="consumption"
+                            required
+                            class="form-control">
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                          <label for="sentBack" class="form-label">Sent Back Energy (kWh):</label>
+                          <input 
+                            type="number" 
+                            id="sentBack" 
+                            name="sentBack"
+                            [(ngModel)]="sentBack"
+                            class="form-control">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                          <label for="billedAmount" class="form-label">Billed Amount ($):</label>
+                          <input 
+                            type="number" 
+                            id="billedAmount" 
+                            name="billedAmount"
+                            [(ngModel)]="billedAmount"
+                            required
+                            class="form-control"
+                            step="0.01">
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                          <label for="unitPrice" class="form-label">Unit Price ($/kWh):</label>
+                          <input 
+                            type="number" 
+                            id="unitPrice" 
+                            name="unitPrice"
+                            [(ngModel)]="unitPrice"
+                            class="form-control"
+                            step="0.001">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-3">
+                      <button 
+                        type="submit" 
+                        [disabled]="!billForm.form.valid || loading"
+                        class="btn btn-primary">
+                        Save Bill Information
+                      </button>
+                      
+                      <button 
+                        type="button" 
+                        (click)="navigateToDashboard()"
+                        class="btn btn-secondary">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                }
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+    </div>
   </div>
-</div>
+</app-logged-in-layout>

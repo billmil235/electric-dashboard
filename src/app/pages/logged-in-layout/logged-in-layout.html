@@ -1,0 +1,50 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-2 d-none d-md-block sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+              <span data-feather="home"></span>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard/profile" routerLinkActive="active">
+              <span data-feather="user"></span>
+              Profile
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" routerLink="/dashboard/billing" routerLinkActive="active">
+              <span data-feather="bar-chart-2"></span>
+              Data Entry
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/reports/overview" routerLinkActive="active">
+              <span data-feather="file-text"></span>
+              Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" (click)="navigateToDashboard()">
+              <span data-feather="log-out"></span>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Electric Dashboard</h1>
+      </div>
+      
+      <ng-content></ng-content>
+    </main>
+  </div>
+</div>

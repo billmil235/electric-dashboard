@@ -7,10 +7,11 @@ import { ElectricBill } from '../../models/electric-bill.model';
 import { ServiceAddress } from '../../models/service-address.model';
 import { ConsumptionChartComponent } from '../../components/consumption-chart/consumption-chart.component';
 import { BillTableComponent } from '../../components/bill-table/bill-table.component';
+import { LoggedInLayout } from '../logged-in-layout/logged-in-layout';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, ServiceAddressSelector, CommonModule, ConsumptionChartComponent, BillTableComponent],
+  imports: [ServiceAddressSelector, CommonModule, ConsumptionChartComponent, BillTableComponent, LoggedInLayout],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -74,7 +75,7 @@ export class Dashboard {
     
     return yearlyData;
   }
-  
+
   private groupBillsByYear(bills: ElectricBill[]): Array<{
     year: number;
     totalConsumption: number;
