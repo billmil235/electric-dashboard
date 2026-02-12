@@ -12,8 +12,8 @@ public static class DataSourceEndpoints
 {
     public static RouteGroupBuilder RegisterDataEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/electric-bill/{addressGuid:guid}",
-            async ([FromRoute] Guid addressGuid, ClaimsPrincipal user, IGetElectricBillQuery getElectricBillQuery,
+        group.MapGet("/electric-bill/{addressGuid:guid}/{billGuid:guid?}",
+            async ([FromRoute] Guid addressGuid, [FromRoute] Guid? billGuid, ClaimsPrincipal user, IGetElectricBillQuery getElectricBillQuery,
                 IGetAddressExistsQuery getAddressExistsQuery) =>
             {
                 var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
@@ -21,7 +21,7 @@ public static class DataSourceEndpoints
                 if (!addressExists)
                     return Results.NotFound();
 
-                var billList = await getElectricBillQuery.GetElectricBills(user.GetGuid(), addressGuid, null);
+                var billList = await getElectricBillQuery.GetElectricBills(user.GetGuid(), addressGuid, billGuid);
 
                 return billList.Count == 0 ? Results.NoContent() : Results.Ok(billList);
             })

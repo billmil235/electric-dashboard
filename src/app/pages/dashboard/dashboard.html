@@ -13,7 +13,7 @@
     <div class="col-12">
       <div class="card">
         <div class="card-body">
-          <h2 class="card-title">Consumption Overview</h2>
+          <h4 class="card-title">Billing Overview</h4>
           @if (bills().length > 0) {
             <app-consumption-chart [chartData]="getChartData()"></app-consumption-chart>
           } @else {
