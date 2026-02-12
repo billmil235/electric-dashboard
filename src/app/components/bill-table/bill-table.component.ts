@@ -42,7 +42,6 @@ import { CommonModule } from '@angular/common';
                     {{ formatCurrency(bill.unitPrice) }}
                   </td>
                   <td data-label="Actions">
-                    <button class="action-btn view">View</button>
                     <button class="action-btn edit">Edit</button>
                     <button class="action-btn delete">Delete</button>
                   </td>
