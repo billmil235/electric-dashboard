@@ -1,4 +1,5 @@
 using ElectricDashboard.Models.Options;
+using ElectricDashboard.Services;
 using ElectricDashboard.Services.DataSources;
 using ElectricDashboard.Services.User;
 using ElectricDashboardApi.Data.Commands.DataSources;
@@ -19,18 +20,20 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDataSourceService, DataSourceService>();
-        
+
         builder.Services.AddScoped<IUpdateProfileCommand, UpdateProfileCommand>();
-        
+
         builder.Services.AddScoped<IAddElectricBillCommand, AddElectricBillCommand>();
-        
+
         builder.Services.AddScoped<IGetElectricBillQuery, GetElectricBillsQuery>();
-        
+
+        builder.Services.AddScoped<IUserAddressService, UserAddressService>();
+
         builder.Services.AddScoped<IGetAddressExistsQuery, GetAddressExistsQuery>();
         builder.Services.AddScoped<IGetUserAddressesQuery, GetUserAddressesQuery>();
         builder.Services.AddScoped<IAddServiceAddressCommand, AddServiceAddressCommand>();
         builder.Services.AddScoped<IDeleteServiceAddressCommand, DeleteServiceAddressCommand>();
-        
+
         builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>
         {
             client.BaseAddress = new Uri("http://192.168.1.135:11434/");

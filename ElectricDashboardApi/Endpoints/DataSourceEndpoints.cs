@@ -4,6 +4,7 @@ using ElectricDashboardApi.Data.Commands.DataSources;
 using ElectricDashboardApi.Data.Queries.DataSources;
 using ElectricDashboardApi.Dtos.DataSources;
 using ElectricDashboardApi.Shared.Extensions;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ElectricDashboardApi.Endpoints;
@@ -19,7 +20,9 @@ public static class DataSourceEndpoints
                 var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
 
                 if (!addressExists)
+                {
                     return Results.NotFound();
+                }
 
                 var billList = await getElectricBillQuery.GetElectricBills(user.GetGuid(), addressGuid, billGuid);
 
@@ -34,7 +37,9 @@ public static class DataSourceEndpoints
                 var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
 
                 if (!addressExists)
+                {
                     return Results.NotFound();
+                }
 
                 var updatedAddress = await addElectricBillCommand.AddElectricBill(user.GetGuid(), electricBillDto);
 
@@ -53,6 +58,14 @@ public static class DataSourceEndpoints
             })
             .RequireAuthorization()
             .DisableAntiforgery();
+
+        group.MapDelete("/electric-bill/{addressGuid:guid}",
+            async ([FromRoute] Guid addressGuid, ClaimsPrincipal user, IGetAddressExistsQuery getAddressExistsQuery) =>
+            {
+                var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
+
+                return !addressExists ? Results.NotFound() : Results.Ok();
+            });
 
         return group;
     }

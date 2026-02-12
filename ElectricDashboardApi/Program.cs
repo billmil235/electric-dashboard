@@ -4,6 +4,7 @@ using ElectricDashboardApi.Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -17,6 +18,15 @@ builder.Services.AddDbContext<ElectricDashboardContext>(options =>
     );
 
 builder.RegisterServices();
+
+builder.Services.AddHybridCache(options =>
+{
+    options.DefaultEntryOptions = new HybridCacheEntryOptions
+    {
+        Expiration = TimeSpan.FromMinutes(30),
+        LocalCacheExpiration = TimeSpan.FromMinutes(5)
+    };
+});
 
 builder.Services.AddCors(options =>
 {
@@ -67,7 +77,7 @@ builder.Services.AddSwaggerGen(options => {
         },
         Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
     });
-        
+
     var securityRequirement = new OpenApiSecurityRequirement()
     {
         {
@@ -85,7 +95,7 @@ builder.Services.AddSwaggerGen(options => {
             []
         }
     };
-        
+
     options.AddSecurityRequirement(securityRequirement);
 });
 
