@@ -20,6 +20,7 @@ export class BillingInfo {
   private readonly cdr = inject(ChangeDetectorRef);
 
   addressId = this.route.snapshot.params['addressGuid'] || '';
+  billGuid = this.route.snapshot.params['billGuid'] || '';
 
   billedDate = '';
   billedDateEnd = '';
@@ -32,6 +33,7 @@ export class BillingInfo {
   error: string | null = null;
   success = false;
   addressesLoading = false;
+  isEditing = false;
 
   pdfUploading = false;
   pdfUploadError: string | null = null;
@@ -39,7 +41,17 @@ export class BillingInfo {
 
   private selectedPdfFile: File | null = null;
 
-  constructor() {}
+  constructor() {
+    // Check if we're editing an existing bill only if we have both parameters
+    if (this.addressId && this.route.snapshot.params['billGuid']) {
+      this.billGuid = this.route.snapshot.params['billGuid'] || '';
+      this.isEditing = true;
+      this.loadBillForEditing();
+    } else {
+      // If we're not editing, clear the form state (reset to empty form)
+      this.clearForm();
+    }
+  }
 
   async onSubmit() {
     this.loading = true;
@@ -115,6 +127,45 @@ export class BillingInfo {
       this.pdfUploadError = 'Failed to process PDF. Please try again or enter information manually.';
     } finally {
       this.pdfUploading = false;
+    }
+  }
+
+  clearForm() {
+    this.billedDate = '';
+    this.billedDateEnd = '';
+    this.consumption = null;
+    this.sentBack = null;
+    this.billedAmount = null;
+    this.unitPrice = null;
+  }
+
+  async loadBillForEditing() {
+    if (!this.addressId || !this.billGuid) {
+      this.error = 'Invalid bill information';
+      return;
+    }
+
+    this.loading = true;
+    try {
+      const bill = await this.api.getBillByAddressAndGuid(this.addressId, this.billGuid).toPromise(); // Assuming the API returns an array of bills, we take the first one
+      
+      console.log('Loaded bill for editing:', bill);
+
+      if (bill?.length && bill[0]) {
+        this.billedDate = bill[0].periodStartDate || '';
+        this.billedDateEnd = bill[0].periodEndDate || '';
+        this.consumption = bill[0].consumptionKwh ?? null;
+        this.sentBack = bill[0].sentBackKwh ?? null;
+        this.billedAmount = bill[0].billedAmount ?? null;
+        this.unitPrice = bill[0].unitPrice ?? null;
+      }
+    } catch (err) {
+      this.error = 'Failed to load bill information. Please try again.';
+      console.error('Failed to load bill:', err);
+    } finally {
+      this.loading = false;
+      // Ensure change detection runs to update the UI
+      this.cdr.detectChanges();
     }
   }
 }

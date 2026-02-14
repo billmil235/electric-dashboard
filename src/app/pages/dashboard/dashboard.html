@@ -30,7 +30,11 @@
         <div class="card-body">
           <h2 class="card-title">Recent Bills</h2>
           <div class="table-responsive">
-            <app-bill-table [bills]="bills()" [loading]="loadingBills()"></app-bill-table>
+            <app-bill-table 
+              [bills]="bills()" 
+              [loading]="loadingBills()" 
+              (editBill)="onEditBill($event)">
+            </app-bill-table>
           </div>
         </div>
       </div>

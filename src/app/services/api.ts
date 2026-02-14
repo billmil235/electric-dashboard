@@ -55,6 +55,16 @@ export class Api {
     return this.http.get<ElectricBill[]>(`api/data/electric-bill/${addressId}`, { headers });
   }
 
+  getBillByAddressAndGuid(addressId: string, billGuid: string): Observable<ElectricBill[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<ElectricBill[]>(`api/data/electric-bill/${addressId}/${billGuid}`, { headers });
+  }
+
+  updateElectricBill(addressId: string, billGuid: string, bill: ElectricBill): Observable<void> {
+    const headers = this.getAuthHeaders();
+    return this.http.put<void>(`api/data/electric-bill/${addressId}/${billGuid}`, bill, { headers });
+  }
+
   uploadElectricBillPdf(addressId: string, file: File): Observable<ElectricBill> {
     const formData = new FormData();
     formData.append('file', file);

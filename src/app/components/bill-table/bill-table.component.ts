@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ElectricBill } from '../../models/electric-bill.model';
 import { CommonModule } from '@angular/common';
 
@@ -34,7 +34,7 @@ import { CommonModule } from '@angular/common';
                     {{ formatDate(bill.periodEndDate) }}
                   </td>
                   <td data-label="Consumption (kWh)">{{ formatNumber(bill.consumptionKwh) }}</td>
-                  <td data-label="Sent Back (kWh)">{{ formatNumber(bill.sentBackKwh) }}</td>
+                  <td data-label="Sent Back (kwh)">{{ formatNumber(bill.sentBackKwh) }}</td>
                   <td data-label="Amount">
                     {{ formatCurrency(bill.billedAmount) }}
                   </td>
@@ -42,7 +42,7 @@ import { CommonModule } from '@angular/common';
                     {{ formatCurrency(bill.unitPrice) }}
                   </td>
                   <td data-label="Actions">
-                    <button class="action-btn edit">Edit</button>
+                    <button class="action-btn edit" (click)="onEditBill(bill)">Edit</button>
                     <button class="action-btn delete">Delete</button>
                   </td>
                 </tr>
@@ -58,6 +58,7 @@ import { CommonModule } from '@angular/common';
 export class BillTableComponent {
   @Input() bills: ElectricBill[] = [];
   @Input() loading = false;
+  @Output() editBill = new EventEmitter<ElectricBill>();
 
   formatDate(dateString?: string): string {
     if (!dateString) return '';
@@ -81,5 +82,9 @@ export class BillTableComponent {
   formatNumber(value?: number | null): string {
     if (value === undefined || value === null) return '';
     return new Intl.NumberFormat('en-US').format(value);
+  }
+
+  onEditBill(bill: ElectricBill) {
+    this.editBill.emit(bill);
   }
 }

@@ -60,6 +60,13 @@ export class Dashboard {
     });
   }
 
+  onEditBill(bill: ElectricBill) {
+    // Navigate to the edit route including billGuid
+    if (this.selectedAddressId() && bill && bill.billId) {
+      this.router.navigate(['/dashboard/billing', this.selectedAddressId(), bill.billId]);
+    }
+  }
+
   getChartData() {
     const bills = this.bills();
     if (bills.length === 0) {

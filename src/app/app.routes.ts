@@ -11,6 +11,7 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
   { path: 'dashboard/billing', component: BillingInfo, canActivate: [authGuard] },
+  { path: 'dashboard/billing/:addressGuid/:billGuid', component: BillingInfo, canActivate: [authGuard] },
   { path: 'reports/overview', component: Reports, canActivate: [authGuard] },
   { path: '**', redirectTo: '/' }
 ]
