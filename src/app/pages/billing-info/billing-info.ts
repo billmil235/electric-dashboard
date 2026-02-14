@@ -69,9 +69,16 @@ export class BillingInfo {
         unitPrice: this.unitPrice || null,
       };
 
-      await this.api.addElectricBill(this.addressId, request).toPromise();
-      this.success = true;
-      this.router.navigate(['/dashboard']);
+      this.api.addElectricBill(this.addressId, request).subscribe({
+        next: () => {
+          this.success = true;
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          this.error = 'Failed to save billing information. Please try again.';
+          this.loading = false;
+        }
+      });
     } catch (err) {
       this.error = 'Failed to save billing information. Please try again.';
     } finally {
@@ -107,25 +114,35 @@ export class BillingInfo {
     this.pdfUploadError = null;
 
     try {
-      const response = await this.api.uploadElectricBillPdf(this.addressId, this.selectedPdfFile).toPromise();
-
-      if (response) {
-        this.billedDate = response.periodStartDate || '';
-        this.billedDateEnd = response.periodEndDate || '';
-        this.consumption = response.consumptionKwh ?? null;
-        this.sentBack = response.sentBackKwh ?? null;
-        this.billedAmount = response.billedAmount ?? null;
-        this.unitPrice = response.unitPrice ?? null;
-        
-        // Trigger change detection manually to update the form
-        this.cdr.detectChanges();
-        
-        this.pdfUploaded = true;
-      }
+      // Handle the Observable by subscribing to it
+      this.api.uploadElectricBillPdf(this.addressId, this.selectedPdfFile).subscribe({
+        next: (response) => {
+          if (response) {
+            this.billedDate = response.periodStartDate || '';
+            this.billedDateEnd = response.periodEndDate || '';
+            this.consumption = response.consumptionKwh ?? null;
+            this.sentBack = response.sentBackKwh ?? null;
+            this.billedAmount = response.billedAmount ?? null;
+            this.unitPrice = response.unitPrice ?? null;
+            
+            // Trigger change detection manually to update the form
+            this.cdr.detectChanges();
+            
+            this.pdfUploaded = true;
+          }
+        },
+        error: (err) => {
+          console.error('PDF upload failed:', err);
+          this.pdfUploadError = 'Failed to process PDF. Please try again or enter information manually.';
+          this.pdfUploading = false;
+        }
+      });
     } catch (err) {
       console.error('PDF upload failed:', err);
       this.pdfUploadError = 'Failed to process PDF. Please try again or enter information manually.';
+      this.pdfUploading = false;
     } finally {
+      // Note: will be set in the subscribe next handler, but we'll set it here for safety
       this.pdfUploading = false;
     }
   }
@@ -147,25 +164,36 @@ export class BillingInfo {
 
     this.loading = true;
     try {
-      const bill = await this.api.getBillByAddressAndGuid(this.addressId, this.billGuid).toPromise(); // Assuming the API returns an array of bills, we take the first one
-      
-      console.log('Loaded bill for editing:', bill);
+      // Handle the Observable by subscribing to it
+      this.api.getBillByAddressAndGuid(this.addressId, this.billGuid).subscribe({
+        next: (bill) => {
+          console.log('Loaded bill for editing:', bill);
 
-      if (bill?.length && bill[0]) {
-        this.billedDate = bill[0].periodStartDate || '';
-        this.billedDateEnd = bill[0].periodEndDate || '';
-        this.consumption = bill[0].consumptionKwh ?? null;
-        this.sentBack = bill[0].sentBackKwh ?? null;
-        this.billedAmount = bill[0].billedAmount ?? null;
-        this.unitPrice = bill[0].unitPrice ?? null;
-      }
+          if (bill?.length && bill[0]) {
+            this.billedDate = bill[0].periodStartDate || '';
+            this.billedDateEnd = bill[0].periodEndDate || '';
+            this.consumption = bill[0].consumptionKwh ?? null;
+            this.sentBack = bill[0].sentBackKwh ?? null;
+            this.billedAmount = bill[0].billedAmount ?? null;
+            this.unitPrice = bill[0].unitPrice ?? null;
+          }
+          this.loading = false;
+          // Ensure change detection runs to update the UI
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.error = 'Failed to load bill information. Please try again.';
+          console.error('Failed to load bill:', err);
+          this.loading = false;
+        }
+      });
     } catch (err) {
       this.error = 'Failed to load bill information. Please try again.';
       console.error('Failed to load bill:', err);
-    } finally {
       this.loading = false;
-      // Ensure change detection runs to update the UI
-      this.cdr.detectChanges();
+    } finally {
+      // Set loading to false in the subscribe if already set
+      // this.loading = false; // Already handled in subscribe
     }
   }
 }
