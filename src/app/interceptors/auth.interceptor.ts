@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject, from } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, take, switchMap, finalize } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
@@ -42,32 +42,32 @@ export class AuthInterceptor implements HttpInterceptor {
           this.tokenRefreshCoordinator.setIsRefreshing(true);
           this.refreshTokenSubject.next(null);
 
-return from(this.authService.refreshToken(refreshToken).toPromise())
-              .pipe(
-                switchMap((token: any) => {
-                  console.log('Manual token refresh successful');
-                  this.tokenRefreshCoordinator.setIsRefreshing(false);
-                  this.refreshTokenSubject.next(token.accessToken);
-                  // Make sure the new access token is stored in localStorage  
-                  this.authService.updateAccessToken(token.accessToken);
-                  console.log('New access token stored in localStorage');
-                  // Verify the token was stored correctly
-                  const storedToken = this.authService.getAccessToken();
-                  console.log('Verified stored token:', storedToken);
-                  return next.handle(this.addToken(request, token.accessToken));
-                }),
-              catchError((err) => {
-                console.error('Manual token refresh failed:', err);
-                this.tokenRefreshCoordinator.setIsRefreshing(false);
-                this.refreshTokenSubject.next(null);
-                this.authService.logout();
-                this.router.navigate(['/']);
-                return throwError(() => err);
-              }),
-              finalize(() => {
-                this.tokenRefreshCoordinator.setIsRefreshing(false);
-              })
-            );
+          return this.authService.refreshToken(refreshToken).pipe(
+            switchMap((token: any) => {
+              console.log('Manual token refresh successful');
+              this.tokenRefreshCoordinator.setIsRefreshing(false);
+              this.refreshTokenSubject.next(token.accessToken);
+              // Make sure the new access token is stored in localStorage  
+              this.authService.updateAccessToken(token.accessToken);
+              console.log('New access token stored in localStorage');
+              // Verify the token was stored correctly
+              const storedToken = this.authService.getAccessToken();
+              console.log('Verified stored token:', storedToken);
+              return next.handle(this.addToken(request, token.accessToken));
+            }),
+          ).pipe(
+            catchError((err) => {
+              console.error('Manual token refresh failed:', err);
+              this.tokenRefreshCoordinator.setIsRefreshing(false);
+              this.refreshTokenSubject.next(null);
+              this.authService.logout();
+              this.router.navigate(['/']);
+              return throwError(() => err);
+            }),
+            finalize(() => {
+              this.tokenRefreshCoordinator.setIsRefreshing(false);
+            })
+          );
         }
 
         return throwError(() => error);

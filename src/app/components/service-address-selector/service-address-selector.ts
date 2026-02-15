@@ -2,6 +2,7 @@ import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular
 import { CommonModule } from '@angular/common';
 import { Api } from '../../services/api';
 import { ServiceAddress } from '../../models/service-address.model';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-service-address-selector',
@@ -31,7 +32,7 @@ export class ServiceAddressSelector implements OnInit {
     
     try {
       // Fetch addresses from the API endpoint
-      const response = await this.api.getAddresses().toPromise();
+      const response = await this.api.getAddresses().pipe(take(1)).toPromise();
       this.addresses = response || [];
       this.addressesLoaded.emit(this.addresses);
       

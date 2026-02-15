@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-logged-in-layout',
@@ -9,11 +10,10 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class LoggedInLayout {
   private readonly router = inject(Router);
-
+  private readonly authService = inject(AuthService);
+  
   logout() {
-  }
-
-  navigateToDashboard() {
-    this.router.navigate(['/dashboard']);
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
