@@ -19,7 +19,7 @@
             <h3>Monthly Consumption by Year</h3>
           </div>
           <div class="card-body">
-            <app-monthly-consumption-graph [chartData]="monthlyData" [loading]="loading"></app-monthly-consumption-graph>
+            <app-monthly-consumption-graph [bills]="bills()" [loading]="loading"></app-monthly-consumption-graph>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { ElectricBill } from '../../models/electric-bill.model';
 
 @Component({
   selector: 'app-monthly-consumption-graph',
@@ -10,9 +11,11 @@ import Chart from 'chart.js/auto';
   `,
   styleUrls: ['./monthly-consumption-graph.component.css']
 })
-export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestroy {
-  @Input() chartData: any[] = [];
+export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
+  @Input() bills: ElectricBill[] = [];
   @Input() loading = false;
+  
+  private prevBillsLength = 0;
   
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   
@@ -20,6 +23,17 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
   
   ngAfterViewInit() {
     this.createChart();
+  }
+  
+  ngOnChanges(changes: SimpleChanges) {
+    // Check if bills have changed or if loading has finished
+    const billsChanged = this.bills.length !== this.prevBillsLength;
+    const loadingFinished = changes['loading'] && !this.loading;
+    
+    if (billsChanged || loadingFinished) {
+      this.prevBillsLength = this.bills.length;
+      this.updateChart();
+    }
   }
   
   ngOnDestroy() {
@@ -95,17 +109,20 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
       return;
     }
     
-    if (this.chartData.length === 0) {
+    if (this.bills.length === 0) {
       console.log('No data to display');
       this.clearChart();
       return;
     }
     
+    // Process bills to create monthly consumption data for the last 3 years
+    const monthlyData = this.processBillsForMonthlyData(this.bills);
+    
     // Prepare the datasets for the last 3 years
     const yearData: { [year: string]: { consumption: number[] } } = {};
     
     // Process the data to group by year
-    this.chartData.forEach(entry => {
+    monthlyData.forEach(entry => {
       if (!yearData[entry.year.toString()]) {
         yearData[entry.year.toString()] = { consumption: Array(12).fill(0) };
       }
@@ -134,6 +151,51 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
     // Update chart data
     this.chart.data.datasets = datasets;
     this.chart.update();
+  }
+  
+  processBillsForMonthlyData(bills: ElectricBill[]) {
+    // Process bills to create monthly consumption data for the last 3 years
+    const data = [];
+    const currentYear = new Date().getFullYear();
+    const threeYearsAgo = currentYear - 2;
+    
+    // Group bills by year/month to calculate total consumption per month
+    const monthlyTotals: { [key: string]: number } = {};
+    
+    bills.forEach(bill => {
+      if (!bill.serviceYear || !bill.consumptionKwh) return;
+      
+      // Only process bills from the last 3 years
+      if (bill.serviceYear >= threeYearsAgo && bill.serviceYear <= currentYear) {
+        const month = bill.serviceMonth || 1; // Default to January if month is missing
+        
+        // Create a key for year/month combination
+        const key = `${bill.serviceYear}-${month}`;
+        
+        if (!monthlyTotals[key]) {
+          monthlyTotals[key] = 0;
+        }
+        
+        // Add consumption to monthly total
+        monthlyTotals[key] += bill.consumptionKwh;
+      }
+    });
+    
+    // Generate all months for the last 3 years with actual or zero consumption
+    for (let year = threeYearsAgo; year <= currentYear; year++) {
+      for (let month = 1; month <= 12; month++) {
+        const key = `${year}-${month}`;
+        const consumption = monthlyTotals[key] || 0;
+        
+        data.push({
+          year: year,
+          month: month,
+          consumption: consumption
+        });
+      }
+    }
+    
+    return data;
   }
   
   private getColorForYear(year: string, index: number) {

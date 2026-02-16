@@ -1,8 +1,8 @@
-namespace ElectricDashboardApi.Dtos.User;
+namespace ElectricDashboardApi.Models.User;
 
-public record ServiceAddressDto
+public record ServiceAddress
 {
-    public required Guid AddressId { get; init; }
+    public Guid? AddressId { get; init; } = null;
 
     public required string AddressName { get; init; }
 

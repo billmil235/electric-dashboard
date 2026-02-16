@@ -2,9 +2,8 @@
   <Folder Name="/Solution Items/">
     <File Path="compose.yaml" />
   </Folder>
-  <Project Path="ElectricDashboardApi.Data/ElectricDashboardApi.Data.csproj" />
+  <Project Path="ElectricDashboard.Api\ElectricDashboard.Api.csproj" />
+  <Project Path="ElectricDashboardApi.Core\ElectricDashboardApi.Core.csproj" />
   <Project Path="ElectricDashboardApi.Dtos/ElectricDashboardApi.Dtos.csproj" />
-  <Project Path="ElectricDashboardApi.Models\ElectricDashboardApi.Models.csproj" />
-  <Project Path="ElectricDashboardApi.Services\ElectricDashboardApi.Services.csproj" />
-  <Project Path="ElectricDashboardApi/ElectricDashboardApi.csproj" />
+  <Project Path="ElectricDashboardApi.Infrastructure\ElectricDashboardApi.Infrastructure.csproj" />
 </Solution>
