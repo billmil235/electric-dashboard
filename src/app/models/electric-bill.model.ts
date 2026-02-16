@@ -7,5 +7,6 @@ export interface ElectricBill {
   billedAmount?: number;
   unitPrice?: number | null;
   serviceYear?: number | null;
+  serviceMonth?: number | null;
   billId?: string | null;
 }

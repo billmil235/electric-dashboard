@@ -18,5 +18,10 @@ public class ElectricBill
 
     public decimal? UnitPrice { get; init; }
 
-    public int ServiceYear => PeriodEndDate.Year;
+    private DateOnly MiddleOfServicePeriod =>
+        PeriodStartDate.AddDays((PeriodEndDate.DayNumber - PeriodStartDate.DayNumber) / 2);
+
+    public int ServiceYear => MiddleOfServicePeriod.Year;
+
+    public int ServiceMonth => MiddleOfServicePeriod.Month;
 }

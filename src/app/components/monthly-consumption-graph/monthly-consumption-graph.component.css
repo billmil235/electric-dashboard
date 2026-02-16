@@ -1,0 +1,10 @@
+.chart-wrapper {
+  width: 100%;
+  height: 400px;
+  position: relative;
+}
+
+/* Add padding around the chart for better Bootstrap integration */
+.chart-wrapper {
+  padding: 15px;
+}

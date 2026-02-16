@@ -1,1 +1,4 @@
-/* Empty CSS file for reports placeholder page */
+/* Add spacing for the address selector */
+.address-selector-container {
+  margin-bottom: 1rem;
+}

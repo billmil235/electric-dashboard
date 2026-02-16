@@ -13,21 +13,36 @@ import { take } from 'rxjs/operators';
 
 export class ServiceAddressSelector implements OnInit {
   private readonly api = inject(Api);
+  private _loading: boolean = false;
   
-  @Input() selectedAddressId: string = '';
-  @Input() loading: boolean = false;
+  get loading(): boolean {
+    return this._loading;
+  }
+  
+  @Input() set selectedAddressId(value: string) {
+    this._selectedAddressId = value;
+  }
+  get selectedAddressId(): string {
+    return this._selectedAddressId;
+  }
+  
+  @Input() set loading(value: boolean) {
+    this._loading = value;
+  }
+  
   @Output() addressSelected = new EventEmitter<string>();
   @Output() addressesLoaded = new EventEmitter<ServiceAddress[]>();
   
   addresses: ServiceAddress[] = [];
   error: string | null = null;
+  private _selectedAddressId: string = '';
   
   async ngOnInit() {
     await this.loadAddresses();
   }
   
   async loadAddresses() {
-    this.loading = true;
+    this._loading = true;
     this.error = null;
     
     try {
@@ -37,17 +52,17 @@ export class ServiceAddressSelector implements OnInit {
       this.addressesLoaded.emit(this.addresses);
       
       // If no selected address is set, select the first one or the primary one
-      if (!this.selectedAddressId && this.addresses.length > 0) {
+      if (!this._selectedAddressId && this.addresses.length > 0) {
         const primaryAddress = this.addresses.find(addr => addr.isCommercial === false);
         const firstAddress = this.addresses[0];
-        this.selectedAddressId = primaryAddress?.addressId || firstAddress.addressId;
-        this.addressSelected.emit(this.selectedAddressId);
+        this._selectedAddressId = primaryAddress?.addressId || firstAddress.addressId;
+        this.addressSelected.emit(this._selectedAddressId);
       }
     } catch (err) {
       this.error = 'Failed to load service addresses. Please try again.';
       console.error('Failed to load addresses:', err);
     } finally {
-      this.loading = false;
+      this._loading = false;
     }
   }
   
