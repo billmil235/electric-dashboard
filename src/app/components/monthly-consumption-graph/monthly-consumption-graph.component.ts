@@ -157,7 +157,7 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
     // Process bills to create monthly consumption data for the last 3 years
     const data = [];
     const currentYear = new Date().getFullYear();
-    const threeYearsAgo = currentYear - 2;
+    const threeYearsAgo = currentYear - 3;
     
     // Group bills by year/month to calculate total consumption per month
     const monthlyTotals: { [key: string]: number } = {};

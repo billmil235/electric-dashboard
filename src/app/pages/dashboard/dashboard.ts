@@ -123,7 +123,7 @@ export class Dashboard {
     result.sort((a, b) => b.year - a.year);
     
     // Get only the last 3 years
-    return result.slice(0, 3);
+    return result.slice(0, 4);
   }
 
   formatDate(dateString?: string): string {
