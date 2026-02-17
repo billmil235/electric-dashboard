@@ -1,20 +1,22 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { LoggedInLayout } from "../logged-in-layout/logged-in-layout";
 import { MonthlyConsumptionGraphComponent } from '../../components/monthly-consumption-graph/monthly-consumption-graph.component';
+import { MonthlySentBackGraphComponent } from '../../components/monthly-sent-back-graph/monthly-sent-back-graph.component';
+import { NetEnergyConsumptionGraphComponent } from '../../components/net-energy-consumption-graph/net-energy-consumption-graph.component';
+import { MonthlySpendGraphComponent } from '../../components/monthly-spend-graph/monthly-spend-graph.component';
 import { Api } from '../../services/api';
 import { ServiceAddress } from '../../models/service-address.model';
 import { ElectricBill } from '../../models/electric-bill.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
-import { sign } from 'chart.js/helpers';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.html',
   styleUrl: './reports.css',
   standalone: true,
-  imports: [LoggedInLayout, MonthlyConsumptionGraphComponent, ServiceAddressSelector, CommonModule, FormsModule]
+  imports: [LoggedInLayout, MonthlyConsumptionGraphComponent, MonthlySentBackGraphComponent, NetEnergyConsumptionGraphComponent, MonthlySpendGraphComponent, ServiceAddressSelector, CommonModule, FormsModule]
 })
 export class Reports implements OnInit {
   loading = false;

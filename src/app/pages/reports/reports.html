@@ -23,6 +23,38 @@
           </div>
         </div>
       </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h3>Monthly Spend by Year</h3>
+          </div>
+          <div class="card-body">
+            <app-monthly-spend-graph [bills]="bills()" [loading]="loading"></app-monthly-spend-graph>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h3>Monthly Energy Sent Back by Year</h3>
+          </div>
+          <div class="card-body">
+            <app-monthly-sent-back-graph [bills]="bills()" [loading]="loading"></app-monthly-sent-back-graph>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h3>Net Energy Consumption by Year</h3>
+          </div>
+          <div class="card-body">
+            <app-net-energy-consumption-graph [bills]="bills()" [loading]="loading"></app-net-energy-consumption-graph>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </app-logged-in-layout>

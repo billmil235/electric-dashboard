@@ -1,0 +1,9 @@
+.card-header {
+  font-weight: bold;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
