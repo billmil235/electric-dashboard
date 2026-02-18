@@ -19,7 +19,7 @@ RUN dotnet publish "./ElectricDashboard.Api.csproj" -c $BUILD_CONFIGURATION -o /
 FROM node:22-alpine AS frontend-build
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 COPY . .
 RUN npm run build -- --configuration production
 
