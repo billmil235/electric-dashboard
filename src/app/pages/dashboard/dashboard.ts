@@ -21,6 +21,7 @@ export class Dashboard {
   addresses = signal<ServiceAddress[]>([]);
   bills = signal<ElectricBill[]>([]);
   selectedAddressId = signal<string>('');
+  selectedYearFilter = signal<string>('all');
   loadingBills = signal<boolean>(false);
   
   constructor(private router: Router, private api: Api) {}
@@ -50,6 +51,7 @@ export class Dashboard {
     this.api.getBillsByAddress(addressId).subscribe({
       next: (bills) => {
         this.bills.set(bills);
+        this.updateYearFilterOptions();
       },
       error: (err) => {
         console.error('Failed to load bills:', err);
@@ -60,6 +62,41 @@ export class Dashboard {
     });
   }
 
+  updateYearFilterOptions() {
+    const bills = this.bills();
+    const uniqueYears = Array.from(new Set(bills.map(bill => bill.serviceYear).filter(year => year !== null && year !== undefined)))
+      .sort((a, b) => b - a);
+    
+    const selectedYear = this.selectedYearFilter();
+    if (selectedYear !== 'all' && !uniqueYears.includes(Number(selectedYear))) {
+      this.selectedYearFilter.set('all');
+    }
+  }
+
+  get filteredBills() {
+    const bills = this.bills();
+    const yearFilter = this.selectedYearFilter();
+    
+    if (yearFilter === 'all') {
+      return bills;
+    }
+    
+    return bills.filter(bill => bill.serviceYear === Number(yearFilter));
+  }
+
+  get yearOptions() {
+    const bills = this.bills();
+    const uniqueYears = Array.from(new Set(bills.map(bill => bill.serviceYear).filter(year => year !== null && year !== undefined)))
+      .sort((a, b) => b - a);
+    
+    return [{ value: 'all', label: 'All Years' }, ...uniqueYears.map(year => ({ value: year.toString(), label: year.toString() }))];
+  }
+
+  onYearSelected(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.selectedYearFilter.set(value);
+  }
+
   onEditBill(bill: ElectricBill) {
     // Navigate to the edit route including billGuid
     if (this.selectedAddressId() && bill && bill.billId) {
@@ -68,12 +105,11 @@ export class Dashboard {
   }
 
   getChartData() {
-    const bills = this.bills();
+    const bills = this.filteredBills;
     if (bills.length === 0) {
       return [];
     }
     
-    // Group bills by year
     const yearlyData = this.groupBillsByYear(bills);
     
     if (yearlyData.length === 0) {
@@ -142,5 +178,9 @@ export class Dashboard {
   formatNumber(value?: number | null): string {
     if (value === undefined || value === null) return '';
     return new Intl.NumberFormat('en-US').format(value);
+  }
+
+  trackByYear(index: number, option: { value: string; label: string }): string {
+    return option.value;
   }
 }

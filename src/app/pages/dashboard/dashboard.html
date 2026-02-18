@@ -3,7 +3,18 @@
     <div class="col-12">
       <div class="card">
         <div class="card-body">
-          <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>
+          <div class="row">
+            <div class="col-sm-4">
+              <select class="form-select" style="max-width: 200px;" [value]="selectedYearFilter()" (change)="onYearSelected($event)">
+                @for (option of yearOptions; track trackByYear($index, option)) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-sm-8">
+              <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -31,7 +42,7 @@
           <h2 class="card-title">Recent Bills</h2>
           <div class="table-responsive">
             <app-bill-table 
-              [bills]="bills()" 
+              [bills]="filteredBills" 
               [loading]="loadingBills()" 
               (editBill)="onEditBill($event)">
             </app-bill-table>

@@ -1,7 +1,10 @@
-﻿services:
+services:
   electricdashboardapi:
     image: electricdashboardapi
     build:
       context: .
-      dockerfile: ElectricDashboardApi/Dockerfile
+      dockerfile: ElectricDashboard.Api/Dockerfile
+    ports:
+      - "5281:5281"
+      - "4200:4200"
 
