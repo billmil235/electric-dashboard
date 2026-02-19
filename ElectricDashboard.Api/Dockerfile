@@ -25,7 +25,7 @@ RUN npm run build -- --configuration production
 
 FROM nginx:alpine AS final
 COPY --from=publish /app/publish /app/api
-COPY --from=frontend-build /dist/ElectricDashboard/browser /usr/share/nginx/html
+COPY --from=frontend-build /dist/ElectricDashboard/browser/* /usr/share/nginx/html
 COPY ElectricDashboard.Api/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 4200
 CMD ["nginx", "-g", "daemon off;"]
