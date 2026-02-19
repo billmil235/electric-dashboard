@@ -4,7 +4,7 @@ import { MonthlyConsumptionGraphComponent } from '../../components/monthly-consu
 import { MonthlySentBackGraphComponent } from '../../components/monthly-sent-back-graph/monthly-sent-back-graph.component';
 import { NetEnergyConsumptionGraphComponent } from '../../components/net-energy-consumption-graph/net-energy-consumption-graph.component';
 import { MonthlySpendGraphComponent } from '../../components/monthly-spend-graph/monthly-spend-graph.component';
-import { Api } from '../../services/api';
+import { ElectricBillsApi } from '../../services/electric-bills-api';
 import { ServiceAddress } from '../../models/service-address.model';
 import { ElectricBill } from '../../models/electric-bill.model';
 import { CommonModule } from '@angular/common';
@@ -24,7 +24,7 @@ export class Reports implements OnInit {
   addresses = signal<ServiceAddress[]>([]);
   bills = signal<ElectricBill[]>([]);
 
-  constructor(private api: Api) { }
+  constructor(private electricBillsApi: ElectricBillsApi) { }
 
   ngOnInit() {
     // Address selection will be handled by the component
@@ -32,7 +32,7 @@ export class Reports implements OnInit {
   
   onAddressesLoaded(addresses: ServiceAddress[]) {
     if (addresses.length > 0) {
-      this.selectedAddressId = addresses[0].addressId;
+      this.selectedAddressId = addresses[0].addressId!;
       this.loadBillsForAddress();
     }
   }
@@ -46,14 +46,14 @@ export class Reports implements OnInit {
   
   loadBillsForAddress() {
     this.loading = true;
-    console.log('Loading bills for address ID:', this.selectedAddressId); // Debug log
-    this.api.getBillsByAddress(this.selectedAddressId).subscribe({
-      next: (bills) => {
-        console.log('Bills loaded:', bills); // Debug log
+    console.log('Loading bills for address ID:', this.selectedAddressId);
+    this.electricBillsApi.getBillsByAddress(this.selectedAddressId).subscribe({
+      next: (bills: ElectricBill[]) => {
+        console.log('Bills loaded:', bills);
         this.bills.set(bills);
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error('Error loading bills:', error);
         this.loading = false;
       }

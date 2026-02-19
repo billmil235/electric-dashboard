@@ -1,0 +1,100 @@
+<app-logged-in-layout>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Profile</h1>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-primary" (click)="createNewAddress()">
+              <span data-feather="plus"></span>
+              Add New Address
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title">Your Addresses</h2>
+              
+              @if (loading()) {
+                <div class="text-center py-4">
+                  <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              } @else if (addresses().length === 0) {
+                <div class="alert alert-info">
+                  No addresses found. Click "Add New Address" to get started.
+                </div>
+              } @else {
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Address Name</th>
+                        <th>Address Line 1</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Zip Code</th>
+                        <th>Commercial</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (address of addresses(); track address.addressId) {
+                        <tr>
+                          <td>{{ address.addressName }}</td>
+                          <td>{{ address.addressLine1 }}</td>
+                          <td>{{ address.city }}</td>
+                          <td>{{ address.state }}</td>
+                          <td>{{ address.zipCode }}</td>
+                          <td>
+                            <span class="badge" [class.bg-success]="address.isCommercial" [class.bg-secondary]="!address.isCommercial">
+                              {{ address.isCommercial ? 'Yes' : 'No' }}
+                            </span>
+                          </td>
+                          <td>
+                            <button class="btn btn-sm btn-outline-primary" (click)="editAddress(address)">
+                              <span data-feather="edit"></span>
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" tabindex="-1" [class.show]="showModal()" [attr.aria-hidden]="!showModal()" role="dialog" style="display: {{ showModal() ? 'block' : 'none' }}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ showModalTitle() }}</h5>
+          <button type="button" class="btn-close" (click)="handleCancel()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          @if (editingAddress() || !showModal()) {
+            <app-service-address-entry 
+              [address]="editingAddress()" 
+              (addressSaved)="handleAddressSaved($event)"
+              (cancelled)="handleCancel()">
+            </app-service-address-entry>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</app-logged-in-layout>

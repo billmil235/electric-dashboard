@@ -1,6 +1,6 @@
 import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Api } from '../../services/api';
+import { AddressesApi } from '../../services/addresses-api';
 import { ServiceAddress } from '../../models/service-address.model';
 import { take } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ import { take } from 'rxjs/operators';
 })
 
 export class ServiceAddressSelector implements OnInit {
-  private readonly api = inject(Api);
+  private readonly addressesApi = inject(AddressesApi);
   private _loading: boolean = false;
   
   get loading(): boolean {
@@ -46,16 +46,14 @@ export class ServiceAddressSelector implements OnInit {
     this.error = null;
     
     try {
-      // Fetch addresses from the API endpoint
-      const response = await this.api.getAddresses().pipe(take(1)).toPromise();
+      const response = await this.addressesApi.getAddresses().pipe(take(1)).toPromise();
       this.addresses = response || [];
       this.addressesLoaded.emit(this.addresses);
       
-      // If no selected address is set, select the first one or the primary one
       if (!this._selectedAddressId && this.addresses.length > 0) {
         const primaryAddress = this.addresses.find(addr => addr.isCommercial === false);
         const firstAddress = this.addresses[0];
-        this._selectedAddressId = primaryAddress?.addressId || firstAddress.addressId;
+        this._selectedAddressId = (primaryAddress?.addressId || firstAddress.addressId)!;
         this.addressSelected.emit(this._selectedAddressId);
       }
     } catch (err) {

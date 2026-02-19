@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Api } from '../../services/api';
+import { AuthApi } from '../../services/auth-api';
 
 @Component({
   selector: 'app-register',
@@ -16,11 +16,11 @@ export class Register {
   lastName = '';
   dob = '';
 
-  constructor(private api: Api, private router: Router) {}
+  constructor(private authApi: AuthApi, private router: Router) {}
 
   register() {
     const dobDate = new Date(this.dob);
-    this.api
+    this.authApi
       .register({
         emailAddress: this.email,
         password: this.password,
@@ -32,8 +32,8 @@ export class Register {
         next: () => {
           this.router.navigate(['/']);
         },
-        error: (err) => {
-          alert('Registration failed: ' + err.message);
+        error: (err: unknown) => {
+          alert('Registration failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
         },
       });
   }

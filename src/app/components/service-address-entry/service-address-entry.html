@@ -1,0 +1,105 @@
+<div class="service-address-entry">
+  <h2>{{ isEditing ? 'Edit Address' : 'Add New Address' }}</h2>
+  
+  <div class="form-group">
+    <label for="addressName">Address Name:</label>
+    <input
+      type="text"
+      id="addressName"
+      class="form-control"
+      [value]="form().addressName"
+      (input)="onInputChange('addressName', $event.target.value)"
+      required
+    >
+  </div>
+
+  <div class="form-group">
+    <label for="addressLine1">Address Line 1:</label>
+    <input
+      type="text"
+      id="addressLine1"
+      class="form-control"
+      [value]="form().addressLine1"
+      (input)="onInputChange('addressLine1', $event.target.value)"
+      required
+    >
+  </div>
+
+  <div class="form-group">
+    <label for="addressLine2">Address Line 2:</label>
+    <input
+      type="text"
+      id="addressLine2"
+      class="form-control"
+      [value]="form().addressLine2"
+      (input)="onInputChange('addressLine2', $event.target.value)"
+    >
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="city">City:</label>
+      <input
+        type="text"
+        id="city"
+        class="form-control"
+        [value]="form().city"
+        (input)="onInputChange('city', $event.target.value)"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="state">State:</label>
+      <input
+        type="text"
+        id="state"
+        class="form-control"
+        [value]="form().state"
+        (input)="onInputChange('state', $event.target.value)"
+        required
+        maxlength="2"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="zipCode">Zip Code:</label>
+      <input
+        type="text"
+        id="zipCode"
+        class="form-control"
+        [value]="form().zipCode"
+        (input)="onInputChange('zipCode', $event.target.value)"
+        required
+      >
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="country">Country:</label>
+    <input
+      type="text"
+      id="country"
+      class="form-control"
+      [value]="form().country"
+      (input)="onInputChange('country', $event.target.value)"
+    >
+  </div>
+
+  <div class="form-group checkbox-group">
+    <label>
+      <input
+        type="checkbox"
+        id="isCommercial"
+        [checked]="form().isCommercial"
+        (change)="onInputChange('isCommercial', $event.target.checked)"
+      >
+      Commercial Property
+    </label>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="onSave()">Save</button>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Api } from '../../services/api';
+import { ElectricBillsApi } from '../../services/electric-bills-api';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 import { ElectricBill } from '../../models/electric-bill.model';
@@ -14,7 +14,7 @@ import { LoggedInLayout } from "../logged-in-layout/logged-in-layout";
   styleUrl: './billing-info.css',
 })
 export class BillingInfo {
-  private readonly api = inject(Api);
+  private readonly electricBillsApi = inject(ElectricBillsApi);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -69,12 +69,12 @@ export class BillingInfo {
         unitPrice: this.unitPrice || null,
       };
 
-      this.api.addElectricBill(this.addressId, request).subscribe({
+      this.electricBillsApi.addElectricBill(this.addressId, request).subscribe({
         next: () => {
           this.success = true;
           this.router.navigate(['/dashboard']);
         },
-        error: (err) => {
+        error: (err: unknown) => {
           this.error = 'Failed to save billing information. Please try again.';
           this.loading = false;
         }
@@ -114,9 +114,8 @@ export class BillingInfo {
     this.pdfUploadError = null;
 
     try {
-      // Handle the Observable by subscribing to it
-      this.api.uploadElectricBillPdf(this.addressId, this.selectedPdfFile).subscribe({
-        next: (response) => {
+      this.electricBillsApi.uploadElectricBillPdf(this.addressId, this.selectedPdfFile).subscribe({
+        next: (response: ElectricBill) => {
           if (response) {
             this.billedDate = response.periodStartDate || '';
             this.billedDateEnd = response.periodEndDate || '';
@@ -125,13 +124,12 @@ export class BillingInfo {
             this.billedAmount = response.billedAmount ?? null;
             this.unitPrice = response.unitPrice ?? null;
             
-            // Trigger change detection manually to update the form
             this.cdr.detectChanges();
             
             this.pdfUploaded = true;
           }
         },
-        error: (err) => {
+        error: (err: unknown) => {
           console.error('PDF upload failed:', err);
           this.pdfUploadError = 'Failed to process PDF. Please try again or enter information manually.';
           this.pdfUploading = false;
@@ -164,9 +162,8 @@ export class BillingInfo {
 
     this.loading = true;
     try {
-      // Handle the Observable by subscribing to it
-      this.api.getBillByAddressAndGuid(this.addressId, this.billGuid).subscribe({
-        next: (bill) => {
+      this.electricBillsApi.getBillByAddressAndGuid(this.addressId, this.billGuid).subscribe({
+        next: (bill: ElectricBill[]) => {
           console.log('Loaded bill for editing:', bill);
 
           if (bill?.length && bill[0]) {
@@ -178,10 +175,9 @@ export class BillingInfo {
             this.unitPrice = bill[0].unitPrice ?? null;
           }
           this.loading = false;
-          // Ensure change detection runs to update the UI
           this.cdr.detectChanges();
         },
-        error: (err) => {
+        error: (err: unknown) => {
           this.error = 'Failed to load bill information. Please try again.';
           console.error('Failed to load bill:', err);
           this.loading = false;

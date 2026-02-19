@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 import { CommonModule } from '@angular/common';
-import { Api } from '../../services/api';
+import { ElectricBillsApi } from '../../services/electric-bills-api';
 import { ElectricBill } from '../../models/electric-bill.model';
 import { ServiceAddress } from '../../models/service-address.model';
 import { ConsumptionChartComponent } from '../../components/consumption-chart/consumption-chart.component';
@@ -24,7 +24,7 @@ export class Dashboard {
   selectedYearFilter = signal<string>('all');
   loadingBills = signal<boolean>(false);
   
-  constructor(private router: Router, private api: Api) {}
+  constructor(private router: Router, private electricBillsApi: ElectricBillsApi) {}
 
   logout() {
     localStorage.removeItem('accessToken');
@@ -34,9 +34,7 @@ export class Dashboard {
   onAddressesLoaded(addresses: ServiceAddress[]) {
     this.addresses.set(addresses);
     if (addresses.length > 0) {
-      const primaryAddress = addresses.find(addr => addr.isCommercial === false);
-      const firstAddress = addresses[0];
-      this.selectedAddressId.set(primaryAddress?.addressId || firstAddress.addressId);
+      this.selectedAddressId.set(addresses[0].addressId);
       this.loadBills(this.selectedAddressId());
     }
   }
@@ -48,12 +46,12 @@ export class Dashboard {
 
   loadBills(addressId: string) {
     this.loadingBills.set(true);
-    this.api.getBillsByAddress(addressId).subscribe({
-      next: (bills) => {
+    this.electricBillsApi.getBillsByAddress(addressId).subscribe({
+      next: (bills: ElectricBill[]) => {
         this.bills.set(bills);
         this.updateYearFilterOptions();
       },
-      error: (err) => {
+      error: (err: unknown) => {
         console.error('Failed to load bills:', err);
       },
       complete: () => {
