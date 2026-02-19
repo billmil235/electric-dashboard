@@ -1,3 +1,5 @@
+!ElectricDashboard.Api/Dockerfile
+!ElectricDashboard.Api/nginx.conf
 **/.dockerignore
 **/.env
 **/.git
@@ -16,8 +18,6 @@
 **/charts
 **/docker-compose*
 **/Dockerfile*
-!ElectricDashboard.Api/Dockerfile
-!ElectricDashboard.Api/nginx.conf
 **/node_modules
 **/npm-debug.log
 **/obj
