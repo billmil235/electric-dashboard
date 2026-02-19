@@ -15,9 +15,9 @@
 **/bin
 **/charts
 **/docker-compose*
-!**/ElectricDashboard.Api/Dockerfile
-!**/ElectricDashboard.Api/nginx.conf
 **/Dockerfile*
+!ElectricDashboard.Api/Dockerfile
+!ElectricDashboard.Api/nginx.conf
 **/node_modules
 **/npm-debug.log
 **/obj
