@@ -1,4 +1,4 @@
-import { Component, inject, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ServiceAddress } from '../../models/service-address.model';
 
@@ -7,7 +7,7 @@ import { ServiceAddress } from '../../models/service-address.model';
   imports: [CommonModule],
   templateUrl: './service-address-entry.html'
 })
-export class ServiceAddressEntry implements OnInit {
+export class ServiceAddressEntry implements OnInit, OnChanges {
 
   @Input() address: ServiceAddress | null = null;
 
@@ -49,6 +49,12 @@ export class ServiceAddressEntry implements OnInit {
       country: address.country || '',
       isCommercial: address.isCommercial
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['address'] && this.address) {
+      this.populateForm(this.address);
+    }
   }
 
   onInputChange(field: any, value: string | boolean) {
