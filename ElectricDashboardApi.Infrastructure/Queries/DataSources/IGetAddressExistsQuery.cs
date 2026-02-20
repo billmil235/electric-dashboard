@@ -2,5 +2,5 @@ namespace ElectricDashboardApi.Infrastructure.Queries.DataSources;
 
 public interface IGetAddressExistsQuery
 {
-    Task<bool> ExecuteAsync(Guid userId, Guid addressId);
+    ValueTask<bool> ExecuteAsync(Guid userId, Guid addressId);
 }

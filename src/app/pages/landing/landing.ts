@@ -10,7 +10,6 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './landing.css',
 })
 export class Landing {
-  protected readonly title = signal('ElectricDashboard');
   username = '';
   password = '';
 

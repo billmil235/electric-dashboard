@@ -27,7 +27,7 @@ public class UserAddressService(
             await getUserAddressesQuery.GetUserAddresses(userGuid);
     }
 
-    public async ValueTask<ServiceAddressDto?> AddAddress(Guid userGuid, ServiceAddressDto serviceAddress)
+    public async Task<ServiceAddressDto?> AddAddress(Guid userGuid, ServiceAddressDto serviceAddress)
     {
         // Invalidate cache for this user Guid
         await cache.RemoveByTagAsync($"User:ServiceAddress:{userGuid}");

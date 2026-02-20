@@ -13,4 +13,8 @@ export class AuthApi {
   register(user: UserRegistration): Observable<void> {
     return this.http.post<void>(`api/users/register`, user);
   }
+  
+  updateUserProfile(user: Partial<UserRegistration>): Observable<void> {
+    return this.http.put<void>(`api/users/profile`, user);
+  }
 }

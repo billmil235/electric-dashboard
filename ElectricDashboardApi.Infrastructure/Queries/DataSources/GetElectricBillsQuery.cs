@@ -5,7 +5,7 @@ namespace ElectricDashboardApi.Infrastructure.Queries.DataSources;
 
 public class GetElectricBillsQuery(ElectricDashboardContext context) : IGetElectricBillQuery
 {
-    public async Task<IReadOnlyCollection<ElectricBill>> GetElectricBills(
+    public async ValueTask<IReadOnlyCollection<ElectricBill>> GetElectricBills(
         Guid userId,
         Guid addressId,
         Guid? billId = null)

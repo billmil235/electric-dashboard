@@ -9,8 +9,6 @@ import { TokenRefreshService } from './services/token-refresh.service';
   styleUrl: './app.css'
 })
 export class App implements OnInit, OnDestroy {
-  protected readonly title = signal('ElectricDashboard');
-
   constructor(private tokenRefreshService: TokenRefreshService) {}
 
   ngOnInit() {

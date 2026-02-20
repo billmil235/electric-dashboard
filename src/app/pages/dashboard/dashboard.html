@@ -1,51 +1,53 @@
 <app-logged-in-layout>
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-sm-4">
-              <select class="form-select" style="max-width: 200px;" [value]="selectedYearFilter()" (change)="onYearSelected($event)">
-                @for (option of yearOptions; track trackByYear($index, option)) {
-                  <option [value]="option.value">{{ option.label }}</option>
-                }
-              </select>
-            </div>
-            <div class="col-sm-8">
-              <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>
+  <div class="d-flex flex-column">
+    <div class="row h-25">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-4">
+                <select class="form-select" [value]="selectedYearFilter()" (change)="onYearSelected($event)">
+                  @for (option of yearOptions; track trackByYear($index, option)) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="col-sm-8">
+                <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Billing Overview</h4>
-          @if (bills().length > 0) {
-            <app-consumption-chart [chartData]="getChartData()"></app-consumption-chart>
-          } @else {
-            <div class="no-chart">No bill data available for chart</div>
-          }
+    <div class="row h-25">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Billing Overview</h4>
+            @if (bills().length > 0) {
+              <app-consumption-chart [chartData]="getChartData()"></app-consumption-chart>
+            } @else {
+              <div class="no-chart">No bill data available for chart</div>
+            }
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="card-title">Recent Bills</h2>
-          <div class="table-responsive">
-            <app-bill-table 
-              [bills]="filteredBills" 
-              [loading]="loadingBills()" 
-              (editBill)="onEditBill($event)">
-            </app-bill-table>
+    <div class="row flex-grow-1 h-50">
+      <div class="col-12">
+        <div class="card h-100" style="overflow: hidden;">
+          <div class="card-body" style="padding-bottom: 0;">
+            <h2 class="card-title">Recent Bills</h2>
+            <div class="table-responsive" style="max-height: calc(100vh - 600px); overflow-y: auto;">
+              <app-bill-table 
+                [bills]="filteredBills" 
+                [loading]="loadingBills()" 
+                (editBill)="onEditBill($event)">
+              </app-bill-table>
+            </div>
           </div>
         </div>
       </div>
