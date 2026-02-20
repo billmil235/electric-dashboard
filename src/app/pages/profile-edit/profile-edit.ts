@@ -20,9 +20,7 @@ export class ProfileEdit {
   addresses = signal<ServiceAddress[]>([]);
   loading = signal<boolean>(false);
   editingAddress = signal<ServiceAddress | null>(null);
-  showModal = signal<boolean>(false);
-  showModalTitle = signal<string>('');
-  showSaveButton = signal<boolean>(true);
+  showAddForm = signal<boolean>(false);
 
   ngOnInit() {
     this.loadAddresses();
@@ -48,16 +46,12 @@ export class ProfileEdit {
 
   createNewAddress() {
     this.editingAddress.set(null);
-    this.showModalTitle.set('Add New Address');
-    this.showSaveButton.set(true);
-    this.showModal.set(true);
+    this.showAddForm.set(true);
   }
 
   editAddress(address: ServiceAddress) {
     this.editingAddress.set({ ...address });
-    this.showModalTitle.set('Edit Address');
-    this.showSaveButton.set(true);
-    this.showModal.set(true);
+    this.showAddForm.set(true);
   }
 
   handleAddressSaved(address: ServiceAddress) {
@@ -70,12 +64,12 @@ export class ProfileEdit {
     } else {
       this.addresses.set([...currentAddresses, address]);
     }
-    this.showModal.set(false);
+    this.showAddForm.set(false);
     this.editingAddress.set(null);
   }
 
   handleCancel() {
-    this.showModal.set(false);
+    this.showAddForm.set(false);
     this.editingAddress.set(null);
   }
 

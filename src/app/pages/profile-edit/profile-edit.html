@@ -16,6 +16,22 @@
         </div>
       </div>
 
+      @if (showAddForm()) {
+        <div class="row mb-4" id="add-address">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <app-service-address-entry 
+                  [address]="editingAddress()"
+                  (addressSaved)="handleAddressSaved($event)"
+                  (cancelled)="handleCancel()">
+                </app-service-address-entry>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
       <div class="row">
         <div class="col-12">
           <div class="card">
@@ -73,26 +89,6 @@
               }
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" tabindex="-1" [class.show]="showModal()" [attr.aria-hidden]="!showModal()" role="dialog" style="display: {{ showModal() ? 'block' : 'none' }}">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ showModalTitle() }}</h5>
-          <button type="button" class="btn-close" (click)="handleCancel()" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          @if (editingAddress() || !showModal()) {
-            <app-service-address-entry 
-              [address]="editingAddress()" 
-              (addressSaved)="handleAddressSaved($event)"
-              (cancelled)="handleCancel()">
-            </app-service-address-entry>
-          }
         </div>
       </div>
     </div>
