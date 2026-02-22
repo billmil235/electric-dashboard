@@ -32,6 +32,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IGetAddressExistsQuery, GetAddressExistsQuery>();
         builder.Services.AddScoped<IGetUserAddressesQuery, GetUserAddressesQuery>();
         builder.Services.AddScoped<IAddServiceAddressCommand, AddServiceAddressCommand>();
+        builder.Services.AddScoped<IUpdateServiceAddress, UpdateServiceAddress>();
         builder.Services.AddScoped<IDeleteServiceAddressCommand, DeleteServiceAddressCommand>();
 
         builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>

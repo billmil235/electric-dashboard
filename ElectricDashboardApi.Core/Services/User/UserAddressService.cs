@@ -2,6 +2,7 @@ using ElectricDashboardApi.Infrastructure.Commands.Users;
 using ElectricDashboardApi.Infrastructure.Queries.DataSources;
 using ElectricDashboardApi.Infrastructure.Queries.User;
 using ElectricDashboardApi.Dtos.User;
+using ElectricDashboardApi.Infrastructure.Commands.User;
 using Microsoft.Extensions.Caching.Hybrid;
 
 namespace ElectricDashboard.Services.User;
@@ -10,7 +11,8 @@ public class UserAddressService(
     HybridCache cache,
     IGetAddressExistsQuery getAddressExistsQuery,
     IGetUserAddressesQuery getUserAddressesQuery,
-    IAddServiceAddressCommand addServiceAddressCommand) : IUserAddressService
+    IAddServiceAddressCommand addServiceAddressCommand,
+    IUpdateServiceAddress updateServiceAddress) : IUserAddressService
 {
 
     public async ValueTask<IReadOnlyCollection<ServiceAddressDto>> GetServiceAddresses(Guid userGuid)
@@ -34,6 +36,15 @@ public class UserAddressService(
 
         // Create address in the database
         return await addServiceAddressCommand.AddServiceAddress(userGuid, serviceAddress);
+    }
+
+    public async Task<ServiceAddressDto?> UpdateServiceAddress(Guid userGuid, Guid addressGuid, ServiceAddressDto serviceAddress)
+    {
+        // Invalidate cache for this user Guid
+        await cache.RemoveByTagAsync($"User:ServiceAddress:{userGuid}");
+
+        // Update address in the database
+        return await updateServiceAddress.Execute(userGuid, addressGuid, serviceAddress);
     }
 
     public async Task DeleteAddress(Guid userGuid, Guid addressGuid)

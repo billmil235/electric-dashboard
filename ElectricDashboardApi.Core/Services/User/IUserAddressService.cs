@@ -8,4 +8,6 @@ public interface IUserAddressService
     ValueTask<IReadOnlyCollection<ServiceAddressDto>> GetServiceAddresses(Guid userGuid);
 
     Task<ServiceAddressDto?> AddAddress(Guid userGuid, ServiceAddressDto serviceAddress);
+
+    Task<ServiceAddressDto?> UpdateServiceAddress(Guid userGuid, Guid addressGuid, ServiceAddressDto serviceAddress);
 }
