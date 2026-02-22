@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthApi } from '../../services/auth-api';
-import { NgIf } from "../../../../node_modules/@angular/common/types/_common_module-chunk";
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterLink, NgIf],
+  imports: [FormsModule, RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
