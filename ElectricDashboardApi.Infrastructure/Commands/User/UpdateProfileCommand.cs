@@ -14,7 +14,7 @@ public class UpdateProfileCommand(ElectricDashboardContext context) : IUpdatePro
             var newUser = new Entities.User
             {
                 UserId = userId,
-                DateOfBirth = userModel.DateOfBirth,
+                DateOfBirth = DateOnly.FromDateTime(userModel.DateOfBirth),
                 EmailAddress = userModel.EmailAddress,
                 FirstName = userModel.FirstName,
                 LastName = userModel.LastName
@@ -26,7 +26,7 @@ public class UpdateProfileCommand(ElectricDashboardContext context) : IUpdatePro
         {
             userEntity.FirstName = userModel.FirstName;
             userEntity.LastName = userModel.LastName;
-            userEntity.DateOfBirth = userModel.DateOfBirth;
+            userEntity.DateOfBirth = DateOnly.FromDateTime(userModel.DateOfBirth);
         }
 
         await context.SaveChangesAsync();

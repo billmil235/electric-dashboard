@@ -10,5 +10,5 @@ public record UserUpdate
     [MaxLength(50)]
     public required string LastName { get; init; }
 
-    public required DateOnly DateOfBirth { get; init; }
+    public required DateTime DateOfBirth { get; init; }
 }

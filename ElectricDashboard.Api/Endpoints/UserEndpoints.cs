@@ -12,10 +12,11 @@ public static class UserEndpoint
     {
         group.MapPost("/register", async (UserDto user, IUserService userService) =>
         {
-            await userService.CreateUserAsync(user);
-            return Results.Ok();
+            var result = await userService.CreateUserAsync(user);
+
+            return result.IsSuccessful ? Results.Ok() : Results.BadRequest(result.ErrorMessage);
         })
-            .AllowAnonymous();
+        .AllowAnonymous();
 
         group.MapPost("/login", async (Login login, IUserService userService) =>
         {
@@ -42,6 +43,8 @@ public static class UserEndpoint
                 return userService.UpdateUserProfile(userModel, userId);
             })
             .RequireAuthorization();
+
+        group.MapGet("/profile", (ClaimsPrincipal userClaims) => Results.Ok());
 
         return group;
     }

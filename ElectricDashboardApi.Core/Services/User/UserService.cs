@@ -16,7 +16,7 @@ public class UserService(
 
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions
     {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
     private async Task<string> GetAdminTokenAsync()
@@ -44,35 +44,24 @@ public class UserService(
         return JsonDocument.Parse(json).RootElement.GetProperty("access_token").GetString();
     }
 
-    public async Task CreateUserAsync(UserDto userModel)
+    public async Task<CreateUserResult> CreateUserAsync(UserDto userModel)
     {
         var token = await GetAdminTokenAsync();
 
         var client = new HttpClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
 
-        var user = new
-        {
-            username = userModel.EmailAddress,
-            email = userModel.EmailAddress,
-            enabled = true,
-            emailVerified = true,
-            firstName = userModel.FirstName,
-            lastName = userModel.LastName,
-            credentials = new[]
-            {
-                new
-                {
-                    type = "password",
-                    value = userModel.Password,
-                    temporary = false
-                }
-            }
-        };
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var user = new CreateUserRequest(
+            userModel.EmailAddress,
+            userModel.FirstName,
+            userModel.LastName,
+            userModel.Password);
+
+        var json = JsonSerializer.Serialize(user, _options);
 
         var content = new StringContent(
-            JsonSerializer.Serialize(user),
+            json,
             Encoding.UTF8,
             "application/json");
 
@@ -83,15 +72,42 @@ public class UserService(
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Keycloak error: {response.StatusCode} - {error}");
+            var keycloakError = JsonSerializer.Deserialize<KeyCloakError>(error);
+            return new CreateUserResult()
+            {
+                IsSuccessful = false,
+                ErrorMessage = keycloakError?.Error
+            };
         }
 
-        var location = response.Headers.Location?.ToString();
-        if (location is not null)
+        try
         {
-            var userId = new Guid(location.Split('/').Last());
-            await UpdateUserProfile(userModel, userId);
+            var location = response.Headers.Location?.ToString();
+            if (location is not null)
+            {
+                var userId = new Guid(location.Split('/').Last());
+                await UpdateUserProfile(userModel, userId);
+
+                return new CreateUserResult()
+                {
+                    IsSuccessful = true,
+                    UserGuid = new Guid(location)
+                };
+            }
+            else
+            {
+                throw new Exception("Failed to create user.");
+            }
         }
+        catch (Exception ex)
+        {
+            return new CreateUserResult()
+            {
+                IsSuccessful = false,
+                ErrorMessage = ex.Message
+            };
+        }
+
     }
 
     public async Task<LoginTokenResponse> LoginAsync(string username, string password)
@@ -155,5 +171,10 @@ public class UserService(
     public async Task UpdateUserProfile(UserDto user, Guid userId)
     {
         await updateProfileCommand.Execute(user, userId);
+    }
+
+    public Task<UserDto> GetUserInformation(Guid userGuid)
+    {
+        throw new NotImplementedException();
     }
 }

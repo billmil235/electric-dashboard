@@ -15,5 +15,5 @@ public class UserDto
 
     public required string Password { get; init; }
 
-    public required DateOnly DateOfBirth { get; init; }
+    public required DateTime DateOfBirth { get; init; }
 }
