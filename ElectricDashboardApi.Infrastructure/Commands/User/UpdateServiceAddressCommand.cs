@@ -3,7 +3,7 @@ namespace ElectricDashboardApi.Infrastructure.Commands.User;
 using ElectricDashboardApi.Dtos.User;
 using ElectricDashboardApi.Infrastructure.Entities;
 
-public class UpdateServiceAddress(ElectricDashboardContext context) : IUpdateServiceAddress
+public class UpdateServiceAddressCommand(ElectricDashboardContext context) : IUpdateServiceAddressCommand
 {
     public async Task<ServiceAddressDto?> Execute(Guid userId, Guid addressId, ServiceAddressDto serviceAddress)
     {

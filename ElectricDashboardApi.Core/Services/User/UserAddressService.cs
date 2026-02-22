@@ -1,4 +1,3 @@
-using ElectricDashboardApi.Infrastructure.Commands.Users;
 using ElectricDashboardApi.Infrastructure.Queries.DataSources;
 using ElectricDashboardApi.Infrastructure.Queries.User;
 using ElectricDashboardApi.Dtos.User;
@@ -12,7 +11,7 @@ public class UserAddressService(
     IGetAddressExistsQuery getAddressExistsQuery,
     IGetUserAddressesQuery getUserAddressesQuery,
     IAddServiceAddressCommand addServiceAddressCommand,
-    IUpdateServiceAddress updateServiceAddress) : IUserAddressService
+    IUpdateServiceAddressCommand updateServiceAddressCommand) : IUserAddressService
 {
 
     public async ValueTask<IReadOnlyCollection<ServiceAddressDto>> GetServiceAddresses(Guid userGuid)
@@ -35,7 +34,7 @@ public class UserAddressService(
         await cache.RemoveByTagAsync($"User:ServiceAddress:{userGuid}");
 
         // Create address in the database
-        return await addServiceAddressCommand.AddServiceAddress(userGuid, serviceAddress);
+        return await addServiceAddressCommand.Execute(userGuid, serviceAddress);
     }
 
     public async Task<ServiceAddressDto?> UpdateServiceAddress(Guid userGuid, Guid addressGuid, ServiceAddressDto serviceAddress)
@@ -44,12 +43,12 @@ public class UserAddressService(
         await cache.RemoveByTagAsync($"User:ServiceAddress:{userGuid}");
 
         // Update address in the database
-        return await updateServiceAddress.Execute(userGuid, addressGuid, serviceAddress);
+        return await updateServiceAddressCommand.Execute(userGuid, addressGuid, serviceAddress);
     }
 
     public async Task DeleteAddress(Guid userGuid, Guid addressGuid)
     {
-        var addressExists = await getAddressExistsQuery.ExecuteAsync(userGuid, addressGuid);
+        var addressExists = await getAddressExistsQuery.Execute(userGuid, addressGuid);
 
         if (addressExists)
         {

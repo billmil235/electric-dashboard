@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace ElectricDashboardApi.Infrastructure.Commands.Users;
+namespace ElectricDashboardApi.Infrastructure.Commands.User;
 
 public class DeleteServiceAddressCommand(ElectricDashboardContext context) : IDeleteServiceAddressCommand
 {
-    public async Task<bool> DeleteServiceAddress(Guid userId, Guid addressId)
+    public async Task<bool> Execute(Guid userId, Guid addressId)
     {
         // First check if the address exists and belongs to the user
         var addressLink = await context.UserToServiceAddresses

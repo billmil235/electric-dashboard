@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using ElectricDashboard.Services.User;
-using ElectricDashboardApi.Infrastructure.Commands.Users;
 using ElectricDashboardApi.Dtos.User;
+using ElectricDashboardApi.Infrastructure.Commands.User;
 using ElectricDashboardApi.Shared.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,19 +19,19 @@ public static class ProfileEndpoints
 
         group.MapPost("/address", async ([FromBody] ServiceAddressDto serviceAddress, ClaimsPrincipal user, IAddServiceAddressCommand addServiceAddressCommand) =>
         {
-            var address = await addServiceAddressCommand.AddServiceAddress(user.GetGuid(), serviceAddress);
+            var address = await addServiceAddressCommand.Execute(user.GetGuid(), serviceAddress);
             return Results.Ok(address);
         }).RequireAuthorization();
 
         group.MapPut("/address{addressGuid:guid}", async (Guid addressGuid, [FromBody] ServiceAddressDto serviceAddress, ClaimsPrincipal user, IAddServiceAddressCommand addServiceAddressCommand) =>
         {
-            var address = await addServiceAddressCommand.AddServiceAddress(user.GetGuid(), serviceAddress);
+            var address = await addServiceAddressCommand.Execute(user.GetGuid(), serviceAddress);
             return Results.Ok(address);
         }).RequireAuthorization();
 
         group.MapDelete("/address/{addressId:Guid}", async ([FromRoute] Guid addressId, ClaimsPrincipal user, IDeleteServiceAddressCommand deleteServiceAddressCommand) =>
         {
-            var success = await deleteServiceAddressCommand.DeleteServiceAddress(user.GetGuid(), addressId);
+            var success = await deleteServiceAddressCommand.Execute(user.GetGuid(), addressId);
             return !success ? Results.NotFound() : Results.Ok();
         }).RequireAuthorization();
 

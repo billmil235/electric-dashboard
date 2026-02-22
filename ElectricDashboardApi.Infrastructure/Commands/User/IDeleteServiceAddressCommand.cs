@@ -1,6 +1,6 @@
-namespace ElectricDashboardApi.Infrastructure.Commands.Users;
+namespace ElectricDashboardApi.Infrastructure.Commands.User;
 
 public interface IDeleteServiceAddressCommand
 {
-    Task<bool> DeleteServiceAddress(Guid userId, Guid addressId);
+    Task<bool> Execute(Guid userId, Guid addressId);
 }

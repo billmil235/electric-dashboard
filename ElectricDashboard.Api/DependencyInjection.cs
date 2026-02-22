@@ -3,7 +3,6 @@ using ElectricDashboard.Services.DataSources;
 using ElectricDashboard.Services.User;
 using ElectricDashboardApi.Infrastructure.Commands.DataSources;
 using ElectricDashboardApi.Infrastructure.Commands.User;
-using ElectricDashboardApi.Infrastructure.Commands.Users;
 using ElectricDashboardApi.Infrastructure.Queries.DataSources;
 using ElectricDashboardApi.Infrastructure.Queries.User;
 using ElectricDashboardApi.Models.Options;
@@ -32,7 +31,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IGetAddressExistsQuery, GetAddressExistsQuery>();
         builder.Services.AddScoped<IGetUserAddressesQuery, GetUserAddressesQuery>();
         builder.Services.AddScoped<IAddServiceAddressCommand, AddServiceAddressCommand>();
-        builder.Services.AddScoped<IUpdateServiceAddress, UpdateServiceAddress>();
+        builder.Services.AddScoped<IUpdateServiceAddressCommand, UpdateServiceAddressCommand>();
         builder.Services.AddScoped<IDeleteServiceAddressCommand, DeleteServiceAddressCommand>();
 
         builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>

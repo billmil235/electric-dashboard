@@ -1,11 +1,11 @@
 using ElectricDashboardApi.Dtos.User;
 using ElectricDashboardApi.Infrastructure.Entities;
 
-namespace ElectricDashboardApi.Infrastructure.Commands.Users;
+namespace ElectricDashboardApi.Infrastructure.Commands.User;
 
 public class AddServiceAddressCommand(ElectricDashboardContext context) : IAddServiceAddressCommand
 {
-    public async Task<ServiceAddressDto?> AddServiceAddress(Guid userId, ServiceAddressDto serviceAddress)
+    public async Task<ServiceAddressDto?> Execute(Guid userId, ServiceAddressDto serviceAddress)
     {
         var entity = new ServiceAddress
         {

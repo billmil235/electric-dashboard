@@ -17,14 +17,14 @@ public static class DataSourceEndpoints
             async ([FromRoute] Guid addressGuid, [FromRoute] Guid? billGuid, ClaimsPrincipal user, IGetElectricBillQuery getElectricBillQuery,
                 IGetAddressExistsQuery getAddressExistsQuery) =>
             {
-                var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
+                var addressExists = await getAddressExistsQuery.Execute(user.GetGuid(), addressGuid);
 
                 if (!addressExists)
                 {
                     return Results.NotFound();
                 }
 
-                var billList = await getElectricBillQuery.GetElectricBills(user.GetGuid(), addressGuid, billGuid);
+                var billList = await getElectricBillQuery.Execute(user.GetGuid(), addressGuid, billGuid);
 
                 return billList.Count == 0 ? Results.NoContent() : Results.Ok(billList.Select(ElectricBillMapper.ToModel).ToList());
             })
@@ -34,7 +34,7 @@ public static class DataSourceEndpoints
             async ([FromRoute] Guid addressGuid, [FromBody] ElectricBillDto electricBillDto, ClaimsPrincipal user,
                 IAddElectricBillCommand addElectricBillCommand, IGetAddressExistsQuery getAddressExistsQuery) =>
             {
-                var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
+                var addressExists = await getAddressExistsQuery.Execute(user.GetGuid(), addressGuid);
 
                 if (!addressExists)
                 {
@@ -51,7 +51,7 @@ public static class DataSourceEndpoints
                 async ([FromRoute] Guid addressGuid, [FromBody] ElectricBillDto electricBillDto, ClaimsPrincipal user,
                     IAddElectricBillCommand addElectricBillCommand, IGetAddressExistsQuery getAddressExistsQuery) =>
                 {
-                    var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
+                    var addressExists = await getAddressExistsQuery.Execute(user.GetGuid(), addressGuid);
 
                     if (!addressExists)
                     {
@@ -79,7 +79,7 @@ public static class DataSourceEndpoints
         group.MapDelete("/electric-bill/{addressGuid:guid}",
             async ([FromRoute] Guid addressGuid, ClaimsPrincipal user, IGetAddressExistsQuery getAddressExistsQuery) =>
             {
-                var addressExists = await getAddressExistsQuery.ExecuteAsync(user.GetGuid(), addressGuid);
+                var addressExists = await getAddressExistsQuery.Execute(user.GetGuid(), addressGuid);
 
                 return !addressExists ? Results.NotFound() : Results.Ok();
             });
