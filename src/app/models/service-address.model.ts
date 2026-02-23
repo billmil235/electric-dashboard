@@ -8,4 +8,5 @@ export interface ServiceAddress {
   zipCode: string;
   country: string | null;
   isCommercial: boolean;
+  electricCompanyId: number;
 }

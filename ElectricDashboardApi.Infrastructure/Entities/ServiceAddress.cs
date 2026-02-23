@@ -34,4 +34,10 @@ public class ServiceAddress
     public string? Country { get; set; }
 
     public bool IsCommercial { get; set; }
+
+    [Required]
+    public int ElectricCompanyId { get; set; }
+
+    [ForeignKey(nameof(ElectricCompanyId))]
+    public virtual ElectricCompany ElectricCompany { get; set; }
 }

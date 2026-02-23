@@ -12,13 +12,15 @@ public class ElectricDashboardContext(DbContextOptions<ElectricDashboardContext>
     public DbSet<ElectricBill> ElectricBills => Set<ElectricBill>();
 
     public DbSet<UserToServiceAddress> UserToServiceAddresses { get; set; }
-    
+
     public DbSet<ServiceAddress> ServiceAddresses => Set<ServiceAddress>();
-    
+
+    public DbSet<ElectricCompany> ElectricCompanies => Set<ElectricCompany>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.HasDefaultSchema("public");
-        
+
         builder.Entity<UserToServiceAddress>()
             .HasKey(u => new { u.UserId, u.AddressId });
 
@@ -33,7 +35,7 @@ public class ElectricDashboardContext(DbContextOptions<ElectricDashboardContext>
             .WithMany()
             .HasForeignKey(u => u.AddressId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         base.OnModelCreating(builder);
     }
 }

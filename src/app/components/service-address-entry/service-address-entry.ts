@@ -22,7 +22,8 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
     state: '',
     zipCode: '',
     country: '',
-    isCommercial: false
+    isCommercial: false,
+    electricCompanyId: 0
   });
 
   get isEditing(): boolean {
@@ -47,7 +48,8 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
       state: address.state,
       zipCode: address.zipCode,
       country: address.country || '',
-      isCommercial: address.isCommercial
+      isCommercial: address.isCommercial,
+      electricCompanyId: address.electricCompanyId
     });
   }
 
@@ -76,7 +78,8 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
       state: formData.state,
       zipCode: formData.zipCode,
       country: formData.country || null,
-      isCommercial: formData.isCommercial
+      isCommercial: formData.isCommercial,
+      electricCompanyId: formData.electricCompanyId
     };
 
     if (this._isEditing && addressToSave.addressId) {

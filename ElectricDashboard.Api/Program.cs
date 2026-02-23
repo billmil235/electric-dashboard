@@ -121,5 +121,6 @@ app.UseHttpsRedirection();
 app.MapGroup("/users").RegisterUserEndpoints();
 app.MapGroup("/profile").RegisterProfileEndpoints();
 app.MapGroup("/data").RegisterDataEndpoints();
+app.MapGroup("/lookups").RegisterLookupEndpoints();
 
 app.Run();

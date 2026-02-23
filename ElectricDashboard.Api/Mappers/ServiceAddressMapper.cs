@@ -17,7 +17,8 @@ public static class ServiceAddressMapper
             ZipCode = serviceAddress.ZipCode,
             State = serviceAddress.State,
             Country = serviceAddress.Country,
-            IsCommercial = serviceAddress.IsCommercial
+            IsCommercial = serviceAddress.IsCommercial,
+            ElectricCompanyId = serviceAddress.ElectricCompanyId
         };
     }
 }
