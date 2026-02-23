@@ -19,4 +19,6 @@ public record ServiceAddressDto
     public string? Country { get; init; } = null;
 
     public bool IsCommercial { get; init; } = false;
+
+    public int ElectricCompanyId { get; init; } = 0;
 }

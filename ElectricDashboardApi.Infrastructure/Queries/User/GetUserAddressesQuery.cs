@@ -29,8 +29,8 @@ public class GetUserAddressesQuery(ElectricDashboardContext context) : IGetUserA
                 State = usa.ServiceAddress.State,
                 ZipCode = usa.ServiceAddress.ZipCode,
                 Country = usa.ServiceAddress.Country,
-                IsCommercial = usa.ServiceAddress.IsCommercial
-
+                IsCommercial = usa.ServiceAddress.IsCommercial,
+                ElectricCompanyId = usa.ServiceAddress.ElectricCompanyId
             })
             .ToListAsync();
     }
