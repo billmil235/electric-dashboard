@@ -1,37 +1,68 @@
-<div class="container d-flex align-items-center justify-content-center min-vh-100">
-  <div class="card col-12 col-md-6 col-lg-4">
-    <div class="card-body">
-      <h1 class="card-title text-center mb-4">Electric Dashboard</h1>
-      <p class="card-text text-center mb-4">Track and report on your electricity consumption and production</p>
-
-      <form (ngSubmit)="login()" class="mb-3">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            id="username"
-            [(ngModel)]="username"
-            name="username"
-            required
-          />
+<div class="hero-section d-flex align-items-center min-vh-100 px-3 px-md-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+        <div class="features-section">
+          <div class="row g-4 align-items-center">
+            <div class="col-md-4">
+              <i class="bi bi-file-text feature-icon"></i>
+              <div class="feature-title">Collect bills in one place.</div>
+            </div>
+            <div class="col-md-4">
+              <i class="bi bi-graph-up feature-icon"></i>
+              <div class="feature-title">View year over year of consumption and spending.</div>
+            </div>
+            <div class="col-md-4">
+              <i class="bi bi-sun feature-icon"></i>
+              <div class="feature-title">See solar production and net metering charts.</div>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            [(ngModel)]="password"
-            name="password"
-            required
-          />
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
+      </div>
+      <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+        <div class="login-section">
+          <div class="text-center mb-4">
+            <h1 class="login-title mb-2">Electric Dashboard</h1>
+            <p class="login-subtitle">Track and report on your electricity consumption and production</p>
+          </div>
 
-      <div class="text-center">
-        <p>Don't have an account? <a routerLink="/register" class="link-primary">Register here</a></p>
+          <form (ngSubmit)="login()" class="mb-4">
+            <div class="mb-3">
+              <label for="username" class="form-label">Email or Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                [(ngModel)]="username"
+                name="username"
+                required
+                placeholder="Enter your username"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                [(ngModel)]="password"
+                name="password"
+                required
+                placeholder="Enter your password"
+              />
+            </div>
+            @if (errorMessage()) {
+              <div class="alert alert-danger">
+                {{ errorMessage() }}
+              </div>
+            }
+            <button type="submit" class="btn login-btn w-100">Login</button>
+          </form>
+
+          <div class="text-center text-muted small">
+            <p>Don't have an account? <a routerLink="/register" class="link-primary fw-semibold">Create an account</a></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -19,6 +19,11 @@ public class UserService(
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
+    private readonly JsonSerializerOptions _optionSnakeCase = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+    };
+
     private async Task<string> GetAdminTokenAsync()
     {
         var client = new HttpClient();
@@ -110,7 +115,7 @@ public class UserService(
 
     }
 
-    public async Task<LoginTokenResponse> LoginAsync(string username, string password)
+    public async Task<LoginResult> LoginAsync(string username, string password)
     {
         var client = new HttpClient();
 
@@ -130,11 +135,24 @@ public class UserService(
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Keycloak error: {response.StatusCode} - {error}");
+            var errorResponse = JsonSerializer.Deserialize<KeyCloakLoginError>(error, _optionSnakeCase);
+
+            return new LoginResult()
+            {
+                IsSuccessful = false,
+                ErrorMessage = errorResponse?.ErrorDescription
+            };
         }
 
         var json = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<LoginTokenResponse>(json, _options) ?? new LoginTokenResponse(); // contains access_token, refresh_token, etc.
+
+        var loginTokenResponse = JsonSerializer.Deserialize<LoginTokenResponse>(json, _optionSnakeCase); // contains access_token, refresh_token, etc.
+
+        return new LoginResult()
+        {
+            IsSuccessful = loginTokenResponse != null,
+            Token = loginTokenResponse
+        };
     }
 
     public async Task<RefreshTokenResponse?> RefreshTokenAsync(string refreshToken)

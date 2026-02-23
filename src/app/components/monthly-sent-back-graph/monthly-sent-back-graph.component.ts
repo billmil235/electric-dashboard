@@ -62,7 +62,7 @@ export class MonthlySentBackGraphComponent implements AfterViewInit, OnDestroy, 
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
           x: {
             title: {

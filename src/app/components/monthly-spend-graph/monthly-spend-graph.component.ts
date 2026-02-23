@@ -62,7 +62,7 @@ export class MonthlySpendGraphComponent implements AfterViewInit, OnDestroy, OnC
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
           x: {
             title: {

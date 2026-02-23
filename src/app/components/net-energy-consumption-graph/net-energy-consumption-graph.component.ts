@@ -62,7 +62,7 @@ export class NetEnergyConsumptionGraphComponent implements AfterViewInit, OnDest
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
           x: {
             title: {

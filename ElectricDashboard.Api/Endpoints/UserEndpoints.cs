@@ -20,10 +20,13 @@ public static class UserEndpoint
 
         group.MapPost("/login", async (Login login, IUserService userService) =>
         {
-            var token = await userService.LoginAsync(login.Username, login.Password);
-            return Results.Ok(token);
+            var loginResult = await userService.LoginAsync(login.Username, login.Password);
+
+            return loginResult.IsSuccessful
+                ? Results.Ok(loginResult.Token)
+                : Results.BadRequest(loginResult.ErrorMessage);
         })
-            .AllowAnonymous();
+        .AllowAnonymous();
 
         group.MapPost("/refresh-token/{token}", async (string token, IUserService userService)
             => await userService.RefreshTokenAsync(token))

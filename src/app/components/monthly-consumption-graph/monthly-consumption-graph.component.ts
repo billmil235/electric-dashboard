@@ -64,7 +64,7 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
           x: {
             title: {
