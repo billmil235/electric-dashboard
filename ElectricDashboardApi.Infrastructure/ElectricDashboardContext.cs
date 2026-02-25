@@ -7,8 +7,6 @@ public class ElectricDashboardContext(DbContextOptions<ElectricDashboardContext>
 {
     public DbSet<User> Users => Set<User>();
 
-    public DbSet<ServiceProvider> ServiceProviders => Set<ServiceProvider>();
-
     public DbSet<ElectricBill> ElectricBills => Set<ElectricBill>();
 
     public DbSet<UserToServiceAddress> UserToServiceAddresses { get; set; }

@@ -30,8 +30,7 @@ import { CommonModule } from '@angular/common';
                 <tr>
                   <td data-label="Year">{{ bill.serviceYear }}</td>
                   <td data-label="Period">
-                    {{ formatDate(bill.periodStartDate) }} -<br>
-                    {{ formatDate(bill.periodEndDate) }}
+                    {{ formatDate(bill.periodStartDate) }} - {{ formatDate(bill.periodEndDate) }}
                   </td>
                   <td data-label="Consumption (kWh)">{{ formatNumber(bill.consumptionKwh) }}</td>
                   <td data-label="Sent Back (kwh)">{{ formatNumber(bill.sentBackKwh) }}</td>

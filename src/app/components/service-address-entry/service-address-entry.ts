@@ -1,6 +1,8 @@
 import { Component, inject, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ServiceAddress } from '../../models/service-address.model';
+import { ElectricCompany } from '../../models/electric-company.model';
+import { LookupsApi } from '../../services/lookups-api';
 
 @Component({
   selector: 'app-service-address-entry',
@@ -31,12 +33,21 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
   }
 
   private _isEditing = false;
+  private lookupsApi = inject(LookupsApi);
+  electricCompanies = signal<ElectricCompany[]>([]);
 
   ngOnInit() {
     if (this.address) {
       this._isEditing = true;
       this.populateForm(this.address);
     }
+    this.loadElectricCompanies();
+  }
+
+  loadElectricCompanies() {
+    this.lookupsApi.getElectricCompanies().subscribe(companies => {
+      this.electricCompanies.set(companies);
+    });
   }
 
   populateForm(address: ServiceAddress) {
@@ -59,11 +70,16 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
     }
   }
 
-  onInputChange(field: any, value: string | boolean) {
+  onInputChange(field: any, value: string | boolean | number) {
     this.form.update(current => ({
       ...current,
       [field]: value
     }));
+  }
+
+  onSelectChange(event: Event, field: string) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.onInputChange(field, value === '' ? 0 : parseInt(value, 10));
   }
 
   onSave() {

@@ -4,5 +4,5 @@ namespace ElectricDashboardApi.Infrastructure.Queries.Lookups;
 
 public interface IGetElectricCompanies
 {
-    Task<IReadOnlyList<ElectricCompany>> Execute();
+    Task<IReadOnlyList<ElectricCompany>> Execute(string? countryName, string? stateName);
 }

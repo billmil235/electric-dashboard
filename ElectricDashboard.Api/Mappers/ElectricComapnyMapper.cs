@@ -10,7 +10,8 @@ public static class ElectricComapnyMapper
         return new ElectricCompany()
         {
             CompanyName = entity.CompanyName,
-            ElectricCompanyId = entity.ElectricCompanyId
+            ElectricCompanyId = entity.ElectricCompanyId,
+            State = entity.State
         };
     }
 }
