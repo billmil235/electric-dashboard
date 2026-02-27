@@ -22,6 +22,7 @@ export class Dashboard {
   bills = signal<ElectricBill[]>([]);
   selectedAddressId = signal<string>('');
   selectedYearFilter = signal<string>('all');
+  selectedChartView = signal<'yearly'|'ytd'>('yearly');
   loadingBills = signal<boolean>(false);
   
   constructor(private router: Router, private electricBillsApi: ElectricBillsApi) {}
@@ -102,63 +103,120 @@ export class Dashboard {
     }
   }
 
-  getChartData() {
-    const bills = this.filteredBills;
-    if (bills.length === 0) {
-      return [];
-    }
-    
-    const yearlyData = this.groupBillsByYear(bills);
-    
-    if (yearlyData.length === 0) {
-      return [];
-    }
-    
-    return yearlyData;
-  }
+   setChartView(view: 'yearly' | 'ytd') {
+     this.selectedChartView.set(view);
+   }
 
-  private groupBillsByYear(bills: ElectricBill[]): Array<{
-    year: number;
-    totalConsumption: number;
-    totalSentBack: number;
-    totalBilledAmount: number;
-  }> {
-    const yearlyMap = new Map<number, {
-      year: number;
+   getChartData() {
+     const bills = this.filteredBills;
+     if (bills.length === 0) {
+       return [];
+     }
+
+     if (this.selectedChartView() === 'ytd') {
+       return this.getYTDData();
+     }
+
+     const yearlyData = this.groupBillsByYear(bills);
+
+     if (yearlyData.length === 0) {
+       return [];
+     }
+
+     return yearlyData;
+   }
+
+    private getYTDData(): Array<{
+      label: string;
       totalConsumption: number;
       totalSentBack: number;
       totalBilledAmount: number;
-    }>();
-    
-    for (const bill of bills) {
-      // Use serviceYear directly since it's always present
-      const year = bill.serviceYear;
-      
-      if (!year) continue;
-      
-      let yearlyData = yearlyMap.get(year);
-      if (!yearlyData) {
-        yearlyData = {
-          year,
-          totalConsumption: 0,
-          totalSentBack: 0,
-          totalBilledAmount: 0
-        };
-        yearlyMap.set(year, yearlyData);
+    }> {
+      const bills = this.bills();
+      const now = new Date();
+      const currentYear = now.getFullYear();
+
+      const monthsSet = new Set<number>();
+      for (const b of bills) {
+        if (b.serviceYear === currentYear && b.serviceMonth) {
+          monthsSet.add(b.serviceMonth);
+        }
       }
-      
-      yearlyData.totalConsumption += (bill.consumptionKwh || 0);
-      yearlyData.totalSentBack += (bill.sentBackKwh || 0);
-      yearlyData.totalBilledAmount += (bill.billedAmount || 0);
+
+      if (monthsSet.size === 0) return [];
+
+      const yearlyMap = new Map<number, {
+        totalConsumption: number;
+        totalSentBack: number;
+        totalBilledAmount: number;
+      }>();
+
+      for (const b of bills) {
+        if (!monthsSet.has(b.serviceMonth!)) continue;
+        const year = b.serviceYear;
+        if (!year) continue;
+        let data = yearlyMap.get(year);
+        if (!data) {
+          data = { totalConsumption: 0, totalSentBack: 0, totalBilledAmount: 0 };
+          yearlyMap.set(year, data);
+        }
+        data.totalConsumption += b.consumptionKwh ?? 0;
+        data.totalSentBack += b.sentBackKwh ?? 0;
+        data.totalBilledAmount += b.billedAmount ?? 0;
+      }
+
+      const result = Array.from(yearlyMap.entries()).map(([year, v]) => ({
+        label: year.toString(),
+        totalConsumption: v.totalConsumption,
+        totalSentBack: v.totalSentBack,
+        totalBilledAmount: v.totalBilledAmount
+      }));
+
+      result.sort((a, b) => Number(b.label) - Number(a.label));
+      return result;
     }
-    
-    // Convert map to array and sort by year descending (most recent first)
-    const result = Array.from(yearlyMap.values());
-    result.sort((a, b) => b.year - a.year);
-    
-    // Get only the last 3 years
-    return result.slice(0, 4);
-  }
+
+    private groupBillsByYear(bills: ElectricBill[]): Array<{
+      label: string;
+      totalConsumption: number;
+      totalSentBack: number;
+      totalBilledAmount: number;
+    }> {
+
+      const yearlyMap = new Map<number, {
+        year: number;
+        totalConsumption: number;
+        totalSentBack: number;
+        totalBilledAmount: number;
+      }>();
+
+      for (const bill of bills) {
+        const year = bill.serviceYear;
+        if (!year) continue;
+        let yearlyData = yearlyMap.get(year);
+        if (!yearlyData) {
+          yearlyData = {
+            year,
+            totalConsumption: 0,
+            totalSentBack: 0,
+            totalBilledAmount: 0
+          };
+          yearlyMap.set(year, yearlyData);
+        }
+        yearlyData.totalConsumption += (bill.consumptionKwh || 0);
+        yearlyData.totalSentBack += (bill.sentBackKwh || 0);
+        yearlyData.totalBilledAmount += (bill.billedAmount || 0);
+      }
+
+      const result = Array.from(yearlyMap.values());
+      result.sort((a, b) => b.year - a.year);
+      return result.slice(0, 4).map(y => ({
+        label: y.year.toString(),
+        totalConsumption: y.totalConsumption,
+        totalSentBack: y.totalSentBack,
+        totalBilledAmount: y.totalBilledAmount
+      }));
+    }
 
   formatDate(dateString?: string): string {
     if (!dateString) return '';

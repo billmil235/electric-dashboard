@@ -17,6 +17,12 @@ export class ConsumptionChartComponent implements AfterViewInit, OnDestroy {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   
   private chart: Chart | null = null;
+
+  ngOnChanges(changes: any) {
+    if (changes.chartData) {
+      this.updateChart();
+    }
+  }
   
   ngAfterViewInit() {
     this.createChart();
@@ -142,7 +148,7 @@ export class ConsumptionChartComponent implements AfterViewInit, OnDestroy {
       return;
     }
     
-    const labels = this.chartData.map(entry => entry.year.toString());
+        const labels = this.chartData.map(entry => entry.label);
     
     // Extract data for each dataset
     const consumptionData = this.chartData.map(entry => entry.totalConsumption);

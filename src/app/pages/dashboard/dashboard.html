@@ -1,25 +1,35 @@
 <app-logged-in-layout>
   <div class="d-flex flex-column">
-    <div class="row h-25">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-4">
-                <select class="form-select" [value]="selectedYearFilter()" (change)="onYearSelected($event)">
-                  @for (option of yearOptions; track trackByYear($index, option)) {
-                    <option [value]="option.value">{{ option.label }}</option>
-                  }
-                </select>
-              </div>
-              <div class="col-sm-8">
-                <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>
-              </div>
+  <div class="row h-25">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4">
+              <select class="form-select" [value]="selectedYearFilter()" (change)="onYearSelected($event)">
+               @for (option of yearOptions; track trackByYear($index, option)) {
+                 <option [value]="option.value">{{ option.label }}</option>
+               }
+              </select>
+            </div>
+          <div class="col-sm-4">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="chartView" [checked]="selectedChartView()=='yearly'" (change)="setChartView('yearly')" />
+              Yearly
+            </label>
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="chartView" [checked]="selectedChartView()=='ytd'" (change)="setChartView('ytd')" />
+              Year-to-Date
+            </label>
+          </div>
+            <div class="col-sm-4">
+              <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
     <div class="row h-25">
       <div class="col-12">
