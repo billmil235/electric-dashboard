@@ -134,19 +134,31 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
       }
     });
     
-    // Create datasets for each year
-    const datasets = Object.keys(yearData)
-      .sort((a, b) => parseInt(a) - parseInt(b)) // Sort years ascending
-      .map((year, index) => {
-        const yearColor = this.getColorForYear(year, index);
+ // Helper to sort month data descending and reorder labels
+      const sortMonthsDescending = (consumptionArray: number[]): {labels: string[], data: number[]} => {
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const indexed = consumptionArray.map((v, i)=> ({value:v, month:months[i]}));
+        indexed.sort((a,b)=>b.value - a.value);
         return {
-          label: `Year ${year}`,
-          data: yearData[year].consumption,
-          backgroundColor: yearColor,
-          borderColor: yearColor,
-          borderWidth: 1
+          labels: indexed.map(i=>i.month),
+          data: indexed.map(i=>i.value)
         };
-      });
+      };
+
+      // Create datasets for each year
+      const datasets = Object.keys(yearData)
+        .sort((a, b) => parseInt(a) - parseInt(b)) // Sort years ascending
+        .map((year, index) => {
+          const yearColor = this.getColorForYear(year, index);
+          const sorted = sortMonthsDescending(yearData[year].consumption);
+          return {
+            label: `Year ${year}`,
+            data: sorted.data,
+            backgroundColor: yearColor,
+            borderColor: yearColor,
+            borderWidth: 1
+          };
+        });
     
     // Update chart data
     this.chart.data.datasets = datasets;

@@ -1,0 +1,17 @@
+@if(forecast) {
+  <div class="row">
+    <div class="col-sm-12">
+      <h6>Forecast for period starting {{ forecast.forecastYear }}-{{ forecast.forecastMonth | number:'2.0' }}</h6>
+      <p>Predicted Amount: {{ forecast.predictedAmount | currency }}</p>
+      <p>Confidence: {{ forecast.confidence * 100 | number:'1.0-2' }}%</p>
+    </div>
+  </div>
+}
+@else
+{
+  <div class="row">
+    <div class="col-sm-12">
+      <h5>No forecast data available.</h5>
+    </div>
+  </div>
+}

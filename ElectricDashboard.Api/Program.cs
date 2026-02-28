@@ -15,7 +15,7 @@ builder.Services.Configure<JsonOptions>(opts => opts.SerializerOptions.IncludeFi
 builder.Services.AddDbContext<ElectricDashboardContext>(options =>
     options
         .UseNpgsql(builder.Configuration.GetConnectionString("postgres"))
-    );
+        );
 
 builder.RegisterServices();
 
@@ -100,7 +100,6 @@ builder.Services.AddSwaggerGen(options => {
 });
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -122,5 +121,8 @@ app.MapGroup("/users").RegisterUserEndpoints();
 app.MapGroup("/profile").RegisterProfileEndpoints();
 app.MapGroup("/data").RegisterDataEndpoints();
 app.MapGroup("/lookups").RegisterLookupEndpoints();
+
+// Register forecast endpoints
+app.MapGroup("/forecast").RegisterForecastEndpoints();
 
 app.Run();

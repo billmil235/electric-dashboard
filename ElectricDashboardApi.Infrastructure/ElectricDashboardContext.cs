@@ -13,6 +13,8 @@ public class ElectricDashboardContext(DbContextOptions<ElectricDashboardContext>
 
     public DbSet<ServiceAddress> ServiceAddresses => Set<ServiceAddress>();
 
+        public DbSet<ForecastCache> ForecastCaches => Set<ForecastCache>();
+
     public DbSet<ElectricCompany> ElectricCompanies => Set<ElectricCompany>();
 
     protected override void OnModelCreating(ModelBuilder builder)

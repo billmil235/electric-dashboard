@@ -1,0 +1,12 @@
+/* Forecast card styling */
+.forecast-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1rem;
+  background-color: #fafafa;
+  color: #333;
+  margin-bottom: 1rem;
+}
+.forecast-card h5 {
+  margin-top: 0;
+}
