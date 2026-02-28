@@ -6,7 +6,36 @@
   background-color: #fafafa;
   color: #333;
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 .forecast-card h5 {
   margin-top: 0;
+}
+
+/* Responsive styles */
+@media (max-width: 576px) {
+  .forecast-card {
+    padding: 0.5rem;
+  }
+  
+  .forecast-card h6 {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+  
+  .forecast-card p {
+    font-size: clamp(0.875rem, 3vw, 1rem);
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (min-width: 577px) {
+  .forecast-card h6 {
+    font-size: 1.25rem;
+  }
+  
+  .forecast-card p {
+    font-size: 1rem;
+  }
 }
