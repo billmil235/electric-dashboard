@@ -33,7 +33,7 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
                     ForecastYear = nextYear,
                     PredictedKwh = cached.PredictedKwh,
                     AlgorithmUsed = cached.AlgorithmUsed,
-                    Confidence = 1.0m // cached value assumed reliable
+                    Confidence = cached.Confidence // cached value assumed reliable
                 };
             }
 
@@ -91,7 +91,8 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
                 ForecastMonth = nextMonth,
                 PredictedKwh = (decimal)predicted,
                 AlgorithmUsed = algorithmUsed,
-                CachedAt = DateTime.UtcNow
+                CachedAt = DateTime.UtcNow,
+                Confidence = 1 - ((decimal)Math.Min(maeLinear, maeHolt) / mean)
             };
             context.ForecastCaches.Add(newCache);
             await context.SaveChangesAsync();

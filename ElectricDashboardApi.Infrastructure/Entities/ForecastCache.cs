@@ -25,4 +25,7 @@ public class ForecastCache
 
     [Required]
     public DateTime CachedAt { get; set; } = DateTime.UtcNow;
+
+    [Column(TypeName="DECIMAL(5,20")]
+    public decimal Confidence { get; set; }
 }
