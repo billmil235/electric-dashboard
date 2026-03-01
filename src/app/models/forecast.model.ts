@@ -2,7 +2,7 @@ export interface Forecast {
   addressId: string;
   forecastYear: number;
   forecastMonth: number;
-  predictedAmount: number;
+  predictedKwh: number;
   algorithmUsed: string;
   confidence: number;
 }

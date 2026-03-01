@@ -15,4 +15,6 @@ public record ElectricBillDto
     public decimal BilledAmount { get; init; }
 
     public decimal? UnitPrice { get; init; }
+
+    public List<ElectricBillLineItemDto>? LineItemCharges { get; init; }
 }

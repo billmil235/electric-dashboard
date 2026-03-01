@@ -50,7 +50,7 @@ public static class DependencyInjection
             var httpClient = sp.GetRequiredService<IHttpClientFactory>()
                 .CreateClient("ollama");
 
-            return new OllamaApiClient(httpClient, "gpt-oss");
+            return new OllamaApiClient(httpClient, "devstral-small-2:24b");
         });
     }
 }

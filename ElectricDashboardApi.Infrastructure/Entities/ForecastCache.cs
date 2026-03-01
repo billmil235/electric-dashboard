@@ -18,8 +18,7 @@ public class ForecastCache
     [Required]
     public int ForecastMonth { get; set; }
 
-    [Required]
-    public decimal PredictedAmount { get; set; }
+    public decimal PredictedKwh { get; set; }
 
     [Required]
     public string AlgorithmUsed { get; set; } = string.Empty;

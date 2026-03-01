@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using ElectricDashboardApi.Infrastructure.Commands.DataSources;
 using ElectricDashboardApi.Dtos.DataSources;
+using Microsoft.Extensions.AI;
 using OllamaSharp;
 using OllamaSharp.Models;
 using PDFtoImage;
@@ -9,33 +10,50 @@ using SkiaSharp;
 
 namespace ElectricDashboard.Services.DataSources;
 
-public class DataSourceService(IOllamaApiClient chatClient, IAddElectricBillCommand addElectricBillCommand) : IDataSourceService
+public class DataSourceService(IChatClient chatClient, IAddElectricBillCommand addElectricBillCommand) : IDataSourceService
 {
+    private const string SystemPrompt = """
+                                        You are an invoice processing assistant.  You will be extracting information
+                                        from electric invoices.
+
+                                        The invoices will contain the following pieces of information that need to be
+                                        extracted.
+
+                                            - Period Start Date
+                                            - Period End Date
+                                            - Total kilowatt hours (kWh) delivered or sent.
+                                            - Total dollar amount billed to customer.
+
+                                        This information should be extracted if it exists.
+                                            - Total kilowatt hours (kWh) recieved from the customer or sent back to
+                                              the utility.
+
+                                        The electric bill may also contain line item charges.
+                                            - Line Item Description
+                                            - Quantity
+                                            - Unit Price (Days, kWh)
+                                            - Total Price
+                                        """;
+
     private const string Prompt = """
-                                     Attached is an invoice from an electric utility as a PDF file.
-                                     
-                                     Extract the following information from the invoice.
-                                     
-                                     - Period Start Date
-                                     - Period End Date
-                                     - Total kilowatt hours delivered as consumption
-                                     - Total kilowatt hours received as sent back
-                                     - Amount billed to the customer
-                                     
-                                     Only provide a RFC8259 compliant JSON response following this format without deviation.
-                                     
+                                     Attached is the invoice that you should extract the data from.
+
+                                     Extract information from the invoice as an RFC8259 compliant JSON response
+                                     following this format without deviation.
+
                                      {
                                          "PeriodStartDate": datetime,
                                          "PeriodEndDate": datetime,
                                          "ConsumptionKwh": number,
                                          "SentBackKwh": number,
-                                         "BilledAmount": number
+                                         "BilledAmount": number,
+                                         "LineItemCharges": []
                                      }
                                      """;
-    
-    private static async Task<List<string>> ConvertPdfToImagesAsync(Stream pdfStream)
+
+    private static async Task<List<byte[]>> ConvertPdfToImagesAsync(Stream pdfStream)
     {
-        var images = new List<string>();
+        var images = new List<byte[]>();
 
         // Convert PDF pages to SKBitmap images
         await foreach (var bitmap in Conversion.ToImagesAsync(pdfStream))
@@ -49,50 +67,41 @@ public class DataSourceService(IOllamaApiClient chatClient, IAddElectricBillComm
                 {
                     data.SaveTo(ms);
                     var imageBytes = ms.ToArray();
-                    var base64Image = Convert.ToBase64String(imageBytes);
-                    images.Add(base64Image);
+                    images.Add(imageBytes);
                 }
             }
         }
 
         return images;
     }
-    
+
     public async Task<ElectricBillDto?> ParseUploadedBill(Guid addressId, MemoryStream file, string contentType)
     {
         if (file.Length == 0) return null;
 
         // Get the exact bytes of the uploaded file
         var image = Convert.ToBase64String(file.ToArray());
-        
-        chatClient.SelectedModel = "devstral-small-2:24b";
-        
-        var request = new GenerateRequest
-        {
-            Prompt = Prompt,
-            Format = "json",
-            Stream = false
-        };
+
+        var systemMessage = new ChatMessage(ChatRole.System, SystemPrompt);
+
+        var message = new ChatMessage(ChatRole.User, Prompt);
 
         if (contentType.Equals("application/pdf", StringComparison.CurrentCultureIgnoreCase))
         {
             var pdfPages = await ConvertPdfToImagesAsync(file);
-            request.Images = [pdfPages[1]];
+            message.Contents.Add(new DataContent(pdfPages[1], "image/x-ms-bmp"));
         }
         else
         {
-            request.Images = [image];
+            message.Contents.Add(new DataContent(file.ToArray(), contentType));
         }
 
-        var response = chatClient.GenerateAsync(request);
 
-        var messageBuilder = new StringBuilder();
-        await foreach (var answerToken in response)
-            messageBuilder.Append(answerToken!.Response);
-        
-        
-        var parsedBill = JsonSerializer.Deserialize<ElectricBillDto>(messageBuilder.ToString()) ?? new ElectricBillDto();
+        var response = await chatClient.GetResponseAsync<ElectricBillDto>([systemMessage, message], new ChatOptions
+        {
+            Temperature = 0
+        });
 
-        return parsedBill with { AddressId = addressId };
+        return response.Result with { AddressId = addressId };
     }
 }

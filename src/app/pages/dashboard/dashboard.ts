@@ -27,7 +27,7 @@ export class Dashboard {
   selectedChartView = signal<'yearly' | 'ytd'>('yearly');
   loadingBills = signal<boolean>(false);
 
-  forecast: Forecast | null = null;
+  forecast = signal<Forecast | null>(null);
 
   constructor(
     private router: Router,
@@ -70,8 +70,8 @@ export class Dashboard {
 
   fetchForecast(id: string) {
     this.forecastApi.getForecast(id).subscribe({
-      next: (f: Forecast) => (this.forecast = f),
-      error: (err: any) => { console.error('Forecast error', err); this.forecast = null; },
+      next: (f: Forecast) => this.forecast.set(f),
+      error: (err: any) => { console.error('Forecast error', err); this.forecast.set(null); },
     });
   }
 

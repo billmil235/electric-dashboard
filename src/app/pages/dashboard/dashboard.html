@@ -25,7 +25,7 @@
               </div>
             </div>
             <div class="col-sm-4" id="forecast">
-              <app-forecast-display [forecast]="forecast"></app-forecast-display>
+              <app-forecast-display [forecast]="forecast()"></app-forecast-display>
             </div>
             <div class="col-sm-4" id="serviceAddressSelection">
               <app-service-address-selector (addressesLoaded)="onAddressesLoaded($event)" (addressSelected)="onAddressSelected($event)"></app-service-address-selector>

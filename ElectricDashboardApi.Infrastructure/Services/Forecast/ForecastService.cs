@@ -31,7 +31,7 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
                     AddressId = addressId,
                     ForecastMonth = nextMonth,
                     ForecastYear = nextYear,
-                    PredictedAmount = cached.PredictedAmount,
+                    PredictedKwh = cached.PredictedKwh,
                     AlgorithmUsed = cached.AlgorithmUsed,
                     Confidence = 1.0m // cached value assumed reliable
                 };
@@ -44,7 +44,7 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
 
             // Build monthly totals
             var monthly = bills.GroupBy(b => new { b.PeriodEndDate.Year, b.PeriodEndDate.Month })
-                .Select(g => new MonthlyBill { Year = g.Key.Year, Month = g.Key.Month, Total = g.Sum(b => b.BilledAmount) })
+                .Select(g => new MonthlyBill { Year = g.Key.Year, Month = g.Key.Month, Total = g.Sum(b => b.ConsumptionKwh) })
                 .OrderBy(m => m.Year).ThenBy(m => m.Month)
                 .ToList();
 
@@ -89,7 +89,7 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
                 AddressId = addressId,
                 ForecastYear = nextYear,
                 ForecastMonth = nextMonth,
-                PredictedAmount = (decimal)predicted,
+                PredictedKwh = (decimal)predicted,
                 AlgorithmUsed = algorithmUsed,
                 CachedAt = DateTime.UtcNow
             };
@@ -101,7 +101,7 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
                 AddressId = addressId,
                 ForecastMonth = nextMonth,
                 ForecastYear = nextYear,
-                PredictedAmount = (decimal)predicted,
+                PredictedKwh = (decimal)predicted,
                 AlgorithmUsed = algorithmUsed,
                 Confidence = 1 - ((decimal)Math.Min(maeLinear, maeHolt) / mean) // crude confidence
             };

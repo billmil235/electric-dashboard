@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-12">
         <h6 class="forecast-title">Forecast for period starting {{ forecast.forecastYear }}-{{ forecast.forecastMonth | number:'2.0' }}</h6>
-        <p class="forecast-amount">Predicted Amount: {{ forecast.predictedAmount | currency }}</p>
+         <p class="forecast-amount"><strong>Predicted Consumption:</strong> {{ forecast.predictedKwh | number }} kWh</p>
         <p class="forecast-confidence">Confidence: {{ forecast.confidence * 100 | number:'1.0-2' }}%</p>
       </div>
     </div>

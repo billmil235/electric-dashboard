@@ -8,7 +8,8 @@ public record ForecastResponse
 
     public int ForecastMonth {get; set;}
 
-    public decimal PredictedAmount {get; set;}
+    public decimal PredictedKwh {get; set;}
+
 
     public string AlgorithmUsed { get; set; }
 
