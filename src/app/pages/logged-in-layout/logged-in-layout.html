@@ -18,12 +18,16 @@
             Profile
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard/billing" routerLinkActive="active" ariaCurrentWhenActive="page">
-            <span data-feather="bar-chart-2" class="nav-icon"></span>
-            Data Entry
-          </a>
-        </li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dataEntryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+    <span data-feather="bar-chart-2" class="nav-icon"></span>
+    Data Entry
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dataEntryDropdown">
+    <li><a class="dropdown-item" routerLink="/dashboard/billing" routerLinkActive="active" ariaCurrentWhenActive="page">Electric Bills</a></li>
+    <li><a class="dropdown-item" routerLink="/dashboard/solar-generation" routerLinkActive="active" ariaCurrentWhenActive="page">Solar Generation</a></li>
+  </ul>
+</li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/reports/overview" routerLinkActive="active" ariaCurrentWhenActive="page">
             <span data-feather="file-text" class="nav-icon"></span>
