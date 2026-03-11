@@ -47,8 +47,8 @@ public static class DataSourceEndpoints
             })
             .RequireAuthorization();
 
-        group.MapPut("/electric-bill/{addressGuid:Guid}",
-                async ([FromRoute] Guid addressGuid, [FromBody] ElectricBillDto electricBillDto, ClaimsPrincipal user,
+        group.MapPut("/electric-bill/{addressGuid:Guid}/{billGuid:Guid}",
+                async ([FromRoute] Guid addressGuid, [FromRoute] Guid billGuid, [FromBody] ElectricBillDto electricBillDto, ClaimsPrincipal user,
                     IAddElectricBillCommand addElectricBillCommand, IGetAddressExistsQuery getAddressExistsQuery) =>
                 {
                     var addressExists = await getAddressExistsQuery.Execute(user.GetGuid(), addressGuid);
@@ -58,7 +58,7 @@ public static class DataSourceEndpoints
                         return Results.NotFound();
                     }
 
-                    var updatedAddress = await addElectricBillCommand.AddElectricBill(user.GetGuid(), electricBillDto);
+                    var updatedAddress = await addElectricBillCommand.AddElectricBill(user.GetGuid(), electricBillDto, billGuid);
 
                     return Results.Ok(updatedAddress?.ToString());
                 })

@@ -53,37 +53,36 @@ export class BillingInfo {
     }
   }
 
-  async onSubmit() {
+    async onSubmit() {
     this.loading = true;
     this.error = null;
     this.success = false;
 
-    try {
-      const request: ElectricBill = {
-        addressId: this.addressId || null,
-        periodStartDate: this.billedDate,
-        periodEndDate: this.billedDateEnd,
-        consumptionKwh: this.consumption || 0,
-        sentBackKwh: this.sentBack || null,
-        billedAmount: this.billedAmount || 0,
-        unitPrice: this.unitPrice || null,
-      };
+    const request: ElectricBill = {
+      addressId: this.addressId || null,
+      periodStartDate: this.billedDate,
+      periodEndDate: this.billedDateEnd,
+      consumptionKwh: this.consumption ?? 0,
+      sentBackKwh: this.sentBack ?? null,
+      billedAmount: this.billedAmount ?? 0,
+      unitPrice: this.unitPrice ?? null,
+    };
 
-      this.electricBillsApi.addElectricBill(this.addressId, request).subscribe({
-        next: () => {
-          this.success = true;
-          this.router.navigate(['/dashboard']);
-        },
-        error: (err: unknown) => {
-          this.error = 'Failed to save billing information. Please try again.';
-          this.loading = false;
-        }
-      });
-    } catch (err) {
-      this.error = 'Failed to save billing information. Please try again.';
-    } finally {
-      this.loading = false;
-    }
+    const apiCall$ = this.isEditing
+      ? this.electricBillsApi.updateElectricBill(this.addressId, this.billGuid, request)
+      : this.electricBillsApi.addElectricBill(this.addressId, request);
+
+    apiCall$.subscribe({
+      next: () => {
+        this.success = true;
+        this.router.navigate(['/dashboard']);
+      },
+      error: () => {
+        this.error = 'Failed to save billing information. Please try again.';
+        this.loading = false;
+      },
+    });
+    this.loading = false;
   }
   
   navigateToDashboard() {

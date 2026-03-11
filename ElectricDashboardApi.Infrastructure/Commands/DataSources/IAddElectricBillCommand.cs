@@ -5,5 +5,5 @@ namespace ElectricDashboardApi.Infrastructure.Commands.DataSources;
 
 public interface IAddElectricBillCommand
 {
-    Task<ElectricBill?> AddElectricBill(Guid userId, ElectricBillDto electricBillDto);
+    Task<ElectricBill?> AddElectricBill(Guid userId, ElectricBillDto electricBillDto, Guid? billGuid = null);
 }
