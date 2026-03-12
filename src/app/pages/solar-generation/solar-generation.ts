@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { SolarGenerationService } from '../../services/solar-generation.service';
 import { LoggedInLayout } from '../logged-in-layout/logged-in-layout';
 import { SolarDataDto } from '../../services/solar-generation.service';
+import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 
 @Component({
   selector: 'app-solar-generation',
-  imports: [LoggedInLayout, CommonModule, FormsModule],
+  imports: [LoggedInLayout, CommonModule, FormsModule, ServiceAddressSelector],
   templateUrl: './solar-generation.html',
   styleUrls: ['./solar-generation.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,8 +19,13 @@ export class SolarGeneration {
   selectedValueCol = signal<string | null>(null);
   file: File | null = null;
   data = signal<SolarDataDto[]>([]);
+  private _selectedAddressId: string = '';
 
   constructor(private solarService: SolarGenerationService) {}
+
+  onAddressSelected(addressId: string) {
+    this._selectedAddressId = addressId;
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
