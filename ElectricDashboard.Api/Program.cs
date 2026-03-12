@@ -120,6 +120,7 @@ app.UseHttpsRedirection();
 app.MapGroup("/users").RegisterUserEndpoints();
 app.MapGroup("/profile").RegisterProfileEndpoints();
 app.MapGroup("/data").RegisterDataEndpoints();
+app.MapGroup("/solar-generation").RegisterSolarEndpoints();
 app.MapGroup("/lookups").RegisterLookupEndpoints();
 
 // Register forecast endpoints

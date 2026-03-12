@@ -6,6 +6,7 @@ using ElectricDashboardApi.Infrastructure.Queries.DataSources;
 using ElectricDashboardApi.Infrastructure.Queries.Lookups;
 using ElectricDashboardApi.Infrastructure.Queries.User;
 using ElectricDashboardApi.Infrastructure.Services.Forecast;
+using ElectricDashboardApi.Infrastructure.Services.Solar;
 using ElectricDashboardApi.Models.Options;
 using OllamaSharp;
 
@@ -20,6 +21,7 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDataSourceService, DataSourceService>();
+        builder.Services.AddSingleton<ISolarDataService, SolarDataService>();
 
         builder.Services.AddScoped<IUpdateProfileCommand, UpdateProfileCommand>();
 

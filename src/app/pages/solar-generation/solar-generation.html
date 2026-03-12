@@ -1,6 +1,33 @@
 <app-logged-in-layout>
   <div class="container mt-4">
     <h1>Solar Generation</h1>
-    <p>This page will display solar generation data.</p>
+    <p>Select a CSV file. Then choose the date and value columns from the grid.</p>
+    <input type="file" (change)="onFileSelected($event)"/>
+    @if (headers().length) {
+      <table class="table table-sm">
+        <thead><tr><th>Date</th><th>Value</th><th>Header</th></tr></thead>
+        <tbody>
+          @for (h of headers(); track $index) {
+            <tr>
+              <td><input type="radio" name="dateCol" (change)="setDateColumn(h)" [checked]="selectedDateCol()===h"/></td>
+              <td><input type="radio" name="valueCol" (change)="setValueColumn(h)" [checked]="selectedValueCol()===h"/></td>
+              <td>{{h}}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <button (click)="submitFile()" [disabled]="!selectedDateCol() || !selectedValueCol()">Parse CSV</button>
+    }
+    @if (data().length) {
+      <h2>Parsed Data</h2>
+      <table class="table table-sm">
+        <thead><tr><th>Date</th><th>Value</th></tr></thead>
+        <tbody>
+          @for (d of data(); track $index) {
+            <tr><td>{{d.date}}</td><td>{{d.value}}</td></tr>
+          }
+        </tbody>
+      </table>
+    }
   </div>
 </app-logged-in-layout>
