@@ -12,7 +12,7 @@ export class AddressesApi {
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('accessToken');
-    const headers: { [key: string]: string } = {};
+    const headers: Record<string, string> = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }

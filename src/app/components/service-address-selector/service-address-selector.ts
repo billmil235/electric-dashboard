@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, input, output, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddressesApi } from '../../services/addresses-api';
 import { ServiceAddress } from '../../models/service-address.model';
@@ -12,7 +12,7 @@ import { take } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ServiceAddressSelector {
+export class ServiceAddressSelector implements OnInit {
   private readonly addressesApi = inject(AddressesApi);
   private _loading = signal<boolean>(false);
   private _addresses = signal<ServiceAddress[]>([]);

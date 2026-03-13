@@ -120,7 +120,7 @@ export class MonthlySpendGraphComponent implements AfterViewInit, OnDestroy {
 
     const monthlyData = this.processBillsForMonthlyData(bills);
 
-    const yearData: { [year: string]: { spend: number[] } } = {};
+    const yearData: Record<string, { spend: number[] }> = {};
 
     monthlyData.forEach(entry => {
       if (!yearData[entry.year.toString()]) {
@@ -155,7 +155,7 @@ export class MonthlySpendGraphComponent implements AfterViewInit, OnDestroy {
     const currentYear = new Date().getFullYear();
     const threeYearsAgo = currentYear - 3;
 
-    const monthlyTotals: { [key: string]: number } = {};
+    const monthlyTotals: Record<string, number> = {};
 
     bills.forEach(bill => {
       if (!bill.serviceYear || !bill.billedAmount) return;

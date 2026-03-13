@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -10,7 +10,7 @@ import Chart from 'chart.js/auto';
   `,
   styleUrls: ['./consumption-chart.css']
 })
-export class ConsumptionChartComponent implements AfterViewInit, OnDestroy {
+export class ConsumptionChartComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() chartData: any[] = [];
   @Input() loading = false;
   

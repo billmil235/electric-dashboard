@@ -122,7 +122,7 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
     const monthlyData = this.processBillsForMonthlyData(this.bills());
     
     // Prepare the datasets for the last 3 years
-    const yearData: { [year: string]: { consumption: number[] } } = {};
+    const yearData: Record<string, { consumption: number[] }> = {};
     
     // Process the data to group by year
     monthlyData.forEach(entry => {
@@ -175,7 +175,7 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
     const threeYearsAgo = currentYear - 3;
     
     // Group bills by year/month to calculate total consumption per month
-    const monthlyTotals: { [key: string]: number } = {};
+    const monthlyTotals: Record<string, number> = {};
     
     bills.forEach(bill => {
       if (!bill.serviceYear || !bill.consumptionKwh) return;

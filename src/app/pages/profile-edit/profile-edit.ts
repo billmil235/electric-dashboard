@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AddressesApi } from '../../services/addresses-api';
@@ -12,7 +12,7 @@ import { LoggedInLayout } from '../logged-in-layout/logged-in-layout';
   imports: [CommonModule, ServiceAddressEntry, LoggedInLayout],
   templateUrl: './profile-edit.html'
 })
-export class ProfileEdit {
+export class ProfileEdit implements OnInit {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly addressesApi = inject(AddressesApi);

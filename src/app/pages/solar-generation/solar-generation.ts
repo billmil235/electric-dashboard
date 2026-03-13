@@ -19,7 +19,7 @@ export class SolarGeneration {
   selectedValueCol = signal<string | null>(null);
   file: File | null = null;
   data = signal<SolarDataDto[]>([]);
-  private _selectedAddressId: string = '';
+  private _selectedAddressId = '';
 
   constructor(private solarService: SolarGenerationService) {}
 

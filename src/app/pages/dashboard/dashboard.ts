@@ -120,7 +120,7 @@ export class Dashboard {
     return this.groupBillsByYear(bills).sort((a,b)=> Number(b.label) - Number(a.label));
   }
 
-  private getYTDData(): Array<{ label: string; totalConsumption: number; totalSentBack: number; totalBilledAmount: number; }> {
+  private getYTDData(): { label: string; totalConsumption: number; totalSentBack: number; totalBilledAmount: number; }[] {
     const bills = this.bills();
     const now = new Date();
     const currentYear = now.getFullYear();
@@ -144,7 +144,7 @@ export class Dashboard {
     return res;
   }
 
-  private groupBillsByYear(bills: ElectricBill[]): Array<{ label: string; totalConsumption: number; totalSentBack: number; totalBilledAmount: number; }> {
+  private groupBillsByYear(bills: ElectricBill[]): { label: string; totalConsumption: number; totalSentBack: number; totalBilledAmount: number; }[] {
     const map = new Map<number, { totalConsumption: number; totalSentBack: number; totalBilledAmount: number; }>();
     for (const b of bills) {
       const year = b.serviceYear!;

@@ -19,7 +19,7 @@ import { ServiceAddressSelector } from '../../components/service-address-selecto
 })
 export class Reports implements OnInit {
   loading = false;
-  selectedAddressId: string = '';
+  selectedAddressId = '';
   addresses = signal<ServiceAddress[]>([]);
   bills = signal<ElectricBill[]>([]);
 

@@ -15,11 +15,11 @@
               </div>
               <div class="row" id="filteringOptions">
                 <label class="form-check-label">
-                  <input type="radio" class="form-check-input" name="chartView" [checked]="selectedChartView()=='yearly'" (change)="setChartView('yearly')" />
+                  <input type="radio" class="form-check-input" name="chartView" [checked]="selectedChartView()==='yearly'" (change)="setChartView('yearly')" />
                   Yearly
                 </label>
                 <label class="form-check-label">
-                  <input type="radio" class="form-check-input" name="chartView" [checked]="selectedChartView()=='ytd'" (change)="setChartView('ytd')" />
+                  <input type="radio" class="form-check-input" name="chartView" [checked]="selectedChartView()==='ytd'" (change)="setChartView('ytd')" />
                   Year-to-Date
                 </label>                
               </div>

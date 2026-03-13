@@ -118,7 +118,7 @@ export class MonthlySentBackGraphComponent implements AfterViewInit, OnDestroy {
 
     const monthlyData = this.processBillsForMonthlyData(this.bills());
 
-    const yearData: { [year: string]: { sentBack: number[] } } = {};
+    const yearData: Record<string, { sentBack: number[] }> = {};
 
     monthlyData.forEach(entry => {
       if (!yearData[entry.year.toString()]) {
@@ -153,7 +153,7 @@ export class MonthlySentBackGraphComponent implements AfterViewInit, OnDestroy {
     const currentYear = new Date().getFullYear();
     const threeYearsAgo = currentYear - 3;
 
-    const monthlyTotals: { [key: string]: number } = {};
+    const monthlyTotals: Record<string, number> = {};
 
     bills.forEach(bill => {
       if (!bill.serviceYear || !bill.sentBackKwh) return;

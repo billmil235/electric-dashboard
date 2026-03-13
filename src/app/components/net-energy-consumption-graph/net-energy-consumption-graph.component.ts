@@ -118,7 +118,7 @@ export class NetEnergyConsumptionGraphComponent implements AfterViewInit, OnDest
 
     const monthlyData = this.processBillsForMonthlyData(this.bills());
 
-    const yearData: { [year: string]: { netConsumption: number[] } } = {};
+    const yearData: Record<string, { netConsumption: number[] }> = {};
 
     monthlyData.forEach(entry => {
       if (!yearData[entry.year.toString()]) {
@@ -153,7 +153,7 @@ export class NetEnergyConsumptionGraphComponent implements AfterViewInit, OnDest
     const currentYear = new Date().getFullYear();
     const threeYearsAgo = currentYear - 3;
 
-    const monthlyTotals: { [key: string]: { consumption: number; sentBack: number } } = {};
+    const monthlyTotals: Record<string, { consumption: number; sentBack: number }> = {};
 
     bills.forEach(bill => {
       if (!bill.serviceYear) return;
