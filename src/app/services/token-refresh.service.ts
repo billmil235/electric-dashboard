@@ -7,7 +7,7 @@ import { TokenRefreshCoordinatorService } from './token-refresh-coordinator.serv
   providedIn: 'root',
 })
 export class TokenRefreshService {
-  private refreshInterval: any;
+  private refreshInterval: ReturnType<typeof setTimeout> | number | null = null;
 
   constructor(private authService: AuthService, private tokenRefreshCoordinator: TokenRefreshCoordinatorService) {}
 

@@ -8,7 +8,7 @@ import { TokenRefreshCoordinatorService } from '../services/token-refresh-coordi
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
   constructor(
     private authService: AuthService, 
@@ -16,7 +16,7 @@ export class AuthInterceptor implements HttpInterceptor {
     private tokenRefreshCoordinator: TokenRefreshCoordinatorService
   ) {}
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 && error.error?.message === 'Unauthorized') {
@@ -42,12 +42,11 @@ export class AuthInterceptor implements HttpInterceptor {
           this.tokenRefreshCoordinator.setIsRefreshing(true);
           this.refreshTokenSubject.next(null);
 
-          return this.authService.refreshToken(refreshToken).pipe(
-            switchMap((token: any) => {
+return this.authService.refreshToken(refreshToken).pipe(
+  switchMap((token: { accessToken: string }) => {
               console.log('Manual token refresh successful');
               this.tokenRefreshCoordinator.setIsRefreshing(false);
               this.refreshTokenSubject.next(token.accessToken);
-              // Make sure the new access token is stored in localStorage  
               this.authService.updateAccessToken(token.accessToken);
               console.log('New access token stored in localStorage');
               // Verify the token was stored correctly

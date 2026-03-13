@@ -1,4 +1,4 @@
-import { Component, inject, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, signal } from '@angular/core';
+import { Component, inject, input, output, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ServiceAddress } from '../../models/service-address.model';
 import { ElectricCompany } from '../../models/electric-company.model';
@@ -9,12 +9,10 @@ import { LookupsApi } from '../../services/lookups-api';
   imports: [CommonModule],
   templateUrl: './service-address-entry.html'
 })
-export class ServiceAddressEntry implements OnInit, OnChanges {
-
-  @Input() address: ServiceAddress | null = null;
-
-  @Output() addressSaved = new EventEmitter<ServiceAddress>();
-  @Output() cancelled = new EventEmitter<void>();
+export class ServiceAddressEntry {
+  address = input<ServiceAddress | null>(null);
+  addressSaved = output<ServiceAddress>();
+  cancelled = output<void>();
 
   form = signal({
     addressName: '',
@@ -28,20 +26,27 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
     electricCompanyId: 0
   });
 
-  get isEditing(): boolean {
-    return this._isEditing;
+  get isEditing() {
+    return this._isEditing();
   }
 
-  private _isEditing = false;
+  private _isEditing = signal(false);
   private lookupsApi = inject(LookupsApi);
   electricCompanies = signal<ElectricCompany[]>([]);
 
-  ngOnInit() {
-    if (this.address) {
-      this._isEditing = true;
-      this.populateForm(this.address);
-    }
-    this.loadElectricCompanies();
+  constructor() {
+    // Handle address changes
+    effect(() => {
+      this._isEditing.set(this.address() !== null);
+      this.loadElectricCompanies();
+    });
+
+    // Watch for address input to populate form
+    effect(() => {
+      if (this.address()) {
+        this.populateForm(this.address()!);
+      }
+    });
   }
 
   loadElectricCompanies() {
@@ -64,13 +69,7 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['address'] && this.address) {
-      this.populateForm(this.address);
-    }
-  }
-
-  onInputChange(field: any, value: string | boolean | number) {
+  onInputChange(field: string, value: string | boolean | number) {
     this.form.update(current => ({
       ...current,
       [field]: value
@@ -86,7 +85,7 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
     const formData = this.form();
     
     const addressToSave: ServiceAddress = {
-      addressId: this._isEditing && this.address ? this.address.addressId : '',
+      addressId: this._isEditing() && this.address() ? this.address()!.addressId : '',
       addressName: formData.addressName,
       addressLine1: formData.addressLine1,
       addressLine2: formData.addressLine2 || null,
@@ -98,7 +97,7 @@ export class ServiceAddressEntry implements OnInit, OnChanges {
       electricCompanyId: formData.electricCompanyId
     };
 
-    if (this._isEditing && addressToSave.addressId) {
+    if (this._isEditing() && addressToSave.addressId) {
       this.addressSaved.emit(addressToSave);
     } else {
       this.addressSaved.emit(addressToSave);

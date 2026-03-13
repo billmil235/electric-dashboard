@@ -15,7 +15,6 @@ import { ServiceAddressSelector } from '../../components/service-address-selecto
   selector: 'app-reports',
   templateUrl: './reports.html',
   styleUrl: './reports.css',
-  standalone: true,
   imports: [LoggedInLayout, MonthlyConsumptionGraphComponent, MonthlySentBackGraphComponent, NetEnergyConsumptionGraphComponent, MonthlySpendGraphComponent, ServiceAddressSelector, CommonModule, FormsModule]
 })
 export class Reports implements OnInit {

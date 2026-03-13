@@ -1,9 +1,10 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, input, ChangeDetectionStrategy, effect } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { ElectricBill } from '../../models/electric-bill.model';
 
 @Component({
   selector: 'app-monthly-consumption-graph',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="chart-wrapper">
       <canvas #chartCanvas></canvas>
@@ -11,9 +12,9 @@ import { ElectricBill } from '../../models/electric-bill.model';
   `,
   styleUrls: ['./monthly-consumption-graph.component.css']
 })
-export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestroy, OnChanges {
-  @Input() bills: ElectricBill[] = [];
-  @Input() loading = false;
+export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestroy {
+  bills = input<ElectricBill[]>([]);
+  loading = input(false);
   
   private prevBillsLength = 0;
   
@@ -21,19 +22,21 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
   
   private chart: Chart | null = null;
   
-  ngAfterViewInit() {
-    this.createChart();
+  constructor() {
+    // Handle input changes with effect
+    effect(() => {
+      const billsChanged = this.bills().length !== this.prevBillsLength;
+      const loadingFinished = !this.loading();
+      
+      if (billsChanged || loadingFinished) {
+        this.prevBillsLength = this.bills().length;
+        this.updateChart();
+      }
+    });
   }
   
-  ngOnChanges(changes: SimpleChanges) {
-    // Check if bills have changed or if loading has finished
-    const billsChanged = this.bills.length !== this.prevBillsLength;
-    const loadingFinished = changes['loading'] && !this.loading;
-    
-    if (billsChanged || loadingFinished) {
-      this.prevBillsLength = this.bills.length;
-      this.updateChart();
-    }
+  ngAfterViewInit() {
+    this.createChart();
   }
   
   ngOnDestroy() {
@@ -109,14 +112,14 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
       return;
     }
     
-    if (this.bills.length === 0) {
+    if (this.bills().length === 0) {
       console.log('No data to display');
       this.clearChart();
       return;
     }
     
     // Process bills to create monthly consumption data for the last 3 years
-    const monthlyData = this.processBillsForMonthlyData(this.bills);
+    const monthlyData = this.processBillsForMonthlyData(this.bills());
     
     // Prepare the datasets for the last 3 years
     const yearData: { [year: string]: { consumption: number[] } } = {};
@@ -134,31 +137,31 @@ export class MonthlyConsumptionGraphComponent implements AfterViewInit, OnDestro
       }
     });
     
- // Helper to sort month data descending and reorder labels
-      const sortMonthsDescending = (consumptionArray: number[]): {labels: string[], data: number[]} => {
-        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        const indexed = consumptionArray.map((v, i)=> ({value:v, month:months[i]}));
-        indexed.sort((a,b)=>b.value - a.value);
-        return {
-          labels: indexed.map(i=>i.month),
-          data: indexed.map(i=>i.value)
-        };
+    // Helper to sort month data descending and reorder labels
+    const sortMonthsDescending = (consumptionArray: number[]): {labels: string[], data: number[]} => {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const indexed = consumptionArray.map((v, i)=> ({value:v, month:months[i]}));
+      indexed.sort((a,b)=>b.value - a.value);
+      return {
+        labels: indexed.map(i=>i.month),
+        data: indexed.map(i=>i.value)
       };
-
-      // Create datasets for each year
-      const datasets = Object.keys(yearData)
-        .sort((a, b) => parseInt(a) - parseInt(b)) // Sort years ascending
-        .map((year, index) => {
-          const yearColor = this.getColorForYear(year, index);
-          const sorted = sortMonthsDescending(yearData[year].consumption);
-          return {
-            label: `Year ${year}`,
-            data: sorted.data,
-            backgroundColor: yearColor,
-            borderColor: yearColor,
-            borderWidth: 1
-          };
-        });
+    };
+    
+    // Create datasets for each year
+    const datasets = Object.keys(yearData)
+      .sort((a, b) => parseInt(a) - parseInt(b)) // Sort years ascending
+      .map((year, index) => {
+        const yearColor = this.getColorForYear(year, index);
+        const sorted = sortMonthsDescending(yearData[year].consumption);
+        return {
+          label: `Year ${year}`,
+          data: sorted.data,
+          backgroundColor: yearColor,
+          borderColor: yearColor,
+          borderWidth: 1
+        };
+      });
     
     // Update chart data
     this.chart.data.datasets = datasets;
