@@ -1,4 +1,4 @@
-import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, inject, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AddressesApi } from '../../services/addresses-api';
 import { ServiceAddress } from '../../models/service-address.model';
@@ -8,65 +8,59 @@ import { take } from 'rxjs/operators';
   selector: 'app-service-address-selector',
   imports: [CommonModule],
   templateUrl: './service-address-selector.html',
-  styleUrls: ['./service-address-selector.css']
+  styleUrls: ['./service-address-selector.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ServiceAddressSelector implements OnInit {
+export class ServiceAddressSelector {
   private readonly addressesApi = inject(AddressesApi);
-  private _loading: boolean = false;
+  private _loading = signal<boolean>(false);
+  private _addresses = signal<ServiceAddress[]>([]);
+  private _error = signal<string | null>(null);
+  private _selectedAddressId = signal<string>('');
   
-  get loading(): boolean {
-    return this._loading;
-  }
+  loading = this._loading.asReadonly();
+  addresses = this._addresses.asReadonly();
+  error = this._error.asReadonly();
+  selectedAddressId = input<string>();
   
-  @Input() set selectedAddressId(value: string) {
-    this._selectedAddressId = value;
-  }
-  get selectedAddressId(): string {
-    return this._selectedAddressId;
-  }
+  addressSelected = output<string>();
+  addressesLoaded = output<ServiceAddress[]>();
   
-  @Input() set loading(value: boolean) {
-    this._loading = value;
-  }
-  
-  @Output() addressSelected = new EventEmitter<string>();
-  @Output() addressesLoaded = new EventEmitter<ServiceAddress[]>();
-  
-  addresses: ServiceAddress[] = [];
-  error: string | null = null;
-  private _selectedAddressId: string = '';
-  
-  async ngOnInit() {
-    await this.loadAddresses();
+  ngOnInit() {
+    this.loadAddresses();
   }
   
   async loadAddresses() {
-    this._loading = true;
-    this.error = null;
+    this._loading.set(true);
+    this._error.set(null);
     
     try {
       const response = await this.addressesApi.getAddresses().pipe(take(1)).toPromise();
-      this.addresses = response || [];
-      this.addressesLoaded.emit(this.addresses);
+      this._addresses.set(response || []);
+      this.addressesLoaded.emit(this._addresses());
       
-      if (!this._selectedAddressId && this.addresses.length > 0) {
-        const primaryAddress = this.addresses.find(addr => addr.isCommercial === false);
-        const firstAddress = this.addresses[0];
-        this._selectedAddressId = (primaryAddress?.addressId || firstAddress.addressId)!;
-        this.addressSelected.emit(this._selectedAddressId);
+      const selectedId = this.selectedAddressId();
+      const addresses = this._addresses();
+      
+      if (!selectedId && addresses.length > 0) {
+        const primaryAddress = addresses.find(addr => addr.isCommercial === false);
+        const firstAddress = addresses[0];
+        const selected = (primaryAddress?.addressId || firstAddress.addressId) || '';
+        this._selectedAddressId.set(selected);
+        this.addressSelected.emit(selected);
       }
     } catch (err) {
-      this.error = 'Failed to load service addresses. Please try again.';
+      this._error.set('Failed to load service addresses. Please try again.');
       console.error('Failed to load addresses:', err);
     } finally {
-      this._loading = false;
+      this._loading.set(false);
     }
   }
   
   onAddressChange(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;
-    this.selectedAddressId = selectedId;
+    this._selectedAddressId.set(selectedId);
     this.addressSelected.emit(selectedId);
   }
 }

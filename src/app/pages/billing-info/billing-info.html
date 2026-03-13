@@ -29,7 +29,6 @@
                   <!-- Service Address Selector -->
                   <app-service-address-selector 
                     [selectedAddressId]="addressId"
-                    [loading]="addressesLoading"
                     (addressSelected)="onAddressSelected($event)"
                     (addressesLoaded)="addressesLoading = false">
                   </app-service-address-selector>
