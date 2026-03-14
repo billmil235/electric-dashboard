@@ -1,13 +1,15 @@
-@if(forecast) {
-  <div class="forecast-card">
-    <div class="row">
-      <div class="col-12">
-        <h6 class="forecast-title">Forecast for period starting {{ forecast.forecastYear }}-{{ forecast.forecastMonth | number:'2.0' }}</h6>
-         <p class="forecast-amount"><strong>Predicted Consumption:</strong> {{ forecast.predictedKwh | number }} kWh</p>
-        <p class="forecast-confidence">Confidence: {{ forecast.confidence * 100 | number:'1.0-2' }}%</p>
+@if(forecast(); as forecastValue) {
+  @if(forecastValue) {
+    <div class="forecast-card">
+      <div class="row">
+        <div class="col-12">
+          <h6 class="forecast-title">Forecast for period starting {{ forecastValue.forecastYear }}-{{ forecastValue.forecastMonth | number:'2.0' }}</h6>
+           <p class="forecast-amount"><strong>Predicted Consumption:</strong> {{ forecastValue.predictedKwh | number }} kWh</p>
+          <p class="forecast-confidence">Confidence: {{ forecastValue.confidence * 100 | number:'1.0-2' }}%</p>
+        </div>
       </div>
     </div>
-  </div>
+  }
 }
 @else {
   <div class="forecast-card">

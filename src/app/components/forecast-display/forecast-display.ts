@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Forecast } from '../../models/forecast.model';
 
@@ -9,5 +9,5 @@ import { Forecast } from '../../models/forecast.model';
   styleUrls: ['./forecast-display.css'],
 })
 export class ForecastDisplay {
-  @Input() forecast: Forecast | null = null;
+  forecast = input<Forecast | null>();
 }
