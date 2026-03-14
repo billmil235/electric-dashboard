@@ -1,5 +1,6 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges, input, effect } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { ElectricBill } from '../../models/electric-bill.model';
 
 @Component({
   selector: 'app-consumption-chart',
@@ -10,18 +11,24 @@ import Chart from 'chart.js/auto';
   `,
   styleUrls: ['./consumption-chart.css']
 })
-export class ConsumptionChartComponent implements AfterViewInit, OnDestroy, OnChanges {
-  @Input() chartData: any[] = [];
-  @Input() loading = false;
+export class ConsumptionChartComponent implements AfterViewInit, OnDestroy {
+  chartData = input<any[]>([]);
+  loading = input(false);
   
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   
   private chart: Chart | null = null;
 
-  ngOnChanges(changes: any) {
-    if (changes.chartData) {
-      this.updateChart();
-    }
+  constructor() {
+    // Handle input changes with effect
+    effect(() => {
+      const loadingFinished = !this.loading();
+
+      if (this.chartData().length > 0 && loadingFinished) {
+        console.log('Data or loading state changed, updating chart');
+        this.updateChart();
+      }
+    });
   }
   
   ngAfterViewInit() {
@@ -142,18 +149,18 @@ export class ConsumptionChartComponent implements AfterViewInit, OnDestroy, OnCh
       return;
     }
     
-    if (this.chartData.length === 0) {
+    if (this.chartData().length === 0) {
       console.log('No data to display');
       this.clearChart();
       return;
     }
     
-        const labels = this.chartData.map(entry => entry.label);
-    
+    const labels = this.chartData().map(entry => entry.label) ?? [];
+
     // Extract data for each dataset
-    const consumptionData = this.chartData.map(entry => entry.totalConsumption);
-    const sentBackData = this.chartData.map(entry => entry.totalSentBack);
-    const billedAmountData = this.chartData.map(entry => entry.totalBilledAmount);
+    const consumptionData = this.chartData().map(entry => entry.totalConsumption) ?? [];
+    const sentBackData = this.chartData().map(entry => entry.totalSentBack) ?? [];
+    const billedAmountData = this.chartData().map(entry => entry.totalBilledAmount) ?? [];
     
     // Update chart data
     this.chart.data.labels = labels;
