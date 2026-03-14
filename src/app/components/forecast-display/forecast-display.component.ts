@@ -5,8 +5,8 @@ import { Forecast } from '../../models/forecast.model';
 @Component({
   selector: 'app-forecast-display',
   imports: [CommonModule],
-  templateUrl: './forecast-display.html',
-  styleUrls: ['./forecast-display.css'],
+  templateUrl: './forecast-display.component.html',
+  styleUrls: ['./forecast-display.component.css'],
 })
 export class ForecastDisplay {
   forecast = input<Forecast | null>();

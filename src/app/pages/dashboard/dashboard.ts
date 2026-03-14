@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 import { CommonModule } from '@angular/common';
@@ -10,7 +10,7 @@ import { BillTableComponent } from '../../components/bill-table/bill-table.compo
 import { LoggedInLayout } from '../logged-in-layout/logged-in-layout';
 import { ForecastApiService } from '../../services/forecast-api.service';
 import { Forecast } from '../../models/forecast.model';
-import { ForecastDisplay } from '../../components/forecast-display/forecast-display';
+import { ForecastDisplay } from '../../components/forecast-display/forecast-display.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -85,12 +85,12 @@ export class Dashboard {
     }
   }
 
-  get filteredBills() {
+  filteredBills = computed(() => {
     const bills = this.bills();
     const filter = this.selectedYearFilter();
     if (filter === 'all') return bills;
     return bills.filter(b => b.serviceYear === Number(filter));
-  }
+  });
 
   get yearOptions() {
     const bills = this.bills();
@@ -114,7 +114,7 @@ export class Dashboard {
   setChartView(view: 'yearly' | 'ytd') { this.selectedChartView.set(view); }
 
   getChartData() {
-    const bills = this.filteredBills;
+    const bills = this.filteredBills();
     if (!bills.length) return [];
     if (this.selectedChartView() === 'ytd') return this.getYTDData();
     return this.groupBillsByYear(bills).sort((a,b)=> Number(b.label) - Number(a.label));
