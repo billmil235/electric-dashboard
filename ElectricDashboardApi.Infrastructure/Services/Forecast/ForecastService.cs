@@ -87,17 +87,30 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
             }
 
             // Cache result
-            var newCache = new ForecastCache
+            var existingCache = await context.ForecastCaches
+                .FirstOrDefaultAsync(fc => fc.AddressId == addressId && fc.ForecastYear == nextYear && fc.ForecastMonth == nextMonth)
+                .ConfigureAwait(false);
+            if (existingCache == null)
             {
-                AddressId = addressId,
-                ForecastYear = nextYear,
-                ForecastMonth = nextMonth,
-                PredictedKwh = (decimal)predicted,
-                AlgorithmUsed = algorithmUsed,
-                CachedAt = DateTime.UtcNow,
-                Confidence = 1 - ((decimal)Math.Min(maeLinear, maeHolt) / mean)
-            };
-            context.ForecastCaches.Add(newCache);
+                existingCache = new ForecastCache
+                {
+                    AddressId = addressId,
+                    ForecastYear = nextYear,
+                    ForecastMonth = nextMonth,
+                    PredictedKwh = (decimal)predicted,
+                    AlgorithmUsed = algorithmUsed,
+                    CachedAt = DateTime.UtcNow,
+                    Confidence = 1 - ((decimal)Math.Min(maeLinear, maeHolt) / mean)
+                };
+                context.ForecastCaches.Add(existingCache);
+            }
+            else
+            {
+                existingCache.PredictedKwh = (decimal)predicted;
+                existingCache.AlgorithmUsed = algorithmUsed;
+                existingCache.CachedAt = DateTime.UtcNow;
+                existingCache.Confidence = 1 - ((decimal)Math.Min(maeLinear, maeHolt) / mean);
+            }
             await context.SaveChangesAsync().ConfigureAwait(false);
 
             return new ForecastResponse
