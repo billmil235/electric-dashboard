@@ -11,7 +11,8 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
         {
             // Verify ownership
             var owns = await context.UserToServiceAddresses
-                .AnyAsync(ua => ua.UserId == userId && ua.AddressId == addressId);
+                .AnyAsync(ua => ua.UserId == userId && ua.AddressId == addressId)
+                .ConfigureAwait(false);
             if (!owns) throw new UnauthorizedAccessException();
 
             // Determine next month
@@ -22,7 +23,8 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
             // Cache lookup
             var cached = await context.ForecastCaches
                 .Where(fc => fc.AddressId == addressId && fc.ForecastYear == nextYear && fc.ForecastMonth == nextMonth)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
 
             if (cached != null && cached.CachedAt > DateTime.UtcNow.AddHours(-24))
             {
@@ -40,7 +42,8 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
             // Pull historical bills and aggregate
             var bills = await context.ElectricBills
                 .Where(b => b.AddressId == addressId)
-                .ToListAsync();
+                .ToListAsync()
+                .ConfigureAwait(false);
 
             // Build monthly totals
             var monthly = bills.GroupBy(b => new { b.PeriodEndDate.Year, b.PeriodEndDate.Month })
@@ -95,7 +98,7 @@ namespace ElectricDashboardApi.Infrastructure.Services.Forecast
                 Confidence = 1 - ((decimal)Math.Min(maeLinear, maeHolt) / mean)
             };
             context.ForecastCaches.Add(newCache);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync().ConfigureAwait(false);
 
             return new ForecastResponse
             {

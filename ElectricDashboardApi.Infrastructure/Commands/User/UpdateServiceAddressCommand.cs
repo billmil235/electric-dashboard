@@ -7,7 +7,9 @@ public class UpdateServiceAddressCommand(ElectricDashboardContext context) : IUp
 {
     public async Task<ServiceAddressDto?> Execute(Guid userId, Guid addressId, ServiceAddressDto serviceAddress)
     {
-        var address = await context.ServiceAddresses.FindAsync(addressId);
+        var address = await context.ServiceAddresses
+            .FindAsync(addressId)
+            .ConfigureAwait(false);
 
         if (address == null)
         {
@@ -23,7 +25,7 @@ public class UpdateServiceAddressCommand(ElectricDashboardContext context) : IUp
         address.Country = serviceAddress.Country;
         address.IsCommercial = serviceAddress.IsCommercial;
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         return serviceAddress;
     }

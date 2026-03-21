@@ -28,8 +28,8 @@ public class AddServiceAddressCommand(ElectricDashboardContext context) : IAddSe
             AddressId = entity.AddressId
         };
 
-        await context.UserToServiceAddresses.AddAsync(userToServiceAddress);
-        await context.SaveChangesAsync();
+        await context.UserToServiceAddresses.AddAsync(userToServiceAddress).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         return serviceAddress with { AddressId = entity.AddressId };
     }

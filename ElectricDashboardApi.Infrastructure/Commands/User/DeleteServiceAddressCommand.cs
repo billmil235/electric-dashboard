@@ -32,7 +32,7 @@ public class DeleteServiceAddressCommand(ElectricDashboardContext context) : IDe
             }
         }
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync().ConfigureAwait(false);
         return true;
     }
 }

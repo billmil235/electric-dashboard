@@ -10,13 +10,15 @@ public class GetElectricBillsQuery(ElectricDashboardContext context) : IGetElect
         Guid addressId,
         Guid? billId = null)
     {
-        var query = context.ElectricBills.Where(bill => bill.AddressId == addressId);
+        var query = context.ElectricBills
+            .Where(bill => bill.AddressId == addressId)
+            .AsNoTracking();
 
         if (billId.HasValue)
         {
             query = query.Where(bill => bill.BillId == billId);
         }
 
-        return await query.ToListAsync();
+        return await query.ToListAsync().ConfigureAwait(false);
     }
 }

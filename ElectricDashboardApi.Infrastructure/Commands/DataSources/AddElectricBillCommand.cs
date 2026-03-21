@@ -1,5 +1,6 @@
 using ElectricDashboardApi.Dtos.DataSources;
 using ElectricDashboardApi.Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ElectricDashboardApi.Infrastructure.Commands.DataSources;
 
@@ -11,7 +12,9 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
 
         if (billGuid.HasValue)
         {
-            entity = context.ElectricBills.First(x => x.BillId == billGuid);
+            entity = await context.ElectricBills
+                .FirstAsync(x => x.BillId == billGuid)
+                .ConfigureAwait(false);
         }
         else
         {
@@ -29,8 +32,8 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
         entity.ConsumptionKwh = electricBillDto.ConsumptionKwh;
         entity.UnitPrice = electricBillDto.UnitPrice;
 
-        await context.ElectricBills.AddAsync(entity);
-        await context.SaveChangesAsync();
+        await context.ElectricBills.AddAsync(entity).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         return entity;
     }

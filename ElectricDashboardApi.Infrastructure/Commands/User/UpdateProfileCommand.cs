@@ -7,7 +7,9 @@ public class UpdateProfileCommand(ElectricDashboardContext context) : IUpdatePro
 {
     public async Task Execute(UserDto userModel, Guid userId)
     {
-        var userEntity = await context.Users.SingleOrDefaultAsync(user => user.UserId == userId);
+        var userEntity = await context.Users
+            .SingleOrDefaultAsync(user => user.UserId == userId)
+            .ConfigureAwait(false);
 
         if (userEntity is null)
         {
@@ -20,7 +22,7 @@ public class UpdateProfileCommand(ElectricDashboardContext context) : IUpdatePro
                 LastName = userModel.LastName
             };
 
-            await context.Users.AddAsync(newUser);
+            await context.Users.AddAsync(newUser).ConfigureAwait(false);
         }
         else
         {
@@ -29,6 +31,6 @@ public class UpdateProfileCommand(ElectricDashboardContext context) : IUpdatePro
             userEntity.DateOfBirth = DateOnly.FromDateTime(userModel.DateOfBirth);
         }
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 }

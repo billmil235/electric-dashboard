@@ -10,6 +10,7 @@ public class GetUserAddressesQuery(ElectricDashboardContext context) : IGetUserA
         Guid? addressId = null)
     {
         var query = context.UserToServiceAddresses
+            .AsNoTracking()
             .Include(usa => usa.ServiceAddress)
             .Where(usa => usa.UserId == userId);
 
@@ -32,6 +33,7 @@ public class GetUserAddressesQuery(ElectricDashboardContext context) : IGetUserA
                 IsCommercial = usa.ServiceAddress.IsCommercial,
                 ElectricCompanyId = usa.ServiceAddress.ElectricCompanyId
             })
-            .ToListAsync();
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 }

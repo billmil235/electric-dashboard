@@ -7,6 +7,8 @@ public class GetAddressExistsQuery(ElectricDashboardContext context) : IGetAddre
     public async ValueTask<bool> Execute(Guid userId, Guid addressId)
     {
         return await context.UserToServiceAddresses
-            .AnyAsync(a => a.AddressId == addressId && a.UserId == userId);
+            .AsNoTracking()
+            .AnyAsync(a => a.AddressId == addressId && a.UserId == userId)
+            .ConfigureAwait(false);
     }
 }
