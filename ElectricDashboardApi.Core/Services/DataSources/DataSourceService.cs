@@ -1,16 +1,11 @@
-using System.Text;
-using System.Text.Json;
-using ElectricDashboardApi.Infrastructure.Commands.DataSources;
 using ElectricDashboardApi.Dtos.DataSources;
 using Microsoft.Extensions.AI;
-using OllamaSharp;
-using OllamaSharp.Models;
 using PDFtoImage;
 using SkiaSharp;
 
 namespace ElectricDashboard.Services.DataSources;
 
-public class DataSourceService(IChatClient chatClient, IAddElectricBillCommand addElectricBillCommand) : IDataSourceService
+public class DataSourceService(IChatClient chatClient) : IDataSourceService
 {
     private const string SystemPrompt = """
                                         You are an invoice processing assistant.  You will be extracting information
@@ -56,20 +51,15 @@ public class DataSourceService(IChatClient chatClient, IAddElectricBillCommand a
         var images = new List<byte[]>();
 
         // Convert PDF pages to SKBitmap images
-        await foreach (var bitmap in Conversion.ToImagesAsync(pdfStream))
+        await foreach (var bitmap in Conversion.ToImagesAsync(pdfStream).ConfigureAwait(false))
         {
-            using (bitmap)
-            using (var ms = new MemoryStream())
-            {
-                // Encode as PNG
-                using (var image = SKImage.FromBitmap(bitmap))
-                using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
-                {
-                    data.SaveTo(ms);
-                    var imageBytes = ms.ToArray();
-                    images.Add(imageBytes);
-                }
-            }
+            using var ms = new MemoryStream();
+            // Encode as PNG
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            data.SaveTo(ms);
+            var imageBytes = ms.ToArray();
+            images.Add(imageBytes);
         }
 
         return images;
@@ -78,9 +68,6 @@ public class DataSourceService(IChatClient chatClient, IAddElectricBillCommand a
     public async Task<ElectricBillDto?> ParseUploadedBill(Guid addressId, MemoryStream file, string contentType)
     {
         if (file.Length == 0) return null;
-
-        // Get the exact bytes of the uploaded file
-        var image = Convert.ToBase64String(file.ToArray());
 
         var systemMessage = new ChatMessage(ChatRole.System, SystemPrompt);
 

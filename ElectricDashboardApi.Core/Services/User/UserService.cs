@@ -41,17 +41,17 @@ public class UserService(
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             throw new Exception($"Keycloak error: {response.StatusCode} - {error}");
         }
 
-        var json = await response.Content.ReadAsStringAsync();
+        var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         return JsonDocument.Parse(json).RootElement.GetProperty("access_token").GetString();
     }
 
     public async Task<CreateUserResult> CreateUserAsync(UserDto userModel)
     {
-        var token = await GetAdminTokenAsync();
+        var token = await GetAdminTokenAsync().ConfigureAwait(false);
 
         var client = new HttpClient();
 
@@ -76,7 +76,7 @@ public class UserService(
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var keycloakError = JsonSerializer.Deserialize<KeyCloakError>(error);
             return new CreateUserResult()
             {
@@ -119,22 +119,21 @@ public class UserService(
     {
         var client = new HttpClient();
 
-        var content = new FormUrlEncodedContent(new[]
-        {
+        var content = new FormUrlEncodedContent([
             new KeyValuePair<string, string>("client_id", options.Value.ClientId),
             new KeyValuePair<string, string>("client_secret", options.Value.ClientSecret),
             new KeyValuePair<string, string>("grant_type", "password"),
             new KeyValuePair<string, string>("username", username),
             new KeyValuePair<string, string>("password", password)
-        });
+        ]);
 
         var response = await client.PostAsync(
             options.Value.TokenUrl,
-            content);
+            content).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var errorResponse = JsonSerializer.Deserialize<KeyCloakLoginError>(error, _optionSnakeCase);
 
             return new LoginResult()
@@ -144,7 +143,7 @@ public class UserService(
             };
         }
 
-        var json = await response.Content.ReadAsStringAsync();
+        var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         var loginTokenResponse = JsonSerializer.Deserialize<LoginTokenResponse>(json, _optionSnakeCase); // contains access_token, refresh_token, etc.
 
@@ -172,15 +171,15 @@ public class UserService(
         var response = await client.PostAsync(
             options.Value.TokenUrl,
             requestContent
-        );
+        ).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            var error = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             throw new Exception($"Error refreshing Keycloak token: {response.StatusCode}, {error}");
         }
 
-        var json = await response.Content.ReadAsStringAsync();
+        var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var tokenResponse = JsonSerializer.Deserialize<RefreshTokenResponse>(json, _options);
 
         return tokenResponse;

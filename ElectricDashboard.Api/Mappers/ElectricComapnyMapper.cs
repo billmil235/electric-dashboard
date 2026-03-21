@@ -11,7 +11,7 @@ public static class ElectricComapnyMapper
         {
             CompanyName = entity.CompanyName,
             ElectricCompanyId = entity.ElectricCompanyId,
-            State = entity.State
+            State = entity.State ?? "Unspecified"
         };
     }
 }

@@ -84,7 +84,7 @@ namespace ElectricDashboardApi.Infrastructure.Services.Solar
                     continue;
                 }
 
-                result.Add(new SolarDataDto { Date = date, Value = value });
+                result.Add(new SolarDataDto(date, value));
             }
             return result;
         }
