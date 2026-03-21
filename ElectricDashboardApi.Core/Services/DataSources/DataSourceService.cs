@@ -16,8 +16,8 @@ public class DataSourceService(IChatClient chatClient) : IDataSourceService
 
                                             - Period Start Date
                                             - Period End Date
-                                            - Total kilowatt hours (kWh) delivered or sent.
-                                            - Total dollar amount billed to customer.
+                                            - Delivered kilowatt hours (kWh)
+                                            - Total dollar amount billed to customer
 
                                         This information should be extracted if it exists.
                                             - Total kilowatt hours (kWh) recieved from the customer or sent back to
@@ -83,12 +83,18 @@ public class DataSourceService(IChatClient chatClient) : IDataSourceService
             message.Contents.Add(new DataContent(file.ToArray(), contentType));
         }
 
-
-        var response = await chatClient.GetResponseAsync<ElectricBillDto>([systemMessage, message], new ChatOptions
+        try
         {
-            Temperature = 0
-        });
+            var response = await chatClient.GetResponseAsync<ElectricBillDto>([systemMessage, message], new ChatOptions
+            {
+                Temperature = 0
+            });
 
-        return response.Result with { AddressId = addressId };
+            return response.Result with { AddressId = addressId };
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 }

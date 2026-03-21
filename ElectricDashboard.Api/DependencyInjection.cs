@@ -54,6 +54,7 @@ public static class DependencyInjection
                 .CreateClient("ollama");
 
             return new OllamaApiClient(httpClient, "devstral-small-2:24b");
+            //return new OllamaApiClient(httpClient, "qwen3.5:27b");
         });
     }
 }

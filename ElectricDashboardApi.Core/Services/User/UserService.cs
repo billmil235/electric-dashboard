@@ -11,7 +11,8 @@ namespace ElectricDashboard.Services.User;
 
 public class UserService(
     IOptions<KeycloakOptions> options,
-    IUpdateProfileCommand updateProfileCommand) : IUserService
+    IUpdateProfileCommand updateProfileCommand,
+    HttpClient client) : IUserService
 {
 
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions
@@ -26,8 +27,6 @@ public class UserService(
 
     private async Task<string> GetAdminTokenAsync()
     {
-        var client = new HttpClient();
-
         var content = new FormUrlEncodedContent(new[]
         {
             new KeyValuePair<string, string>("client_id", options.Value.ClientId),
@@ -52,8 +51,6 @@ public class UserService(
     public async Task<CreateUserResult> CreateUserAsync(UserDto userModel)
     {
         var token = await GetAdminTokenAsync().ConfigureAwait(false);
-
-        var client = new HttpClient();
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -117,8 +114,6 @@ public class UserService(
 
     public async Task<LoginResult> LoginAsync(string username, string password)
     {
-        var client = new HttpClient();
-
         var content = new FormUrlEncodedContent([
             new KeyValuePair<string, string>("client_id", options.Value.ClientId),
             new KeyValuePair<string, string>("client_secret", options.Value.ClientSecret),
