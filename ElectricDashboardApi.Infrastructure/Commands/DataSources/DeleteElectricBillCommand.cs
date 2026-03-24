@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace ElectricDashboardApi.Infrastructure.Commands.DataSources;
 
 public class DeleteElectricBillCommand(ElectricDashboardContext context) : IDeleteElectricBillCommand
@@ -5,9 +7,9 @@ public class DeleteElectricBillCommand(ElectricDashboardContext context) : IDele
     public async Task<bool> DeleteElectricBill(Guid userId, Guid billId)
     {
         var bill = await context.ElectricBills
-            .Include(b > b.ServiceAddress)
-            .ThenInclude(sa > sa.Users)
-            .FirstOrDefaultAsync(b > b.BillId == billId);
+            .Include(b => b.ServiceAddress)
+            .ThenInclude(sa => sa.Users)
+            .FirstOrDefaultAsync(b => b.BillId == billId);
 
         if (bill == null)
         {
@@ -15,9 +17,8 @@ public class DeleteElectricBillCommand(ElectricDashboardContext context) : IDele
         }
 
         // Check if user has access to this bill's address
-        var hasAccess = await bill.ServiceAddress.Users
-            .AnyAsync(u => u.UserId == userId)
-            .ConfigureAwait(false);
+        var hasAccess = bill.ServiceAddress.Users
+            .Any(u => u.UserId == userId);
 
         if (!hasAccess)
         {
