@@ -1,8 +1,10 @@
 using ElectricDashboard.Services.DataSources;
 using ElectricDashboard.Services.User;
 using ElectricDashboardApi.Infrastructure.Commands.DataSources;
+using ElectricDashboardApi.Infrastructure.Commands.Forecast;
 using ElectricDashboardApi.Infrastructure.Commands.User;
 using ElectricDashboardApi.Infrastructure.Queries.DataSources;
+using ElectricDashboardApi.Infrastructure.Queries.Forecast;
 using ElectricDashboardApi.Infrastructure.Queries.Lookups;
 using ElectricDashboardApi.Infrastructure.Queries.User;
 using ElectricDashboardApi.Infrastructure.Services.Forecast;
@@ -41,6 +43,8 @@ public static class DependencyInjection
         builder.Services.AddScoped<IGetElectricCompanies, GetElectricCompanies>();
 
         builder.Services.AddScoped<IForecastService, ForecastService>();
+        builder.Services.AddScoped<ICacheForecastCommand, CacheForecastCommand>();
+        builder.Services.AddScoped<IGetForecastQuery, GetForecastQuery>();
 
         builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>
         {
