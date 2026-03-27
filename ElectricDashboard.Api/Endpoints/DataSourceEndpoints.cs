@@ -77,11 +77,18 @@ public static class DataSourceEndpoints
             .DisableAntiforgery();
 
         group.MapDelete("/electric-bill/{addressGuid:guid}",
-            async ([FromRoute] Guid addressGuid, ClaimsPrincipal user, IGetAddressExistsQuery getAddressExistsQuery) =>
+            async ([FromRoute] Guid addressGuid, ClaimsPrincipal user, IGetAddressExistsQuery getAddressExistsQuery, IDeleteElectricBillCommand deleteElectricBillCommand) =>
             {
                 var addressExists = await getAddressExistsQuery.Execute(user.GetGuid(), addressGuid);
 
-                return !addressExists ? Results.NotFound() : Results.Ok();
+                if (!addressExists)
+                {
+                    return Results.NotFound();
+                }
+
+                var result  = await deleteElectricBillCommand.DeleteElectricBill(user.GetGuid(), addressGuid);
+
+                return result ? Results.Ok() : Results.InternalServerError();
             });
 
         return group;

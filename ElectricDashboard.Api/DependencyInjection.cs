@@ -39,6 +39,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IAddServiceAddressCommand, AddServiceAddressCommand>();
         builder.Services.AddScoped<IUpdateServiceAddressCommand, UpdateServiceAddressCommand>();
         builder.Services.AddScoped<IDeleteServiceAddressCommand, DeleteServiceAddressCommand>();
+        builder.Services.AddScoped<IDeleteElectricBillCommand, DeleteElectricBillCommand>();
 
         builder.Services.AddScoped<IGetElectricCompanies, GetElectricCompanies>();
 

@@ -29,6 +29,12 @@ export class ElectricBillsApi implements CacheInvalidator {
     return this.http.post<void>(`api/data/electric-bill/${addressId}`, bill, { headers: this.authHeaders.getAuthHeaders() });
   }
 
+  deleteElectricBill(addressId: string, billId: string): Observable<void> {
+    this.invalidateCache();
+    return this.http.delete<void>(`api/data/electric-bill/${addressId}/${billId}`, { headers: this.authHeaders.getAuthHeaders() });
+  }
+
+
   getBillsByAddress(addressId: string): Observable<ElectricBill[]> {
     if (this.cachedBills[addressId] !== undefined && this.cachedBills[addressId] !== null) {
       return of([...(this.cachedBills[addressId] || [])]);

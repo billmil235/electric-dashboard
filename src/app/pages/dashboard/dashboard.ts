@@ -111,6 +111,18 @@ export class Dashboard {
     }
   }
 
+  onDeleteBill(bill: ElectricBill) {
+    if (!this.selectedAddressId() || !bill.billId) return;
+    const confirmed = confirm(`Are you sure you want to delete bill ${bill.billId}?`);
+    if (!confirmed) return;
+    this.electricBillsApi.deleteElectricBill(this.selectedAddressId(), bill.billId).subscribe({
+      next: () => {
+        this.loadBills(this.selectedAddressId());
+      },
+      error: err => console.error('Failed to delete bill:', err),
+    });
+  }
+
   setChartView(view: 'yearly' | 'ytd') { this.selectedChartView.set(view); }
 
   getChartData() {

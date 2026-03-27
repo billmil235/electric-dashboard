@@ -13,15 +13,11 @@ export class BillTableComponent {
   bills = input<ElectricBill[]>([]);
   loading = input(false);
   editBill = output<ElectricBill>();
+  deleteBill = output<ElectricBill>();
 
   formatDate(dateString?: string): string {
     if (!dateString) return '';
-    
-    // Parse the date and format it in UTC without converting to local time
     const date = new Date(dateString);
-    
-    // Format to ISO string and extract just the date part (YYYY-MM-DD)
-    // This ensures no timezone conversion happens
     return date.toISOString().split('T')[0];
   }
   
@@ -40,5 +36,9 @@ export class BillTableComponent {
   
   onEditBill(bill: ElectricBill) {
     this.editBill.emit(bill);
+  }
+  
+  onDeleteBill(bill: ElectricBill) {
+    this.deleteBill.emit(bill);
   }
 }

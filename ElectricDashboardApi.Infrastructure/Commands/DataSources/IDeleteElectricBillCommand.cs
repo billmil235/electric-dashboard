@@ -1,5 +1,3 @@
-using ElectricDashboardApi.Infrastructure.Entities;
-
 namespace ElectricDashboardApi.Infrastructure.Commands.DataSources;
 
 public interface IDeleteElectricBillCommand

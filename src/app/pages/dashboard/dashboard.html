@@ -57,11 +57,12 @@
           <div class="card-body" style="padding-bottom: 0;">
             <h2 class="card-title">Recent Bills</h2>
             <div class="table-responsive" style="max-height: calc(100vh - 600px); overflow-y: auto;">
-            <app-bill-table 
-              [bills]="filteredBills()" 
-              [loading]="loadingBills()" 
-              (editBill)="onEditBill($event)">
-            </app-bill-table>
+              <app-bill-table 
+                [bills]="filteredBills()" 
+                [loading]="loadingBills()" 
+                (editBill)="onEditBill($event)" 
+                (deleteBill)="onDeleteBill($event)">
+              </app-bill-table>
             </div>
           </div>
         </div>
