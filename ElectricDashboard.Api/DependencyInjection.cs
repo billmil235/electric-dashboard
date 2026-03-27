@@ -12,54 +12,52 @@ using ElectricDashboardApi.Infrastructure.Services.Solar;
 using ElectricDashboardApi.Models.Options;
 using OllamaSharp;
 
-namespace ElectricDashboardApi;
-
-public static class DependencyInjection
+namespace ElectricDashboardApi
 {
-    public static void RegisterServices(this WebApplicationBuilder builder)
+    public static class DependencyInjection
     {
-        builder.Services.Configure<KeycloakOptions>(
-            builder.Configuration.GetSection("Keycloak")
-        );
-
-        builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IDataSourceService, DataSourceService>();
-        builder.Services.AddSingleton<ISolarDataService, SolarDataService>();
-
-        builder.Services.AddScoped<IUpdateProfileCommand, UpdateProfileCommand>();
-
-        builder.Services.AddScoped<IAddElectricBillCommand, AddElectricBillCommand>();
-
-        builder.Services.AddScoped<IGetElectricBillQuery, GetElectricBillsQuery>();
-
-        builder.Services.AddScoped<IUserAddressService, UserAddressService>();
-
-        builder.Services.AddScoped<IGetAddressExistsQuery, GetAddressExistsQuery>();
-        builder.Services.AddScoped<IGetUserAddressesQuery, GetUserAddressesQuery>();
-        builder.Services.AddScoped<IAddServiceAddressCommand, AddServiceAddressCommand>();
-        builder.Services.AddScoped<IUpdateServiceAddressCommand, UpdateServiceAddressCommand>();
-        builder.Services.AddScoped<IDeleteServiceAddressCommand, DeleteServiceAddressCommand>();
-        builder.Services.AddScoped<IDeleteElectricBillCommand, DeleteElectricBillCommand>();
-
-        builder.Services.AddScoped<IGetElectricCompanies, GetElectricCompanies>();
-
-        builder.Services.AddScoped<IForecastService, ForecastService>();
-        builder.Services.AddScoped<ICacheForecastCommand, CacheForecastCommand>();
-        builder.Services.AddScoped<IGetForecastQuery, GetForecastQuery>();
-
-        builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>
+        public static void RegisterServices(this WebApplicationBuilder builder)
         {
-            client.BaseAddress = new Uri("http://192.168.1.135:11434/");
-            client.Timeout = TimeSpan.FromMinutes(15);
-        });
+            builder.Services.Configure<KeycloakOptions>(
+                builder.Configuration.GetSection("Keycloak")
+            );
 
-        builder.Services.AddChatClient(sp =>
-        {
-            var httpClient = sp.GetRequiredService<IHttpClientFactory>()
-                .CreateClient("ollama");
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IDataSourceService, DataSourceService>();
+            builder.Services.AddSingleton<ISolarDataService, SolarDataService>();
 
-            return new OllamaApiClient(httpClient, "devstral-small-2:24b");
-            //return new OllamaApiClient(httpClient, "qwen3.5:27b");
-        });
+            builder.Services.AddScoped<IUpdateProfileCommand, UpdateProfileCommand>();
+            builder.Services.AddScoped<IAddElectricBillCommand, AddElectricBillCommand>();
+            builder.Services.AddScoped<IGetElectricBillQuery, GetElectricBillsQuery>();
+
+            builder.Services.AddScoped<IGetAddressExistsQuery, GetAddressExistsQuery>();
+            builder.Services.AddScoped<IGetUserAddressesQuery, GetUserAddressesQuery>();
+            builder.Services.AddScoped<IUserAddressService, UserAddressService>();
+            builder.Services.AddScoped<IAddServiceAddressCommand, AddServiceAddressCommand>();
+            builder.Services.AddScoped<IUpdateServiceAddressCommand, UpdateServiceAddressCommand>();
+            builder.Services.AddScoped<IDeleteServiceAddressCommand, DeleteServiceAddressCommand>();
+            builder.Services.AddScoped<IDeleteElectricBillCommand, DeleteElectricBillCommand>();
+
+            builder.Services.AddScoped<IGetElectricCompanies, GetElectricCompanies>();
+
+            builder.Services.AddScoped<IForecastService, ForecastService>();
+            builder.Services.AddScoped<ICacheForecastCommand, CacheForecastCommand>();
+            builder.Services.AddScoped<IGetForecastQuery, GetForecastQuery>();
+
+            builder.Services.AddHttpClient<IOllamaApiClient, OllamaApiClient>("ollama", client =>
+            {
+                client.BaseAddress = new Uri("http://192.168.1.135:11434/");
+                client.Timeout = TimeSpan.FromMinutes(15);
+            });
+
+            builder.Services.AddChatClient(sp =>
+            {
+                var httpClient = sp.GetRequiredService<IHttpClientFactory>()
+                    .CreateClient("ollama");
+
+                return new OllamaApiClient(httpClient, "devstral-small-2:24b");
+                // return new OllamaApiClient(httpClient, "qwen3.5:27b");
+            });
+        }
     }
 }
