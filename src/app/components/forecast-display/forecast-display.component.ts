@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Forecast } from '../../models/forecast.model';
 
 @Component({
+  standalone: true,
   selector: 'app-forecast-display',
   imports: [CommonModule],
   templateUrl: './forecast-display.component.html',

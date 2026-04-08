@@ -8,7 +8,7 @@
             <div class="col-sm-4">
               <div class="row">
                 <select class="form-select" [value]="selectedYearFilter()" (change)="onYearSelected($event)">
-                @for (option of yearOptions; track trackByYear($index, option)) {
+                @for (option of yearOptions(); track trackByYear($index, option)) {
                   <option [value]="option.value">{{ option.label }}</option>
                 }
                 </select>               

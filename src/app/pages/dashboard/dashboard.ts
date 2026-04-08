@@ -1,4 +1,5 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 import { CommonModule } from '@angular/common';
@@ -28,7 +29,8 @@ export class Dashboard {
   loadingBills = signal<boolean>(false);
 
   forecast = signal<Forecast | null>(null);
-
+  private destroyRef = inject(DestroyRef);
+  
   constructor(
     private router: Router,
     private electricBillsApi: ElectricBillsApi,
@@ -58,7 +60,9 @@ export class Dashboard {
 
   loadBills(id: string) {
     this.loadingBills.set(true);
-    this.electricBillsApi.getBillsByAddress(id).subscribe({
+    this.electricBillsApi.getBillsByAddress(id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (bills) => {
         this.bills.set(bills);
         this.updateYearFilterOptions();
@@ -69,7 +73,9 @@ export class Dashboard {
   }
 
   fetchForecast(id: string) {
-    this.forecastApi.getForecast(id).subscribe({
+    this.forecastApi.getForecast(id).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (f: Forecast) => this.forecast.set(f),
       error: (err: any) => { console.error('Forecast error', err); this.forecast.set(null); },
     });
@@ -92,13 +98,13 @@ export class Dashboard {
     return bills.filter(b => b.serviceYear === Number(filter));
   });
 
-  get yearOptions() {
+  yearOptions = computed(() => {
     const bills = this.bills();
     const years = Array.from(
       new Set(bills.map(b => b.serviceYear).filter(y => y != null)),
     ).sort((a, b) => b - a);
     return [{ value: 'all', label: 'All Years' }, ...years.map(y => ({ value: y.toString(), label: y.toString() }))];
-  }
+  });
 
   onYearSelected(e: Event) {
     const v = (e.target as HTMLSelectElement).value;
@@ -115,7 +121,9 @@ export class Dashboard {
     if (!this.selectedAddressId() || !bill.billId) return;
     const confirmed = confirm(`Are you sure you want to delete bill ${bill.billId}?`);
     if (!confirmed) return;
-    this.electricBillsApi.deleteElectricBill(this.selectedAddressId(), bill.billId).subscribe({
+    this.electricBillsApi.deleteElectricBill(this.selectedAddressId(), bill.billId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: () => {
         this.loadBills(this.selectedAddressId());
       },

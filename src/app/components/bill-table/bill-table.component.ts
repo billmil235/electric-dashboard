@@ -3,6 +3,7 @@ import { ElectricBill } from '../../models/electric-bill.model';
 import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-bill-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],

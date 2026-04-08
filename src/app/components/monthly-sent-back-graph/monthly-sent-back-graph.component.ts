@@ -3,6 +3,7 @@ import Chart from 'chart.js/auto';
 import { ElectricBill } from '../../models/electric-bill.model';
 
 @Component({
+  standalone: true,
   selector: 'app-monthly-sent-back-graph',
   template: `
     <div class="chart-wrapper">

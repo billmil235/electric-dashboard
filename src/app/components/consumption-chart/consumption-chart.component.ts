@@ -1,8 +1,11 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges, input, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, AfterViewInit, OnDestroy, input, ViewChild, ElementRef, effect } from '@angular/core';
 import Chart from 'chart.js/auto';
-import { ElectricBill } from '../../models/electric-bill.model';
+import { ConsumptionChartData } from '../../models/consumption-chart.model';
+
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
   selector: 'app-consumption-chart',
   template: `
     <div class="chart-wrapper">
@@ -12,7 +15,7 @@ import { ElectricBill } from '../../models/electric-bill.model';
   styleUrls: ['./consumption-chart.css']
 })
 export class ConsumptionChartComponent implements AfterViewInit, OnDestroy {
-  chartData = input<any[]>([]);
+  chartData = input<ConsumptionChartData[]>([]);
   loading = input(false);
   
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
