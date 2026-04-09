@@ -1,8 +1,9 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, input, effect } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, input, effect, ChangeDetectionStrategy } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { ElectricBill } from '../../models/electric-bill.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   selector: 'app-monthly-spend-graph',
   template: `

@@ -57,6 +57,8 @@ export class ElectricBillsApi implements CacheInvalidator {
   }
 
   uploadElectricBillPdf(addressId: string, file: File): Observable<ElectricBill> {
-    return this.http.post<ElectricBill>(`api/data/electric-bill/upload/${addressId}`, file, { headers: this.authHeaders.getAuthHeaders(true) });
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ElectricBill>(`api/data/electric-bill/upload/${addressId}`, formData, { headers: this.authHeaders.getAuthHeaders(true) });
   }
 }

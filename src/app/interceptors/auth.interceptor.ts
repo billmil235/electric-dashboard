@@ -1,82 +1,69 @@
-import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
 import { catchError, filter, take, switchMap, finalize } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { TokenRefreshCoordinatorService } from '../services/token-refresh-coordinator.service';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  const tokenRefreshCoordinator = inject(TokenRefreshCoordinatorService);
 
-  constructor(
-    private authService: AuthService, 
-    private router: Router,
-    private tokenRefreshCoordinator: TokenRefreshCoordinatorService
-  ) {}
-
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return next.handle(request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 && error.error?.message === 'Unauthorized') {
-          console.log('401 Unauthorized error caught, attempting to refresh token');
-          const refreshToken = this.authService.getRefreshToken();
-          if (!refreshToken) {
-            this.authService.logout();
-            return throwError(() => error);
-          }
-
-          // Wait if a refresh is already in progress (shared state)
-          if (this.tokenRefreshCoordinator.getIsRefreshing()) {
-            console.log('Waiting for existing refresh to complete...');
-            return this.refreshTokenSubject.pipe(
-              filter(token => token !== null),
-              take(1),
-              switchMap(() => next.handle(this.addToken(request, this.authService.getAccessToken()!)))
-            );
-          }
-
-          // Start refreshing the token
-          console.log('Starting manual token refresh');
-          this.tokenRefreshCoordinator.setIsRefreshing(true);
-          this.refreshTokenSubject.next(null);
-
-return this.authService.refreshToken(refreshToken).pipe(
-  switchMap((token: { accessToken: string }) => {
-              console.log('Manual token refresh successful');
-              this.tokenRefreshCoordinator.setIsRefreshing(false);
-              this.refreshTokenSubject.next(token.accessToken);
-              this.authService.updateAccessToken(token.accessToken);
-              console.log('New access token stored in localStorage');
-              // Verify the token was stored correctly
-              const storedToken = this.authService.getAccessToken();
-              console.log('Verified stored token:', storedToken);
-              return next.handle(this.addToken(request, token.accessToken));
-            }),
-          ).pipe(
-            catchError((err) => {
-              console.error('Manual token refresh failed:', err);
-              this.tokenRefreshCoordinator.setIsRefreshing(false);
-              this.refreshTokenSubject.next(null);
-              this.authService.logout();
-              this.router.navigate(['/']);
-              return throwError(() => err);
-            }),
-            finalize(() => {
-              this.tokenRefreshCoordinator.setIsRefreshing(false);
-            })
-          );
-        }
-
-        return throwError(() => error);
-      })
-    );
-  }
-
-  private addToken(request: HttpRequest<any>, token: string): HttpRequest<any> {
+  const addToken = (request: HttpRequest<unknown>, token: string): HttpRequest<unknown> => {
     return request.clone({
       headers: request.headers.set('Authorization', 'Bearer ' + token)
     });
-  }
-}
+  };
+
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 && error.error?.message === 'Unauthorized') {
+        console.log('401 Unauthorized error caught, attempting to refresh token');
+        const refreshToken = authService.getRefreshToken();
+        if (!refreshToken) {
+          authService.logout();
+          return throwError(() => error);
+        }
+
+        if (tokenRefreshCoordinator.getIsRefreshing()) {
+          console.log('Waiting for existing refresh to complete...');
+          return tokenRefreshCoordinator.refreshToken$.pipe(
+            filter(token => token !== null),
+            take(1),
+            switchMap((token) => next(addToken(req, token!)))
+          );
+        }
+
+        console.log('Starting manual token refresh');
+        tokenRefreshCoordinator.setIsRefreshing(true);
+        tokenRefreshCoordinator.setRefreshToken(null);
+
+        return authService.refreshToken(refreshToken).pipe(
+          switchMap((token: { accessToken: string }) => {
+            console.log('Manual token refresh successful');
+            tokenRefreshCoordinator.setIsRefreshing(false);
+            tokenRefreshCoordinator.setRefreshToken(token.accessToken);
+            authService.updateAccessToken(token.accessToken);
+            console.log('New access token stored in localStorage');
+            return next(addToken(req, token.accessToken));
+          }),
+          catchError((err) => {
+            console.error('Manual token refresh failed:', err);
+            tokenRefreshCoordinator.setIsRefreshing(false);
+            tokenRefreshCoordinator.setRefreshToken(null);
+            authService.logout();
+            router.navigate(['/']);
+            return throwError(() => err);
+          }),
+          finalize(() => {
+            tokenRefreshCoordinator.setIsRefreshing(false);
+          })
+        );
+      }
+
+      return throwError(() => error);
+    })
+  );
+};

@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, DestroyRef } from '@angular/core';
+import { Component, signal, computed, inject, DestroyRef, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
@@ -18,6 +18,7 @@ import { ForecastDisplay } from '../../components/forecast-display/forecast-disp
   imports: [ServiceAddressSelector, CommonModule, ConsumptionChartComponent, BillTableComponent, LoggedInLayout, ForecastDisplay],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Dashboard {
   username = signal('User');
@@ -30,12 +31,10 @@ export class Dashboard {
 
   forecast = signal<Forecast | null>(null);
   private destroyRef = inject(DestroyRef);
-  
-  constructor(
-    private router: Router,
-    private electricBillsApi: ElectricBillsApi,
-    private forecastApi: ForecastApiService,
-  ) {}
+  private router = inject(Router);
+  private electricBillsApi = inject(ElectricBillsApi);
+  private forecastApi = inject(ForecastApiService);
+
 
   logout() {
     localStorage.removeItem('accessToken');
@@ -77,7 +76,7 @@ export class Dashboard {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (f: Forecast) => this.forecast.set(f),
-      error: (err: any) => { console.error('Forecast error', err); this.forecast.set(null); },
+      error: (err: unknown) => { console.error('Forecast error', err); this.forecast.set(null); },
     });
   }
 
@@ -177,5 +176,5 @@ export class Dashboard {
     return Array.from(map.entries()).map(([y, v]) => ({ label: y.toString(), totalConsumption: v.totalConsumption, totalSentBack: v.totalSentBack, totalBilledAmount: v.totalBilledAmount }));
   }
 
-  trackByYear(index: number, option: any) { return option.value; }
+  trackByYear(index: number, option: { value: string; label: string }) { return option.value; }
 }

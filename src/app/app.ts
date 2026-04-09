@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TokenRefreshService } from './services/token-refresh.service';
 
@@ -6,10 +6,11 @@ import { TokenRefreshService } from './services/token-refresh.service';
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App implements OnInit, OnDestroy {
-  constructor(private tokenRefreshService: TokenRefreshService) {}
+  private tokenRefreshService = inject(TokenRefreshService);
 
   ngOnInit() {
     this.tokenRefreshService.startAutoRefresh();

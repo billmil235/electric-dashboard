@@ -8,8 +8,15 @@ export class TokenRefreshCoordinatorService {
   private isRefreshingSubject = new BehaviorSubject<boolean>(false);
   public isRefreshing$ = this.isRefreshingSubject.asObservable();
 
+  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+  public refreshToken$ = this.refreshTokenSubject.asObservable();
+
   setIsRefreshing(isRefreshing: boolean): void {
     this.isRefreshingSubject.next(isRefreshing);
+  }
+
+  setRefreshToken(token: string | null): void {
+    this.refreshTokenSubject.next(token);
   }
 
   getIsRefreshing(): boolean {
