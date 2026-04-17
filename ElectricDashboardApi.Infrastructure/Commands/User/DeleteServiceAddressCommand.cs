@@ -20,7 +20,8 @@ public class DeleteServiceAddressCommand(ElectricDashboardContext context) : IDe
 
         // Check if any other users are using this address
         var otherUsers = await context.UserToServiceAddresses
-            .AnyAsync(usa => usa.AddressId == addressId);
+            .AnyAsync(usa => usa.AddressId == addressId && usa.UserId != userId)
+            .ConfigureAwait(false);
 
         if (!otherUsers)
         {

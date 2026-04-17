@@ -21,11 +21,12 @@ public class ForecastCache
     public decimal PredictedKwh { get; set; }
 
     [Required]
+    [MaxLength(30)]
     public string AlgorithmUsed { get; set; } = string.Empty;
 
     [Required]
     public DateTime CachedAt { get; set; } = DateTime.UtcNow;
 
-    [Column(TypeName="DECIMAL(5,20")]
+    [Column(TypeName="DECIMAL(5,20)")]
     public decimal Confidence { get; set; }
 }

@@ -9,6 +9,7 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
     public async Task<ElectricBill?> AddElectricBill(Guid userId, ElectricBillDto electricBillDto, Guid? billGuid = null)
     {
         ElectricBill? entity;
+        var billId = billGuid ?? Guid.CreateVersion7();
 
         if (billGuid.HasValue)
         {
@@ -18,21 +19,23 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
         }
         else
         {
-            entity = new ElectricBill
-            {
-                BillId = Guid.CreateVersion7(),
-                AddressId = electricBillDto.AddressId!.Value
-            };
+            entity = new ElectricBill();
         }
 
-        entity.BilledAmount = electricBillDto.BilledAmount;
+        entity.BillId = billId;
+        entity.AddressId = electricBillDto.AddressId!.Value;
         entity.PeriodStartDate = electricBillDto.PeriodStartDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
         entity.PeriodEndDate = electricBillDto.PeriodEndDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
-        entity.SentBackKwh = electricBillDto.SentBackKwh;
         entity.ConsumptionKwh = electricBillDto.ConsumptionKwh;
+        entity.SentBackKwh = electricBillDto.SentBackKwh;
         entity.UnitPrice = electricBillDto.UnitPrice;
+        entity.BilledAmount = electricBillDto.BilledAmount;
 
-        await context.ElectricBills.AddAsync(entity).ConfigureAwait(false);
+        if (!billGuid.HasValue)
+        {
+            await context.ElectricBills.AddAsync(entity).ConfigureAwait(false);
+        }
+
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return entity;

@@ -30,6 +30,6 @@ public class ElectricBill
     [Column(TypeName = "decimal(10, 2)")]
     public decimal BilledAmount { get; set; }
 
-    [Column(TypeName = "decimal(6,4")]
+    [Column(TypeName = "decimal(6,4)")]
     public decimal? UnitPrice { get; set; }
 }

@@ -10,6 +10,15 @@ public class GetElectricBillsQuery(ElectricDashboardContext context) : IGetElect
         Guid addressId,
         Guid? billId = null)
     {
+        var owns = await context.UserToServiceAddresses
+            .AnyAsync(ua => ua.UserId == userId && ua.AddressId == addressId)
+            .ConfigureAwait(false);
+        
+        if (!owns)
+        {
+            return [];
+        }
+
         var query = context.ElectricBills
             .Where(bill => bill.AddressId == addressId)
             .AsNoTracking();
