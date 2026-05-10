@@ -1,19 +1,19 @@
-using ElectricDashboardApi.Infrastructure.Queries.DataSources;
-using ElectricDashboardApi.Infrastructure.Queries.User;
+namespace ElectricDashboard.Services.User;
+
 using ElectricDashboardApi.Dtos.User;
 using ElectricDashboardApi.Infrastructure.Commands.User;
+using ElectricDashboardApi.Infrastructure.Queries.DataSources;
+using ElectricDashboardApi.Infrastructure.Queries.User;
 using Microsoft.Extensions.Caching.Hybrid;
-
-namespace ElectricDashboard.Services.User;
 
 public class UserAddressService(
     HybridCache cache,
     IGetAddressExistsQuery getAddressExistsQuery,
     IGetUserAddressesQuery getUserAddressesQuery,
     IAddServiceAddressCommand addServiceAddressCommand,
-    IUpdateServiceAddressCommand updateServiceAddressCommand) : IUserAddressService
+    IUpdateServiceAddressCommand updateServiceAddressCommand,
+    IDeleteServiceAddressCommand deleteServiceAddressCommand) : IUserAddressService
 {
-
     public async ValueTask<IReadOnlyCollection<ServiceAddressDto>> GetServiceAddresses(Guid userGuid)
     {
         return await cache.GetOrCreateAsync(
@@ -30,19 +30,15 @@ public class UserAddressService(
 
     public async Task<ServiceAddressDto?> AddAddress(Guid userGuid, ServiceAddressDto serviceAddress)
     {
-        // Invalidate cache for this user Guid
         await cache.RemoveByTagAsync($"User:ServiceAddress:{userGuid}");
 
-        // Create address in the database
         return await addServiceAddressCommand.Execute(userGuid, serviceAddress);
     }
 
     public async Task<ServiceAddressDto?> UpdateServiceAddress(Guid userGuid, Guid addressGuid, ServiceAddressDto serviceAddress)
     {
-        // Invalidate cache for this user Guid
         await cache.RemoveByTagAsync($"User:ServiceAddress:{userGuid}");
 
-        // Update address in the database
         return await updateServiceAddressCommand.Execute(userGuid, addressGuid, serviceAddress);
     }
 
@@ -52,11 +48,9 @@ public class UserAddressService(
 
         if (addressExists)
         {
-            // Invalidate cache for this user Guid
             await cache.RemoveByTagAsync($"User:ServiceAddress:{userGuid}");
 
-            // Delete the address from the database
+            await deleteServiceAddressCommand.Execute(userGuid, addressGuid);
         }
     }
-
 }
