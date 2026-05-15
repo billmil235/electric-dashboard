@@ -2,7 +2,7 @@ import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ElectricBillsApi } from '../../services/electric-bills-api';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
 import { ElectricBill } from '../../models/electric-bill.model';
 import { LoggedInLayout } from "../logged-in-layout/logged-in-layout";
@@ -22,22 +22,23 @@ export class BillingInfo {
   addressId = this.route.snapshot.params['addressGuid'] || '';
   billGuid = this.route.snapshot.params['billGuid'] || '';
 
-  billedDate = '';
+   billedDate = '';
   billedDateEnd = '';
   consumption: number | null = null;
   sentBack: number | null = null;
   billedAmount: number | null = null;
   unitPrice: number | null = null;
+  note: string | null = null;
 
-  loading = false;
-  error: string | null = null;
-  success = false;
-  addressesLoading = false;
-  isEditing = false;
-
-  pdfUploading = false;
-  pdfUploadError: string | null = null;
-  pdfUploaded = false;
+   loading = false;
+   error: string | null = null;
+   success = false;
+   addressesLoading = false;
+   isEditing = false;
+   
+   pdfUploading = false;
+   pdfUploadError: string | null = null;
+   pdfUploaded = false;
 
   private selectedPdfFile: File | null = null;
 
@@ -66,6 +67,7 @@ export class BillingInfo {
       sentBackKwh: this.sentBack ?? null,
       billedAmount: this.billedAmount ?? 0,
       unitPrice: this.unitPrice ?? null,
+      note: this.note ?? null,
     };
 
     const apiCall$ = this.isEditing
@@ -116,14 +118,14 @@ export class BillingInfo {
       this.electricBillsApi.uploadElectricBillPdf(this.addressId, this.selectedPdfFile).subscribe({
         next: (response: ElectricBill) => {
           if (response) {
-            this.billedDate = response.periodStartDate || '';
-            this.billedDateEnd = response.periodEndDate || '';
-            this.consumption = response.consumptionKwh ?? null;
-            this.sentBack = response.sentBackKwh ?? null;
-            this.billedAmount = response.billedAmount ?? null;
-            this.unitPrice = response.unitPrice ?? null;
-            
-            this.cdr.detectChanges();
+              this.billedDate = response.periodStartDate || '';
+              this.billedDateEnd = response.periodEndDate || '';
+              this.consumption = response.consumptionKwh ?? null;
+              this.sentBack = response.sentBackKwh ?? null;
+              this.billedAmount = response.billedAmount ?? null;
+              this.unitPrice = response.unitPrice ?? null;
+              this.note = response.note ?? null;
+              
             
             this.pdfUploaded = true;
           }
@@ -144,14 +146,15 @@ export class BillingInfo {
     }
   }
 
-  clearForm() {
-    this.billedDate = '';
-    this.billedDateEnd = '';
-    this.consumption = null;
-    this.sentBack = null;
-    this.billedAmount = null;
-    this.unitPrice = null;
-  }
+   clearForm() {
+     this.billedDate = '';
+     this.billedDateEnd = '';
+     this.consumption = null;
+     this.sentBack = null;
+     this.billedAmount = null;
+     this.unitPrice = null;
+     this.note = null;
+   }
 
   async loadBillForEditing() {
     if (!this.addressId || !this.billGuid) {
@@ -172,6 +175,7 @@ export class BillingInfo {
             this.sentBack = bill[0].sentBackKwh ?? null;
             this.billedAmount = bill[0].billedAmount ?? null;
             this.unitPrice = bill[0].unitPrice ?? null;
+            this.note = bill[0].note ?? null;
           }
           this.loading = false;
           this.cdr.detectChanges();

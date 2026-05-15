@@ -136,7 +136,7 @@ export class Dashboard {
     const bills = this.filteredBills();
     if (!bills.length) return [];
     if (this.selectedChartView() === 'ytd') return this.getYTDData();
-    return this.groupBillsByYear(bills).sort((a,b)=> Number(b.label) - Number(a.label));
+    return this.groupBillsByYear(bills).sort((a,b) => Number(b.label) - Number(a.label));
   }
 
   private getYTDData(): { label: string; totalConsumption: number; totalSentBack: number; totalBilledAmount: number; }[] {

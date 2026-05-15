@@ -8,5 +8,6 @@ public record ElectricBillDto (
     int? SentBackKwh,
     decimal BilledAmount,
     decimal? UnitPrice,
+    string? Note,
     List<ElectricBillLineItemDto>? LineItemCharges
 );

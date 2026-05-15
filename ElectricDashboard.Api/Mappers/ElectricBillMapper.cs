@@ -14,9 +14,9 @@ public static class ElectricBillMapper
             PeriodStartDate = DateOnly.FromDateTime(electricBill.PeriodStartDate),
             PeriodEndDate = DateOnly.FromDateTime(electricBill.PeriodEndDate),
             SentBackKwh = electricBill.SentBackKwh,
-            BillId = electricBill.BillId,
+            UnitPrice = electricBill.UnitPrice,
             ConsumptionKwh = electricBill.ConsumptionKwh,
-            UnitPrice = electricBill.UnitPrice
+            Note = electricBill.Note
         };
     }
 }
