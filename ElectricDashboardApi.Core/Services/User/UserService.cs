@@ -93,7 +93,7 @@ public class UserService(
                 return new CreateUserResult()
                 {
                     IsSuccessful = true,
-                    UserGuid = new Guid(location)
+                    UserGuid = userId
                 };
             }
             else

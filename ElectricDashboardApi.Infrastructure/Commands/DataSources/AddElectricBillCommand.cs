@@ -29,12 +29,10 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
         entity.ConsumptionKwh = electricBillDto.ConsumptionKwh;
         entity.SentBackKwh = electricBillDto.SentBackKwh;
         entity.UnitPrice = electricBillDto.UnitPrice;
-         entity.BilledAmount = electricBillDto.BilledAmount;
+        entity.BilledAmount = electricBillDto.BilledAmount;
 
         entity.Note = electricBillDto.Note;
-        {
-            await context.ElectricBills.AddAsync(entity).ConfigureAwait(false);
-        }
+        await context.ElectricBills.AddAsync(entity).ConfigureAwait(false);
 
         await context.SaveChangesAsync().ConfigureAwait(false);
 
