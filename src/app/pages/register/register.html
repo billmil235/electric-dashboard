@@ -14,7 +14,14 @@
             [(ngModel)]="email"
             name="email"
             required
+            (ngModelChange)="onEmailChange($event)"
           />
+          @if (isCheckingEmail) {
+            <div class="form-text text-muted">Checking email availability…</div>
+          }
+          @if (emailAlreadyExists) {
+            <div class="form-text text-danger">This email address is already in use.</div>
+          }
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
@@ -78,7 +85,12 @@
             required
           />
         </div>
-        <button type="submit" class="btn btn-primary w-100">Register</button>
+        @if (registrationError) {
+          <div class="text-danger text-center mb-3" role="alert">{{ registrationError }}</div>
+        }
+        <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Registering…' : 'Register' }}
+        </button>
       </form>
 
       <div class="text-center">

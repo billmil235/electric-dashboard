@@ -17,11 +17,6 @@ public class UserService(
 
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-    };
-
-    private readonly JsonSerializerOptions _optionSnakeCase = new JsonSerializerOptions
-    {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
     };
 
@@ -45,7 +40,41 @@ public class UserService(
         }
 
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        return JsonDocument.Parse(json).RootElement.GetProperty("access_token").GetString();
+        using var document = JsonDocument.Parse(json);
+        return document.RootElement.GetProperty("access_token").GetString()!;
+    }
+
+    public async Task<bool> ExistsByEmailAsync(string emailAddress)
+    {
+        var token = await GetAdminTokenAsync().ConfigureAwait(false);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var requestUri = $"{options.Value.UserUrl}?email={Uri.EscapeDataString(emailAddress)}&max=1";
+        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri)).ConfigureAwait(false);
+
+        var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"Keycloak error: {response.StatusCode} - {content}");
+        }
+
+        using var usersDoc = JsonDocument.Parse(content);
+        var users = usersDoc.RootElement.EnumerateArray();
+        return users.Any(user =>
+        {
+            string? userEmail = user.TryGetProperty("email", out var emailProperty)
+                ? emailProperty.GetString()
+                : null;
+
+            if (userEmail is not null && string.Equals(userEmail, emailAddress, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return user.TryGetProperty("username", out var usernameProperty)
+                && string.Equals(usernameProperty.GetString(), emailAddress, StringComparison.OrdinalIgnoreCase);
+        });
     }
 
     public async Task<CreateUserResult> CreateUserAsync(UserDto userModel)
@@ -53,6 +82,16 @@ public class UserService(
         var token = await GetAdminTokenAsync().ConfigureAwait(false);
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        if (await ExistsByEmailAsync(userModel.EmailAddress).ConfigureAwait(false))
+        {
+            return new CreateUserResult()
+            {
+                IsSuccessful = false,
+                EmailAlreadyExists = true,
+                ErrorMessage = "Email already exists"
+            };
+        }
 
         var user = new CreateUserRequest(
             userModel.EmailAddress,
@@ -129,7 +168,7 @@ public class UserService(
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var errorResponse = JsonSerializer.Deserialize<KeyCloakLoginError>(error, _optionSnakeCase);
+            var errorResponse = JsonSerializer.Deserialize<KeyCloakLoginError>(error);
 
             return new LoginResult()
             {
@@ -140,12 +179,25 @@ public class UserService(
 
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        var loginTokenResponse = JsonSerializer.Deserialize<LoginTokenResponse>(json, _optionSnakeCase); // contains access_token, refresh_token, etc.
+        using var document = JsonDocument.Parse(json);
+
+        document.RootElement.TryGetProperty("access_token", out var accessTokenProp);
+        var accessToken = accessTokenProp.GetString();
 
         return new LoginResult()
         {
-            IsSuccessful = loginTokenResponse != null,
-            Token = loginTokenResponse
+            IsSuccessful = accessToken != null,
+            Token = new LoginTokenResponse
+            {
+                AccessToken = accessToken ?? string.Empty,
+                TokenType = document.RootElement.TryGetProperty("token_type", out var tt) ? tt.GetString()! : string.Empty,
+                ExpiresIn = document.RootElement.TryGetProperty("expires_in", out var ei) ? ei.GetInt32() : 0,
+                RefreshExpiresIn = document.RootElement.TryGetProperty("refresh_expires_in", out var rei) ? rei.GetInt32() : 0,
+                RefreshToken = document.RootElement.TryGetProperty("refresh_token", out var rt) ? rt.GetString()! : string.Empty,
+                SessionState = document.RootElement.TryGetProperty("session_state", out var ss) ? ss.GetString()! : string.Empty,
+                Scope = document.RootElement.TryGetProperty("scope", out var s) ? s.GetString()! : string.Empty,
+                NotBeforePolicy = document.RootElement.TryGetProperty("not_before_policy", out var np) ? np.GetInt32() : 0
+            }
         };
     }
 
@@ -175,9 +227,19 @@ public class UserService(
         }
 
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var tokenResponse = JsonSerializer.Deserialize<RefreshTokenResponse>(json, _options);
 
-        return tokenResponse;
+        using var document = JsonDocument.Parse(json);
+        var tokenResponse = document.RootElement.GetProperty("access_token").GetString();
+
+        return new RefreshTokenResponse
+        {
+            AccessToken = tokenResponse!,
+            ExpiresIn = document.RootElement.GetProperty("expires_in").GetInt32(),
+            RefreshToken = document.RootElement.TryGetProperty("refresh_token", out var rt) ? rt.GetString()! : string.Empty,
+            RefreshExpiresIn = document.RootElement.TryGetProperty("refresh_expires_in", out var rei) ? rei.GetInt32() : 0,
+            TokenType = document.RootElement.TryGetProperty("token_type", out var tt) ? tt.GetString()! : string.Empty,
+            Scope = document.RootElement.TryGetProperty("scope", out var s) ? s.GetString()! : string.Empty
+        };
     }
 
     public async Task UpdateUserProfile(UserDto user, Guid userId)

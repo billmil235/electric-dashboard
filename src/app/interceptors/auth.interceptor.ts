@@ -1,14 +1,12 @@
-import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError, filter, take, switchMap, finalize } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
 import { TokenRefreshCoordinatorService } from '../services/token-refresh-coordinator.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const router = inject(Router);
   const tokenRefreshCoordinator = inject(TokenRefreshCoordinatorService);
 
   const addToken = (request: HttpRequest<unknown>, token: string): HttpRequest<unknown> => {
@@ -41,11 +39,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         tokenRefreshCoordinator.setRefreshToken(null);
 
         return authService.refreshToken(refreshToken).pipe(
-          switchMap((token: { accessToken: string }) => {
+          switchMap((token: { accessToken: string; refreshToken: string }) => {
             console.log('Manual token refresh successful');
             tokenRefreshCoordinator.setIsRefreshing(false);
-            tokenRefreshCoordinator.setRefreshToken(token.accessToken);
+            tokenRefreshCoordinator.setRefreshToken(token.refreshToken);
             authService.updateAccessToken(token.accessToken);
+            localStorage.setItem('refreshToken', token.refreshToken);
             console.log('New access token stored in localStorage');
             return next(addToken(req, token.accessToken));
           }),
@@ -53,8 +52,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             console.error('Manual token refresh failed:', err);
             tokenRefreshCoordinator.setIsRefreshing(false);
             tokenRefreshCoordinator.setRefreshToken(null);
-            authService.logout();
-            router.navigate(['/']);
+            // DO NOT call logout() here - token refresh failure should not force logout
+            // The user will be prompted to re-authenticate on next action
             return throwError(() => err);
           }),
           finalize(() => {

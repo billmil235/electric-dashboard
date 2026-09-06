@@ -1,7 +1,13 @@
-import { Injectable } from '@angular/core';
+import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { LoginRequest } from '../models/login-request.model';
+import { Injectable } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { JwtTokenService } from './jwt-token.service';
+
+interface LoginRequest {
+  username: string;
+  password: string;
+}
 
 interface LoginResponse {
   accessToken: string;
@@ -18,26 +24,23 @@ interface LoginResponse {
   providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private jwtTokenService = inject(JwtTokenService);
   private baseUrl = 'api/users';
-
-  constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<LoginResponse> {
     const request: LoginRequest = { username, password };
-    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, request);
-  }
-  storeTokens(response: LoginResponse): void {
-    localStorage.setItem('accessToken', response.accessToken);
-    localStorage.setItem('refreshToken', response.refreshToken);
+    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, request).pipe(
+      tap((response: LoginResponse) => this.jwtTokenService.storeTokens(response))
+    );
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
+    return this.jwtTokenService.getToken();
   }
 
   logout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    this.jwtTokenService.logout();
   }
 
   refreshToken(token: string): Observable<any> {
@@ -50,5 +53,33 @@ export class AuthService {
 
   updateAccessToken(newToken: string): void {
     localStorage.setItem('accessToken', newToken);
+  }
+
+  getDecodedToken(): any {
+    const token = this.getAccessToken();
+    if (!token) {
+      return null;
+    }
+    return this.jwtTokenService.decodeToken(token);
+  }
+
+  isTokenExpired(): boolean {
+    return this.jwtTokenService.isTokenExpired();
+  }
+
+  getUserId(): string | null {
+    return this.jwtTokenService.getUserId();
+  }
+
+  getUsername(): string | null {
+    return this.jwtTokenService.getUsername();
+  }
+
+  getRoles(): string[] {
+    return this.jwtTokenService.getRoles();
+  }
+
+  hasRole(role: string): boolean {
+    return this.jwtTokenService.hasRole(role);
   }
 }

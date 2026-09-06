@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
+import { HttpClient } from '@angular/common/http';
 import { take, catchError, throwError } from 'rxjs';
 import { TokenRefreshCoordinatorService } from './token-refresh-coordinator.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,14 +10,17 @@ import { TokenRefreshCoordinatorService } from './token-refresh-coordinator.serv
 export class TokenRefreshService {
   private refreshInterval: ReturnType<typeof setTimeout> | number | null = null;
 
-  constructor(private authService: AuthService, private tokenRefreshCoordinator: TokenRefreshCoordinatorService) {}
+  constructor(
+    private authService: AuthService,
+    private tokenRefreshCoordinator: TokenRefreshCoordinatorService,
+    private http: HttpClient
+  ) {}
 
   startAutoRefresh(): void {
     if (this.refreshInterval) {
       this.clearInterval();
     }
 
-    // Try to start refresh immediately, regardless of existing interval
     this.scheduleNextRefresh();
   }
 
@@ -32,10 +36,6 @@ export class TokenRefreshService {
   }
 
   private scheduleNextRefresh(): void {
-    if (this.refreshInterval) {
-      this.clearInterval();
-    }
-
     const refreshToken = this.authService.getRefreshToken();
     if (!refreshToken) {
       // If no refresh token, schedule to check again in 30 seconds
@@ -48,7 +48,6 @@ export class TokenRefreshService {
 
     console.log('Starting automatic token refresh timer');
     this.refreshInterval = setInterval(() => {
-      // Only proceed if not already refreshing
       if (this.tokenRefreshCoordinator.getIsRefreshing()) {
         console.log('Skipping refresh - another refresh is already in progress');
         return;
@@ -59,9 +58,9 @@ export class TokenRefreshService {
         console.log('No access token found for refresh');
         return;
       }
-      
+
       this.attemptRefresh();
-    }, 5 * 60 * 1000); // Every 5 minutes
+    }, 5 * 60 * 1000);
   }
 
   stopAutoRefresh(): void {
@@ -76,11 +75,15 @@ export class TokenRefreshService {
       return;
     }
 
+    if (this.tokenRefreshCoordinator.getIsRefreshing()) {
+      console.log('Skipping refresh - another refresh is already in progress');
+      return;
+    }
+
     console.log('Attempting automatic token refresh');
-    // Set the shared refresh state
     this.tokenRefreshCoordinator.setIsRefreshing(true);
 
-    this.authService.refreshToken(refreshToken).pipe(
+    this.http.post<any>(`api/users/refresh-token/${refreshToken}`, {}).pipe(
       take(1),
       catchError((error) => {
         console.error('Auto token refresh failed:', error);
@@ -91,12 +94,16 @@ export class TokenRefreshService {
       next: (response) => {
         console.log('Auto token refresh successful');
         this.authService.updateAccessToken(response.accessToken);
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
         this.tokenRefreshCoordinator.setIsRefreshing(false);
       },
       error: (err) => {
-        console.error('Auto refresh failed and logged out:', err);
+        console.error('Auto refresh failed - will retry on next cycle, not logging out:', err);
         this.tokenRefreshCoordinator.setIsRefreshing(false);
-        this.authService.logout();
+        // DO NOT call logout() here - the auth interceptor handles 401 errors properly
+        // this.authService.logout();
       }
     });
   }

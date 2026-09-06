@@ -116,7 +116,7 @@ export class BillingInfo {
 
     try {
       this.electricBillsApi.uploadElectricBillPdf(this.addressId, this.selectedPdfFile).subscribe({
-        next: (response: ElectricBill) => {
+      next: (response: ElectricBill) => {
           if (response) {
               this.billedDate = response.periodStartDate || '';
               this.billedDateEnd = response.periodEndDate || '';
@@ -126,8 +126,8 @@ export class BillingInfo {
               this.unitPrice = response.unitPrice ?? null;
               this.note = response.note ?? null;
               
-            
-            this.pdfUploaded = true;
+              this.pdfUploaded = true;
+              this.cdr.detectChanges();
           }
         },
         error: (err: unknown) => {

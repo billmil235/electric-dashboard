@@ -14,7 +14,19 @@ public static class UserEndpoint
         {
             var result = await userService.CreateUserAsync(user);
 
+            if (result.EmailAlreadyExists)
+            {
+                return Results.Conflict(result.ErrorMessage);
+            }
+
             return result.IsSuccessful ? Results.Ok() : Results.BadRequest(result.ErrorMessage);
+        })
+        .AllowAnonymous();
+
+        group.MapGet("/email-exists/{email}", async (string email, IUserService userService) =>
+        {
+            var exists = await userService.ExistsByEmailAsync(email);
+            return exists ? Results.Conflict(email) : Results.Ok();
         })
         .AllowAnonymous();
 

@@ -35,7 +35,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" (click)="logout()" style="cursor: pointer;">
+          <a class="nav-link" (click)="logout()" (keyup.enter)="logout()" style="cursor: pointer;">
             <span data-feather="log-out" class="nav-icon"></span>
             Logout
           </a>

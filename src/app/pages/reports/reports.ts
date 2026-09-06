@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { LoggedInLayout } from "../logged-in-layout/logged-in-layout";
 import { MonthlyConsumptionGraphComponent } from '../../components/monthly-consumption-graph/monthly-consumption-graph.component';
 import { MonthlySentBackGraphComponent } from '../../components/monthly-sent-back-graph/monthly-sent-back-graph.component';
@@ -23,7 +23,7 @@ export class Reports implements OnInit {
   addresses = signal<ServiceAddress[]>([]);
   bills = signal<ElectricBill[]>([]);
 
-  constructor(private electricBillsApi: ElectricBillsApi) { }
+  private electricBillsApi = inject(ElectricBillsApi);
 
   ngOnInit() {
     // Address selection will be handled by the component

@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CacheService } from '../../services/cache.service';
 
@@ -16,13 +15,14 @@ export class Landing {
   password = '';
   errorMessage = signal('');
 
-  constructor(private authService: AuthService, private router: Router, private cacheService: CacheService) {}
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private cacheService = inject(CacheService);
 
   login() {
     this.errorMessage.set('');
     this.authService.login(this.username, this.password).subscribe({
-      next: (response) => {
-        this.authService.storeTokens(response);
+      next: () => {
         // Invalidate all caches after successful login
         this.cacheService.invalidateAllCaches();
         this.router.navigate(['/dashboard']);

@@ -13,7 +13,11 @@ export class AuthApi {
   register(user: UserRegistration): Observable<void> {
     return this.http.post<void>(`api/users/register`, user);
   }
-  
+
+  checkEmailExists(email: string): Observable<boolean> {
+    return this.http.get<boolean>(`api/users/email-exists/${encodeURIComponent(email)}/`);
+  }
+
   updateUserProfile(user: Partial<UserRegistration>): Observable<void> {
     return this.http.put<void>(`api/users/profile`, user);
   }
