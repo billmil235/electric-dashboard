@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { inject } from '@angular/core';
 import { AuthApi } from '../../services/auth-api';
 
 @Component({
@@ -45,7 +46,7 @@ export class Register implements OnInit, OnDestroy {
         this.authApi
           .checkEmailExists(email)
           .subscribe({
-            next: (exists) => {
+            next: (exists: boolean) => {
               this.emailAlreadyExists = exists;
               this.isCheckingEmail = false;
             },

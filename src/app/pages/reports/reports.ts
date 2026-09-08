@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { LoggedInLayout } from "../logged-in-layout/logged-in-layout";
 import { MonthlyConsumptionGraphComponent } from '../../components/monthly-consumption-graph/monthly-consumption-graph.component';
 import { MonthlySentBackGraphComponent } from '../../components/monthly-sent-back-graph/monthly-sent-back-graph.component';
@@ -10,6 +10,7 @@ import { ElectricBill } from '../../models/electric-bill.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ServiceAddressSelector } from '../../components/service-address-selector/service-address-selector';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-reports',

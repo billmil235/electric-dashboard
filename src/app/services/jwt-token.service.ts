@@ -66,6 +66,10 @@ export class JwtTokenService {
     return decoded?.realm_access?.roles || decoded?.roles || [];
   }
 
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
   hasRefreshToken(): boolean {
     return this.getRefreshToken() !== null;
   }

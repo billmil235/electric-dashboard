@@ -1,8 +1,10 @@
 import { Component, signal } from '@angular/core';
+import { inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CacheService } from '../../services/cache.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-landing',
@@ -23,12 +25,11 @@ export class Landing {
     this.errorMessage.set('');
     this.authService.login(this.username, this.password).subscribe({
       next: () => {
-        // Invalidate all caches after successful login
         this.cacheService.invalidateAllCaches();
         this.router.navigate(['/dashboard']);
       },
-      error: (err) => {
-        if (err instanceof HttpErrorResponse && err.error?.errorMessage) {
+      error: (err: HttpErrorResponse) => {
+        if (err.error?.errorMessage) {
           this.errorMessage.set(err.error.errorMessage);
         } else {
           this.errorMessage.set('Login failed. Please check your credentials and try again.');
