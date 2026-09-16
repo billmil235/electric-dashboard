@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, viewChild, ElementRef, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AddressesApi } from '../../services/addresses-api';
@@ -17,10 +17,28 @@ export class ProfileEdit implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly addressesApi = inject(AddressesApi);
 
+  modalElement = viewChild<ElementRef<HTMLElement>>('modalElement');
+
   addresses = signal<ServiceAddress[]>([]);
   loading = signal<boolean>(false);
   editingAddress = signal<ServiceAddress | null>(null);
   showAddForm = signal<boolean>(false);
+
+  constructor() {
+    effect(() => {
+      if (this.showAddForm()) {
+        const element = this.modalElement()?.nativeElement;
+        if (element && (window as any).bootstrap) {
+          const modal = new (window as any).bootstrap.Modal(element);
+          modal.show();
+
+          element.addEventListener('hidden.bs.modal', () => {
+            this.showAddForm.set(false);
+          }, { once: true });
+        }
+      }
+    });
+  }
 
   ngOnInit() {
     this.loadAddresses();
