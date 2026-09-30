@@ -41,8 +41,8 @@ public static class UserEndpoint
         })
         .AllowAnonymous();
 
-        group.MapPost("/refresh-token/{token}", async (string token, IUserService userService, CancellationToken ct)
-            => await userService.RefreshTokenAsync(token, ct))
+        group.MapPost("/refresh-token", async (RefreshTokenRequest request, IUserService userService, CancellationToken ct)
+            => await userService.RefreshTokenAsync(request.RefreshToken, ct))
             .AllowAnonymous();
 
         group.MapPost("/update-profile", (UserUpdate user, ClaimsPrincipal userClaims, IUserService userService) =>

@@ -39,7 +39,7 @@ public class UserService(
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            throw new Exception($"Keycloak error: {response.StatusCode} - {error}");
+            throw new Exception($"Keycloak error: {response.StatusCode}");
         }
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -65,7 +65,7 @@ public class UserService(
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception($"Keycloak error: {response.StatusCode} - {content}");
+            throw new Exception($"Keycloak error: {response.StatusCode}");
         }
 
         using var usersDoc = JsonDocument.Parse(content);
@@ -209,7 +209,7 @@ public class UserService(
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            throw new Exception($"Error refreshing Keycloak token: {response.StatusCode}, {error}");
+            throw new Exception($"Error refreshing Keycloak token: {response.StatusCode}");
         }
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);

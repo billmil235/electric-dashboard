@@ -1,15 +1,21 @@
 using System.Net.Http;
 using System.Text.Json;
 
+using ElectricDashboardApi.Models.Options;
+
+using Microsoft.Extensions.Options;
+
 namespace ElectricDashboard.Services.User;
 
 public class KeycloakTokenClient : IKeycloakTokenClient
 {
     private readonly HttpClient _client;
+    private readonly KeycloakOptions _options;
 
-    public KeycloakTokenClient(HttpClient client)
+    public KeycloakTokenClient(HttpClient client, IOptions<KeycloakOptions> options)
     {
         _client = client;
+        _options = options.Value;
     }
 
     public async Task<KeycloakTokenResponse?> GetTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
@@ -17,25 +23,23 @@ public class KeycloakTokenClient : IKeycloakTokenClient
         var requestData = new Dictionary<string, string>
         {
             { "grant_type", "refresh_token" },
-            { "client_id", _client.BaseAddress?.ToString() ?? string.Empty },
-            { "client_secret", string.Empty },
+            { "client_id", _options.ClientId },
+            { "client_secret", _options.ClientSecret },
             { "refresh_token", refreshToken }
         };
 
         var requestContent = new FormUrlEncodedContent(requestData);
 
-        var request = new HttpRequestMessage(HttpMethod.Post, _client.BaseAddress?.ToString() ?? "/") {
+        var request = new HttpRequestMessage(HttpMethod.Post, _options.TokenUrl) {
             Content = requestContent
         };
 
-        // The actual URL would be from Keycloak options, using the injected client
-        // This is a simplified typed client pattern
         var response = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            throw new Exception($"Error refreshing Keycloak token: {response.StatusCode}, {error}");
+            throw new Exception($"Error refreshing Keycloak token: {response.StatusCode}");
         }
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);

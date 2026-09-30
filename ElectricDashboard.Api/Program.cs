@@ -44,14 +44,14 @@ builder.Services.AddAuthorization(o =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
-        o.RequireHttpsMetadata = false;
+        o.RequireHttpsMetadata = true;
         o.Audience = builder.Configuration["Keycloak:Audience"];
         o.MetadataAddress = builder.Configuration["Keycloak:MetadataAddress"]!;
         o.TokenValidationParameters = new TokenValidationParameters()
         {
             ValidIssuer = builder.Configuration["Keycloak:ValidIssuer"],
             ValidateIssuerSigningKey = true,
-            ValidateAudience = false,
+            ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuer = true
         };

@@ -83,7 +83,7 @@ export class TokenRefreshService {
     console.log('Attempting automatic token refresh');
     this.tokenRefreshCoordinator.setIsRefreshing(true);
 
-    this.http.post<any>(`api/users/refresh-token/${refreshToken}`, {}).pipe(
+    this.http.post<any>(`api/users/refresh-token`, { refreshToken }).pipe(
       take(1),
       catchError((error) => {
         console.error('Auto token refresh failed:', error);
