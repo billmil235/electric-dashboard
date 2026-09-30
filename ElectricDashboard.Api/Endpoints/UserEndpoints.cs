@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading.Tasks;
 using ElectricDashboard.Services.User;
 using ElectricDashboardApi.Dtos.User;
 using ElectricDashboardApi.Models.User;
@@ -10,9 +11,9 @@ public static class UserEndpoint
 {
     public static RouteGroupBuilder RegisterUserEndpoints(this RouteGroupBuilder group)
     {
-        group.MapPost("/register", async (UserDto user, IUserService userService) =>
+        group.MapPost("/register", async (UserDto user, IUserService userService, CancellationToken ct) =>
         {
-            var result = await userService.CreateUserAsync(user);
+            var result = await userService.CreateUserAsync(user, ct);
 
             if (result.EmailAlreadyExists)
             {
@@ -23,16 +24,16 @@ public static class UserEndpoint
         })
         .AllowAnonymous();
 
-        group.MapGet("/email-exists/{email}", async (string email, IUserService userService) =>
+        group.MapGet("/email-exists/{email}", async (string email, IUserService userService, CancellationToken ct) =>
         {
-            var exists = await userService.ExistsByEmailAsync(email);
+            var exists = await userService.ExistsByEmailAsync(email, ct);
             return exists ? Results.Conflict(email) : Results.Ok();
         })
         .AllowAnonymous();
 
-        group.MapPost("/login", async (Login login, IUserService userService) =>
+        group.MapPost("/login", async (Login login, IUserService userService, CancellationToken ct) =>
         {
-            var loginResult = await userService.LoginAsync(login.Username, login.Password);
+            var loginResult = await userService.LoginAsync(login.Username, login.Password, ct);
 
             return loginResult.IsSuccessful
                 ? Results.Ok(loginResult.Token)
@@ -40,8 +41,8 @@ public static class UserEndpoint
         })
         .AllowAnonymous();
 
-        group.MapPost("/refresh-token/{token}", async (string token, IUserService userService)
-            => await userService.RefreshTokenAsync(token))
+        group.MapPost("/refresh-token/{token}", async (string token, IUserService userService, CancellationToken ct)
+            => await userService.RefreshTokenAsync(token, ct))
             .AllowAnonymous();
 
         group.MapPost("/update-profile", (UserUpdate user, ClaimsPrincipal userClaims, IUserService userService) =>

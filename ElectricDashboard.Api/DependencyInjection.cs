@@ -22,6 +22,18 @@ namespace ElectricDashboardApi
                 builder.Configuration.GetSection("Keycloak")
             );
 
+            builder.Services.AddHttpClient<IKeycloakTokenClient, KeycloakTokenClient>("keycloak-token", client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["Keycloak:TokenUrl"]!);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+
+            builder.Services.AddHttpClient<IUserService, UserService>("user-service", client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["Keycloak:UserUrl"]!);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
+
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDataSourceService, DataSourceService>();
             builder.Services.AddSingleton<ISolarDataService, SolarDataService>();
