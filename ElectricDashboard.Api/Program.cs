@@ -3,10 +3,13 @@ using ElectricDashboardApi.Infrastructure;
 using ElectricDashboardApi.Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Threading.RateLimiting;
+using ElectricDashboardApi.Models.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,23 @@ builder.Services.AddDbContext<ElectricDashboardContext>(options =>
         );
 
 builder.RegisterServices();
+
+builder.Services.AddRateLimiter(options =>
+{
+    var rlOptions = builder.Configuration.GetSection("RateLimiting").Get<RateLimitingOptions>() ?? new RateLimitingOptions();
+
+    options.AddPolicy("auth-limiter", httpContext => 
+        RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                Window = TimeSpan.FromSeconds(rlOptions.Login.WindowSeconds),
+                PermitLimit = rlOptions.Login.PermitLimit,
+                QueueLimit = 0
+            }
+        )
+    );
+});
 
 builder.Services.AddHybridCache(options =>
 {
@@ -44,7 +64,7 @@ builder.Services.AddAuthorization(o =>
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
-        o.RequireHttpsMetadata = true;
+        o.RequireHttpsMetadata = false;
         o.Audience = builder.Configuration["Keycloak:Audience"];
         o.MetadataAddress = builder.Configuration["Keycloak:MetadataAddress"]!;
         o.TokenValidationParameters = new TokenValidationParameters()
@@ -105,6 +125,7 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseCors("allowedOrigins");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 

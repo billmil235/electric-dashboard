@@ -22,6 +22,16 @@ namespace ElectricDashboardApi
                 builder.Configuration.GetSection("Keycloak")
             );
 
+            builder.Services.Configure<RateLimitingOptions>(
+                builder.Configuration.GetSection("RateLimiting")
+            );
+
+            builder.Services.Configure<LoginLockoutOptions>(
+                builder.Configuration.GetSection("LoginLockout")
+            );
+
+            builder.Services.AddSingleton<ILoginLockoutService, LoginLockoutService>();
+
             builder.Services.AddHttpClient<IKeycloakTokenClient, KeycloakTokenClient>("keycloak-token", client =>
             {
                 client.BaseAddress = new Uri(builder.Configuration["Keycloak:TokenUrl"]!);

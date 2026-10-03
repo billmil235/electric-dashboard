@@ -4,6 +4,7 @@ using ElectricDashboard.Services.User;
 using ElectricDashboardApi.Dtos.User;
 using ElectricDashboardApi.Models.User;
 using ElectricDashboardApi.Shared.Extensions;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ElectricDashboardApi.Endpoints;
 
@@ -22,7 +23,8 @@ public static class UserEndpoint
 
             return result.IsSuccessful ? Results.Ok() : Results.BadRequest(result.ErrorMessage);
         })
-        .AllowAnonymous();
+        .AllowAnonymous()
+        .RequireRateLimiting("auth-limiter");
 
         group.MapGet("/email-exists/{email}", async (string email, IUserService userService, CancellationToken ct) =>
         {
@@ -31,19 +33,32 @@ public static class UserEndpoint
         })
         .AllowAnonymous();
 
-        group.MapPost("/login", async (Login login, IUserService userService, CancellationToken ct) =>
+        group.MapPost("/login", async (Login login, IUserService userService, ILoginLockoutService lockoutService, HttpContext context, CancellationToken ct) =>
         {
+            var ipAddress = context.Connection.RemoteIpAddress?.ToString();
+            if (lockoutService.IsLockedOut(login.Username, ipAddress, out var retryAfter))
+            {
+                return Results.StatusCode(429); // Too Many Requests / Locked Out
+            }
+
             var loginResult = await userService.LoginAsync(login.Username, login.Password, ct);
 
-            return loginResult.IsSuccessful
-                ? Results.Ok(loginResult.Token)
-                : Results.BadRequest(loginResult.ErrorMessage);
+            if (loginResult.IsSuccessful)
+            {
+                lockoutService.ClearFailures(login.Username, ipAddress);
+                return Results.Ok(loginResult.Token);
+            }
+
+            lockoutService.RegisterFailure(login.Username, ipAddress);
+            return Results.BadRequest(loginResult.ErrorMessage);
         })
-        .AllowAnonymous();
+        .AllowAnonymous()
+        .RequireRateLimiting("auth-limiter");
 
         group.MapPost("/refresh-token", async (RefreshTokenRequest request, IUserService userService, CancellationToken ct)
             => await userService.RefreshTokenAsync(request.RefreshToken, ct))
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireRateLimiting("auth-limiter");
 
         group.MapPost("/update-profile", (UserUpdate user, ClaimsPrincipal userClaims, IUserService userService) =>
             {
