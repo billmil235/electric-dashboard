@@ -2,11 +2,22 @@ namespace ElectricDashboardApi.Infrastructure.Commands.User;
 
 using ElectricDashboardApi.Dtos.User;
 using ElectricDashboardApi.Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 
 public class UpdateServiceAddressCommand(ElectricDashboardContext context) : IUpdateServiceAddressCommand
 {
     public async Task<ServiceAddressDto?> Execute(Guid userId, Guid addressId, ServiceAddressDto serviceAddress)
     {
+        // Verify that the user has access to this address
+        var hasAccess = await context.UserToServiceAddresses
+            .AnyAsync(usa => usa.UserId == userId && usa.AddressId == addressId)
+            .ConfigureAwait(false);
+
+        if (!hasAccess)
+        {
+            return null;
+        }
+
         var address = await context.ServiceAddresses
             .FindAsync(addressId)
             .ConfigureAwait(false);

@@ -1,7 +1,4 @@
-using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using ElectricDashboardApi.Dtos.OAuth;
 using ElectricDashboardApi.Dtos.User;
@@ -26,12 +23,11 @@ public class UserService(
 
     private async Task<string> GetAdminTokenAsync(CancellationToken cancellationToken)
     {
-        var content = new FormUrlEncodedContent(new[]
-        {
+        var content = new FormUrlEncodedContent([
             new KeyValuePair<string, string>("client_id", options.Value.ClientId),
             new KeyValuePair<string, string>("client_secret", options.Value.ClientSecret),
             new KeyValuePair<string, string>("grant_type", "client_credentials")
-        });
+        ]);
 
         var request = new HttpRequestMessage(HttpMethod.Post, options.Value.TokenUrl) { Content = content };
         var response = await _keycloakClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -42,8 +38,8 @@ public class UserService(
             throw new Exception($"Keycloak error: {response.StatusCode}");
         }
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        using var document = JsonDocument.Parse(json);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
         return document.RootElement.GetProperty("access_token").GetString()!;
     }
 
@@ -61,18 +57,18 @@ public class UserService(
 
         var response = await SendAuthorizedRequestAsync(request, cancellationToken).ConfigureAwait(false);
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
         if (!response.IsSuccessStatusCode)
         {
             throw new Exception($"Keycloak error: {response.StatusCode}");
         }
 
-        using var usersDoc = JsonDocument.Parse(content);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using var usersDoc = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
         var users = usersDoc.RootElement.EnumerateArray();
+
         return users.Any(user =>
         {
-            string? userEmail = user.TryGetProperty("email", out var emailProperty)
+            var userEmail = user.TryGetProperty("email", out var emailProperty)
                 ? emailProperty.GetString()
                 : null;
 
@@ -99,15 +95,14 @@ public class UserService(
             {
                 IsSuccessful = false,
                 EmailAlreadyExists = true,
-                ErrorMessage = "Email already exists"
+                ErrorMessage = "Email already exists."
             };
         }
 
-        var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
         if (!response.IsSuccessStatusCode)
         {
-            var keycloakError = JsonSerializer.Deserialize<KeyCloakError>(content);
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            var keycloakError = await JsonSerializer.DeserializeAsync<KeyCloakError>(stream, cancellationToken: cancellationToken, options: _options).ConfigureAwait(false);
             return new CreateUserResult()
             {
                 IsSuccessful = false,
@@ -156,10 +151,11 @@ public class UserService(
         var request = new HttpRequestMessage(HttpMethod.Post, options.Value.TokenUrl) { Content = content };
         var response = await _keycloakClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-            var errorResponse = JsonSerializer.Deserialize<KeyCloakLoginError>(error);
+            var errorResponse = await JsonSerializer.DeserializeAsync<KeyCloakLoginError>(stream, cancellationToken: cancellationToken, options: _options).ConfigureAwait(false);
             return new LoginResult()
             {
                 IsSuccessful = false,
@@ -167,9 +163,7 @@ public class UserService(
             };
         }
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-        using var document = JsonDocument.Parse(json);
+        using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         document.RootElement.TryGetProperty("access_token", out var accessTokenProp);
         var accessToken = accessTokenProp.GetString();
@@ -212,9 +206,8 @@ public class UserService(
             throw new Exception($"Error refreshing Keycloak token: {response.StatusCode}");
         }
 
-        var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-        using var document = JsonDocument.Parse(json);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
         var tokenResponse = document.RootElement.GetProperty("access_token").GetString();
 
         return new RefreshTokenResponse

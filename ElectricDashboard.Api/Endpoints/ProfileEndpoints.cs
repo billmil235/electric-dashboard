@@ -23,10 +23,10 @@ public static class ProfileEndpoints
             return Results.Ok(address);
         }).RequireAuthorization();
 
-        group.MapPut("/address{addressGuid:guid}", async (Guid addressGuid, [FromBody] ServiceAddressDto serviceAddress, ClaimsPrincipal user, IAddServiceAddressCommand addServiceAddressCommand) =>
+        group.MapPut("/address/{addressGuid:guid}", async (Guid addressGuid, [FromBody] ServiceAddressDto serviceAddress, ClaimsPrincipal user, IUpdateServiceAddressCommand updateServiceAddressCommand) =>
         {
-            var address = await addServiceAddressCommand.Execute(user.GetGuid(), serviceAddress);
-            return Results.Ok(address);
+            var address = await updateServiceAddressCommand.Execute(user.GetGuid(), addressGuid, serviceAddress);
+            return address == null ? Results.NotFound() : Results.Ok(address);
         }).RequireAuthorization();
 
         group.MapDelete("/address/{addressId:Guid}", async ([FromRoute] Guid addressId, ClaimsPrincipal user, IDeleteServiceAddressCommand deleteServiceAddressCommand) =>
