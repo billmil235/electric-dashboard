@@ -16,6 +16,15 @@ public class AddElectricBillCommand(ElectricDashboardContext context) : IAddElec
             entity = await context.ElectricBills
                 .FirstAsync(x => x.BillId == billGuid)
                 .ConfigureAwait(false);
+
+            var ownsAddress = await context.UserToServiceAddresses
+                .AnyAsync(a => a.AddressId == entity.AddressId && a.UserId == userId)
+                .ConfigureAwait(false);
+
+            if (!ownsAddress)
+            {
+                return null;
+            }
         }
         else
         {

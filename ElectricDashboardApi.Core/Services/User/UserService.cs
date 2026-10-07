@@ -202,7 +202,6 @@ public class UserService(
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             throw new Exception($"Error refreshing Keycloak token: {response.StatusCode}");
         }
 

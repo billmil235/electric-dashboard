@@ -65,8 +65,15 @@ public static class DataSourceEndpoints
             .RequireAuthorization();
 
         group.MapPost("/electric-bill/upload/{addressGuid:guid}",
-            async (IFormFile file, [FromRoute] Guid addressGuid, ClaimsPrincipal user, IDataSourceService dataSourceService) =>
+            async (IFormFile file, [FromRoute] Guid addressGuid, ClaimsPrincipal user, IDataSourceService dataSourceService, IGetAddressExistsQuery getAddressExistsQuery) =>
             {
+                var addressExists = await getAddressExistsQuery.Execute(user.GetGuid(), addressGuid);
+
+                if (!addressExists)
+                {
+                    return Results.NotFound();
+                }
+
                 using var memoryStream = new MemoryStream();
                 await file.CopyToAsync(memoryStream);
                 var electricBillDto = await dataSourceService.ParseUploadedBill(addressGuid, memoryStream, file.ContentType);
@@ -74,7 +81,8 @@ public static class DataSourceEndpoints
                 return Results.Ok(electricBillDto);
             })
             .RequireAuthorization()
-            .DisableAntiforgery();
+            .DisableAntiforgery()
+            .WithMetadata(new RequestSizeLimitAttribute(10 * 1024 * 1024)); // Limit to 10MB
 
         group.MapDelete("/electric-bill/{addressGuid:guid}",
             async ([FromRoute] Guid addressGuid, ClaimsPrincipal user, IGetAddressExistsQuery getAddressExistsQuery, IDeleteElectricBillCommand deleteElectricBillCommand) =>

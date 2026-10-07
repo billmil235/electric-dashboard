@@ -18,7 +18,9 @@ public static class UserEndpoint
 
             if (result.EmailAlreadyExists)
             {
-                return Results.Conflict(result.ErrorMessage);
+                // Return a generic error or success to prevent enumeration, 
+                // but for this implementation we'll just remove the specific email from response if any.
+                return Results.BadRequest("Registration could not be completed. Please check your details.");
             }
 
             return result.IsSuccessful ? Results.Ok() : Results.BadRequest(result.ErrorMessage);
@@ -29,7 +31,8 @@ public static class UserEndpoint
         group.MapGet("/email-exists/{email}", async (string email, IUserService userService, CancellationToken ct) =>
         {
             var exists = await userService.ExistsByEmailAsync(email, ct);
-            return exists ? Results.Conflict(email) : Results.Ok();
+            // Return 200 regardless to prevent easy enumeration via status codes
+            return Results.Ok(new { exists });
         })
         .AllowAnonymous();
 
