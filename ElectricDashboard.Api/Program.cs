@@ -52,7 +52,7 @@ builder.Services.AddHybridCache(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "allowedOrigins",
-        policy => { policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader(); });
+        policy => { policy.AllowAnyMethod().AllowAnyHeader(); });
 });
 
 // Add authentication / authorization
@@ -139,6 +139,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseExceptionHandler(exceptionHandlerApp =>
 {
     exceptionHandlerApp.Run(async context =>
@@ -164,5 +167,7 @@ app.MapGroup("/lookups").RegisterLookupEndpoints();
 
 // Register forecast endpoints
 app.MapGroup("/forecast").RegisterForecastEndpoints();
+
+app.MapFallbackToFile("index.html");
 
 app.Run();

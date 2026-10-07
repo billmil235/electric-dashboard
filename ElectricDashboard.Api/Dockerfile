@@ -3,6 +3,13 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 5281
 
+FROM node:22-alpine AS frontend-build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build -- --configuration production
+
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS api-build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -17,18 +24,7 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./ElectricDashboard.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM api-base AS api-final
-COPY --from=api-publish /app/publish /app
-ENTRYPOINT ["dotnet", "ElectricDashboard.Api.dll"]
-
-FROM node:22-alpine AS frontend-build
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build -- --base-href /electric/ --configuration production
-
-FROM nginx:alpine AS frontend-final
-COPY --from=frontend-build /app/dist/ElectricDashboard/browser/ /usr/share/nginx/html
-COPY ElectricDashboard.Api/nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 4200
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=api-publish /app/publish .
+COPY --from=frontend-build /app/dist/ElectricDashboard/browser ./wwwroot
+ENTRYPOINT ["dotnet", "ElectricDashboard.Api.dll"]
